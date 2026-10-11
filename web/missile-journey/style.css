@@ -448,3 +448,12 @@ html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
 .duo>div{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .duo img{display:block;width:100%}
 @media (max-width:640px){.duo>div{grid-template-columns:1fr}}
+
+/* 滾輪提示（參考 TOWAN 首頁右下角的箭頭提示） */
+.scroll-hint{position:absolute;z-index:3;right:max(24px,calc((100vw - 1200px)/2 + 24px));bottom:26px;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--fg);text-decoration:none;opacity:.8;transition:opacity .5s}
+.scroll-hint span{font-family:"Noto Sans TC",sans-serif;font-size:12px;letter-spacing:.3em;text-indent:.3em}
+.scroll-hint .wheel{animation:wheel 1.6s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes wheel{0%{transform:translateY(0);opacity:0}25%{opacity:1}75%{transform:translateY(10px);opacity:1}100%{transform:translateY(14px);opacity:0}}
+.scroll-hint.gone{opacity:0;pointer-events:none}
+@media (max-width:640px){.scroll-hint{right:20px;bottom:18px}}
+@media (prefers-reduced-motion:reduce){.scroll-hint .wheel{animation:none}}

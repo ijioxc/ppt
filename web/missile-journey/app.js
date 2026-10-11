@@ -125,3 +125,9 @@ d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json').the
 addEventListener('resize', draw);
 
 update();
+
+// 滾輪提示：開始滑動後淡出
+{
+  const hint = document.querySelector('.scroll-hint');
+  if (hint) addEventListener('scroll', () => hint.classList.toggle('gone', scrollY > 40), {passive: true});
+}
