@@ -184,7 +184,6 @@ main{position:relative;z-index:1}
 .act{position:absolute;top:10px;right:10px;z-index:3;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(20,20,22,.6);color:#fff;text-decoration:none;font-size:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);opacity:0;transform:scale(.9);transition:opacity .25s,transform .25s,background .2s}
 .card:hover .act,.act:focus-visible{opacity:1;transform:none}
 .act:hover{background:#fff;color:#000}
-.act.dl{right:50px}
 .card.deck .act{top:22px}
 @media (hover:none){.act{opacity:1;transform:none}.card.deck .act{top:10px}}
 .empty{text-align:center;color:var(--mute);padding:120px 0}
@@ -241,6 +240,7 @@ const thumb=(d,k)=>`decks/${encodeURIComponent(d.id)}/${d.slides[k].replace(/^s-
 const pic=(it,k=0,cls='')=>it.kind==='deck'
   ?`<img class="${cls}" src="${thumb(it.d,k)}" data-full="${full(it.d,k)}" onerror="this.onerror=null;this.src=this.dataset.full" loading="lazy" draggable="false" alt="">`
   :`<img class="${cls} ${it.s.fit==='contain'?'contain':''}" src="sites/${esc(it.s.shot)}" loading="lazy" draggable="false" alt="">`;
+const tg=it=>it.kind==='site'?' target="_blank" rel="noopener"':'';
 const dl=d=>d.pptx?`href="decks/${encodeURIComponent(d.id)}/${d.pptx}" download="${esc(d.title+d.pptx.slice(d.pptx.lastIndexOf('.')))}"`:'';
 const spread=(len,n)=>Array.from({length:n},(_,k)=>Math.round(k*(len-1)/Math.max(n-1,1)));
 // 橫掃預覽：最多取 8 頁，平均抽樣
@@ -261,7 +261,7 @@ function ring(works,n,link){
   const cs=ringCards(works,n).map(c=>({...c,img:pic(c.it,c.k).replace(' loading="lazy"','')}));
   return `<div class="ring"${link?' id="ring"':''}>${cs.map((c,i)=>{
     const a=`class="c" data-w="${c.w}" style="--a:${(i*360/cs.length).toFixed(2)}deg"`;
-    return link?`<a ${a} href="${c.it.href}" draggable="false" tabindex="-1" aria-hidden="true">${c.img}</a>`:`<span ${a}>${c.img}</span>`;
+    return link?`<a ${a} href="${c.it.href}"${tg(c.it)} draggable="false" tabindex="-1" aria-hidden="true">${c.img}</a>`:`<span ${a}>${c.img}</span>`;
   }).join('')}</div>`;
 }
 
@@ -283,7 +283,7 @@ function focusView(name,works){
     <div class="info"><div class="pv" id="pv"></div><h2 id="it">${esc(name)}</h2><span class="mono" id="im"></span></div>
     <a class="btn ghost back" href="#">← 地圖</a>
     <div class="orbit" id="orbit">${ring(works,40,true)}</div>
-    <nav class="chips" id="chips">${works.map((it,w)=>`<a class="chip" data-w="${w}" href="${it.href}"><span class="mono">${pad(w+1)}</span><b>${esc(it.title)}</b></a>`).join('')}</nav>
+    <nav class="chips" id="chips">${works.map((it,w)=>`<a class="chip" data-w="${w}" href="${it.href}"${tg(it)}><span class="mono">${pad(w+1)}</span><b>${esc(it.title)}</b></a>`).join('')}</nav>
   </section>`;
 }
 
@@ -291,12 +291,11 @@ function focusView(name,works){
 function card(it,i){
   return it.kind==='site'?`
   <div class="card site" style="--i:${i}">
-    <a class="main" href="${it.href}">
-      <span class="shot">${pic(it)}<span class="tag mono">預覽 →</span></span>
+    <a class="main" href="${it.href}"${tg(it)}>
+      <span class="shot">${pic(it)}<span class="tag mono">開啟 ↗</span></span>
       <div class="meta"><div class="title">${esc(it.title)}</div><span class="mono">${esc(it.meta)}</span></div>
       <div class="desc">${esc(it.s.desc)}</div>
     </a>
-    <a class="act" title="開啟網站" href="${esc(it.s.url)}" target="_blank" rel="noopener">↗</a>
     ${it.s.download?`<a class="act dl" title="下載 PDF" href="${esc(it.s.download)}" download>↓</a>`:''}
   </div>`:`
   <div class="card deck" style="--i:${i}" data-deck="${esc(it.d.id)}">
@@ -451,7 +450,7 @@ function load(keep){
     d.reverse().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
     items=[
       ...d.map(d=>({kind:'deck',d,title:d.title,group:d.group||UNC,href:`play.html?deck=${encodeURIComponent(d.id)}`,meta:`${pad(d.slides.length)} 頁 · ${day(d.date)}`})),
-      ...s.map(s=>({kind:'site',s,title:s.title,group:s.group||UNC,href:`view.html?site=${encodeURIComponent(s.id)}`,meta:host(s.url)})),
+      ...s.map(s=>({kind:'site',s,title:s.title,group:s.group||UNC,href:s.url,meta:host(s.url)})),
     ];
     // groups.json 決定順序，也記得空的群組；未分類排最後
     groups=new Map(gs.map(g=>[g,[]]));
