@@ -36,25 +36,8 @@
       "s-30.jpg",
       "s-31.jpg"
     ],
-    "pptx": "original.pptx"
-  },
-  {
-    "id": "20260929-war-ledger-a",
-    "title": "戰爭的帳本",
-    "date": "2026-09-29",
-    "slides": [
-      "s-01.jpg",
-      "s-02.jpg",
-      "s-03.jpg",
-      "s-04.jpg",
-      "s-05.jpg",
-      "s-06.jpg",
-      "s-07.jpg",
-      "s-08.jpg",
-      "s-09.jpg",
-      "s-10.jpg"
-    ],
-    "pptx": "original.pptx"
+    "pptx": "original.pptx",
+    "group": "課程報告"
   },
   {
     "id": "20260929-my-life",
@@ -115,7 +98,8 @@
       "s-52.jpg",
       "s-53.jpg"
     ],
-    "pptx": "original.pptx"
+    "pptx": "original.pptx",
+    "group": "系學會"
   },
   {
     "id": "20260929-0604-plc",
@@ -136,7 +120,8 @@
       "s-12.jpg",
       "s-13.jpg",
       "s-14.jpg"
-    ]
+    ],
+    "group": "課程報告"
   },
   {
     "id": "20260929-a4",
@@ -148,6 +133,71 @@
       "s-3.jpg",
       "s-4.jpg",
       "s-5.jpg"
-    ]
+    ],
+    "group": "系學會"
+  },
+  {
+    "id": "20261011-missile-journey",
+    "title": "認識軍工產業：從一枚 1.3 億元的飛彈說起",
+    "date": "2026-10-11",
+    "slides": [
+      "s-01.jpg",
+      "s-02.jpg",
+      "s-03.jpg",
+      "s-04.jpg",
+      "s-05.jpg",
+      "s-06.jpg",
+      "s-07.jpg",
+      "s-08.jpg",
+      "s-09.jpg",
+      "s-10.jpg",
+      "s-11.jpg",
+      "s-12.jpg",
+      "s-13.jpg",
+      "s-14.jpg",
+      "s-15.jpg",
+      "s-16.jpg",
+      "s-17.jpg",
+      "s-18.jpg",
+      "s-19.jpg",
+      "s-20.jpg",
+      "s-21.jpg",
+      "s-22.jpg",
+      "s-23.jpg",
+      "s-24.jpg",
+      "s-25.jpg",
+      "s-26.jpg",
+      "s-27.jpg",
+      "s-28.jpg",
+      "s-29.jpg",
+      "s-30.jpg",
+      "s-31.jpg",
+      "s-32.jpg",
+      "s-33.jpg",
+      "s-34.jpg",
+      "s-35.jpg",
+      "s-36.jpg",
+      "s-37.jpg",
+      "s-38.jpg",
+      "s-39.jpg",
+      "s-40.jpg",
+      "s-41.jpg",
+      "s-42.jpg",
+      "s-43.jpg",
+      "s-44.jpg",
+      "s-45.jpg",
+      "s-46.jpg",
+      "s-47.jpg",
+      "s-48.jpg",
+      "s-49.jpg",
+      "s-50.jpg",
+      "s-51.jpg",
+      "s-52.jpg",
+      "s-53.jpg",
+      "s-54.jpg",
+      "s-55.jpg",
+      "s-56.jpg"
+    ],
+    "group": "課程報告"
   }
 ]

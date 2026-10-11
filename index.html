@@ -5,47 +5,556 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>簡報庫</title>
 <style>
-:root{--bg:#f6f6f4;--card:#fff;--fg:#1c1c1c;--mute:#6b6b6b;--line:#e3e3e0;--accent:#2f5bea}
-@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1e1e1e;--fg:#eee;--mute:#9a9a9a;--line:#2c2c2c;--accent:#7c9bff}}
+:root{--bg:#09090b;--fg:#f4f4f5;--mute:#8e8e96;--faint:#55555d;--line:rgba(255,255,255,.08);--panel:rgba(255,255,255,.05);--ring:rgba(255,255,255,.1);--bar:rgba(9,9,11,.72);--glow:rgba(120,140,255,.13);--btn:#f4f4f5;--on-btn:#09090b;--shadow:0 24px 60px -20px rgba(0,0,0,.8)}
+@media (prefers-color-scheme:light){:root{--bg:#f7f7f5;--fg:#111113;--mute:#6c6c73;--faint:#a5a5ab;--line:rgba(0,0,0,.09);--panel:rgba(0,0,0,.04);--ring:rgba(0,0,0,.1);--bar:rgba(247,247,245,.75);--glow:rgba(90,110,255,.1);--btn:#111113;--on-btn:#fff;--shadow:0 24px 50px -24px rgba(0,0,0,.35)}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,"PingFang TC","Noto Sans TC",sans-serif}
-header{max-width:1100px;margin:0 auto;padding:32px 16px 8px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-h1{margin:0;font-size:26px;flex:1}
-input{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-size:15px;width:min(280px,100%)}
-main{max-width:1100px;margin:0 auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
-.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .15s,box-shadow .15s}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
-.thumb{display:flex;flex-direction:column;text-decoration:none;color:inherit}
-.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;display:block}
-.meta{padding:12px 14px}
-.title{font-weight:600}
-.sub{color:var(--mute);font-size:13px}
-.dl{position:absolute;top:10px;right:10px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);color:#fff;text-decoration:none;font-size:14px;border-radius:50%;backdrop-filter:blur(2px)}
-.dl:hover{background:rgba(0,0,0,.8)}
-.empty{grid-column:1/-1;text-align:center;color:var(--mute);padding:60px 0}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,"SF Pro Text","PingFang TC","Noto Sans TC",sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:"";position:fixed;inset:0 0 auto;height:520px;background:radial-gradient(60% 100% at 50% 0,var(--glow),transparent 70%);pointer-events:none;z-index:0}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.wrap{max-width:1320px;margin:0 auto;padding:0 28px}
+
+/* 頂列 */
+header{position:sticky;top:0;z-index:10;background:var(--bar);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;text-decoration:none;color:inherit}
+.brand h1{margin:0;font-size:16px;font-weight:600;letter-spacing:.02em}
+.tabs{display:flex;padding:3px;background:var(--panel);border-radius:999px}
+.tabs button{border:0;background:none;color:var(--mute);font:inherit;font-size:13px;padding:5px 14px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s}
+.tabs button:hover{color:var(--fg)}
+.tabs button.on{background:var(--btn);color:var(--on-btn)}
+.search{position:relative}
+.search input{width:220px;padding:8px 34px 8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg);font:inherit;font-size:13px;outline:0;transition:border-color .2s,width .25s}
+.search input::placeholder{color:var(--faint)}
+.search input:focus{border-color:var(--mute);width:280px}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:11px ui-monospace,Menlo,monospace;color:var(--faint);border:1px solid var(--line);border-radius:5px;padding:0 5px;pointer-events:none}
+.search input:focus+kbd{opacity:0}
+
+main{position:relative;z-index:1}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none;background:var(--btn);color:var(--on-btn);transition:transform .2s,opacity .2s}
+.btn:hover{transform:translateY(-1px);opacity:.9}
+.btn.ghost{background:none;color:var(--fg);box-shadow:inset 0 0 0 1px var(--ring)}
+.btn.ghost:hover{background:var(--panel)}
+
+/* 圓環：卡片沿半徑方向立著排成一圈 */
+.orbit{display:grid;place-items:center;perspective:1400px;user-select:none;-webkit-user-select:none}
+.ring{position:relative;width:0;height:0;transform-style:preserve-3d;transform:rotateX(-20deg) rotateY(var(--rot,0deg))}
+.c{position:absolute;left:calc(var(--w)/-2);top:calc(var(--w)*-.28125);width:var(--w);aspect-ratio:16/9;border-radius:calc(var(--w)*.04);overflow:hidden;background:#111;box-shadow:0 0 0 1px var(--ring);transform:rotateY(var(--a)) translateZ(var(--r)) rotateY(90deg) translateY(var(--lift,0px));transition:opacity .35s,transform .35s cubic-bezier(.2,.7,.2,1)}
+.c img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;-webkit-user-drag:none;pointer-events:none}
+.c img.contain{object-fit:contain;object-position:center}
+@keyframes spin{from{transform:rotateX(-20deg) rotateY(0)}to{transform:rotateX(-20deg) rotateY(360deg)}}
+
+/* 地圖：群組直排，一條軸線從每個圓環中心穿過 */
+.map{position:relative;display:flex;flex-direction:column;align-items:center;padding:56px 0 96px;animation:fade .5s both}
+@keyframes fade{from{opacity:0}}
+.hub{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:18px}
+.hub b{font-size:22px;font-weight:650;letter-spacing:.04em}
+.hub::after,.end{content:"";width:7px;height:7px;border-radius:50%;background:var(--fg)}
+.hub::after{margin-top:16px}
+.node{position:relative;display:block;text-decoration:none;color:inherit;outline:0}
+.node .orbit{--r:124px;--w:68px;width:380px;max-width:100vw;height:264px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+/* 軸線放在圓環的 3D 空間裡：前半圈的卡片擋住它，後半圈被它擋住 */
+.axis{position:absolute;left:50%;top:0;bottom:0;width:1px;margin-left:-.5px;background:var(--mute)}
+.node .ring{animation:spin 60s linear infinite}
+.node:nth-of-type(even) .ring{animation-direction:reverse}
+.node:hover .orbit,.node:focus-visible .orbit{transform:scale(1.07)}
+.lab{position:absolute;top:50%;left:calc(50% + 215px);transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;white-space:nowrap}
+.node:nth-of-type(even) .lab{left:auto;right:calc(50% + 215px);text-align:right}
+.lab b{font-size:20px;font-weight:650}
+.node:focus-visible .lab b{text-decoration:underline}
+
+/* 群組 */
+.focus{position:relative;height:calc(100vh - 61px);min-height:620px;display:flex;flex-direction:column;animation:fade .5s both;overflow:hidden}
+.focus .orbit{--r:clamp(140px,min(30vw,34vh),360px);--w:calc(var(--r)*.52);flex:1;min-height:0;cursor:grab;touch-action:pan-y}
+.focus .orbit.drag{cursor:grabbing}
+.focus .c{cursor:pointer}
+.ring.has-hot .c{opacity:.22}
+.ring.has-hot .c.hot{opacity:1;--lift:calc(var(--w)*-.1)}
+.info{position:absolute;left:28px;top:28px;width:min(240px,42vw);z-index:2;pointer-events:none}
+.info .pv{aspect-ratio:16/9;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--ring);margin-bottom:14px;opacity:0;transition:opacity .25s}
+.info .pv.on{opacity:1}
+.info .pv img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.info h2{margin:0 0 4px;font-size:20px;font-weight:650;line-height:1.3;text-wrap:balance}
+.back{position:absolute;right:28px;top:28px;z-index:2;padding:8px 16px;font-size:13px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 28px 30px}
+.chip{display:flex;align-items:baseline;gap:8px;max-width:100%;padding:7px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ring);text-decoration:none;color:var(--fg);font-size:13px;transition:background .2s,color .2s}
+.chip b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip:hover,.chip.hot,.chip:focus-visible{background:var(--btn);color:var(--on-btn);outline:0}
+.chip:hover .mono,.chip.hot .mono,.chip:focus-visible .mono{color:inherit;opacity:.6}
+
+/* 最新加入 */
+.latest{position:absolute;left:28px;top:28px;width:230px;display:flex;flex-direction:column;gap:3px;text-decoration:none;color:inherit;outline:0}
+.latest .shot{margin-bottom:11px;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+.latest:hover .shot,.latest:focus-visible .shot{transform:translateY(-3px)}
+.latest b{font-size:15px;font-weight:600;line-height:1.4}
+
+/* 編輯 */
+.edit button{font:inherit;cursor:pointer;border:0}
+.edit button:disabled{opacity:.5;cursor:default}
+.edit input:not([type=file]){width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);font:inherit;font-size:14px;outline:0}
+.edit input:focus{border-color:var(--mute)}
+.edit input[type=file]{font:inherit;font-size:13px;color:var(--mute);max-width:100%}
+/* 群組列：左到右排群組環，最左是新增 */
+.gbar{position:sticky;top:61px;z-index:5;background:var(--bar);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);border-bottom:1px solid var(--line)}
+.gscroll{display:flex;gap:6px;overflow-x:auto;padding-top:12px;padding-bottom:12px}
+.gt{flex:none;width:116px;padding:8px 6px 10px;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:1px;background:none;color:var(--fg);outline:1.5px dashed transparent;outline-offset:-2px;transition:background .2s,color .2s,opacity .2s,outline-color .2s}
+.gt{cursor:pointer;user-select:none;-webkit-user-select:none}
+.gt:hover{background:var(--panel)}
+.gt:focus-visible{outline-color:var(--fg)}
+.gt.lift{opacity:.3}
+/* 拖群組排序：在會插入的那一側畫一條線 */
+.gt.ins-l{box-shadow:inset 3px 0 0 var(--fg)}
+.gt.ins-r{box-shadow:inset -3px 0 0 var(--fg)}
+.gt.on{background:var(--panel);box-shadow:inset 0 0 0 1px var(--ring)}
+.gt .orbit{--r:36px;--w:21px;width:100px;height:66px}
+.gt>*{pointer-events:none}
+.gt b{font-size:13px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.circ{width:50px;height:50px;margin:8px 0;border-radius:50%;display:grid;place-items:center;font-size:13px;color:var(--mute);border:1px dashed var(--faint)}
+.gt.add .circ{font-size:24px;font-weight:300;color:var(--fg);border-style:solid;border-color:var(--ring)}
+/* 拖曳中：其他群組亮出虛線框，可以丟過去 */
+.edit.dragging .gt:not(.on){outline-color:var(--mute)}
+.edit.dragging .gt.on{opacity:.3}
+.edit.dragging .gt.over{background:var(--btn);color:var(--on-btn);outline-color:transparent}
+.edit.dragging .gt.over .mono,.edit.dragging .gt.over .circ{color:inherit;border-color:currentColor}
+.ebody{padding-top:32px;padding-bottom:96px}
+.ehead{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:26px}
+.ehead h2{margin:0;font-size:22px;font-weight:650}
+.ehead .gname{width:auto;flex:0 1 240px;font-size:20px;font-weight:650;padding:6px 12px}
+.ehead .sp{flex:1}
+.ehead .btn{padding:9px 18px}
+.up{padding:22px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--ring);margin-bottom:32px;animation:rise .35s both}
+.up form{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;align-items:end}
+.up label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);min-width:0}
+.up .full{grid-column:1/-1}
+.up .go{grid-column:1/-1;display:flex;align-items:center;gap:14px}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:26px 20px;margin-bottom:56px}
+.ecard{position:relative;display:flex;flex-direction:column;gap:9px}
+.ecard .shot{cursor:grab;transition:transform .25s,box-shadow .25s}
+.ecard .shot img{pointer-events:none}
+.ecard .shot:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--mute),var(--shadow)}
+.ecard.ghost{opacity:.35}
+.ecard .x{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(20,20,22,.7);color:#fff;font-size:15px;line-height:1;opacity:.75;transition:opacity .2s,background .2s}
+.ecard:hover .x,.ecard .x:focus-visible{opacity:1}
+.ecard .x:hover{background:#e5484d}
+.del{background:none;color:var(--mute);padding:8px 10px;border-radius:8px;font-size:13px}
+.del:hover{background:rgba(255,80,80,.14);color:#ff6b6b}
+.none{color:var(--mute);padding:48px 0 72px;text-align:center}
+.pub{display:flex;flex-wrap:wrap;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:24px}
+.pub pre{flex-basis:100%;margin:0;font:12px/1.6 ui-monospace,Menlo,monospace;color:var(--mute);white-space:pre-wrap}
+.err{color:#ff6b6b}
+/* 確認／輸入視窗（不用瀏覽器內建的 confirm、prompt，有些環境會被擋掉） */
+.dlg{width:min(380px,calc(100vw - 32px));padding:24px;border:0;border-radius:16px;background:var(--bg);color:var(--fg);box-shadow:0 0 0 1px var(--ring),var(--shadow)}
+.dlg::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+.dlg p{margin:0 0 18px;font-size:15px;line-height:1.6;white-space:pre-line}
+.dlg input{width:100%;margin-bottom:18px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);font:inherit;outline:0}
+.dlg input:focus{border-color:var(--mute)}
+.dlg .go{display:flex;justify-content:flex-end;gap:10px}
+.dlg button{font:inherit;font-size:14px;cursor:pointer;border:0;padding:9px 18px}
+.btn.danger{background:#e5484d;color:#fff}
+
+/* 列表 */
+.listv{padding-bottom:96px}
+.hero{display:grid;grid-template-columns:1.55fr 1fr;gap:48px;align-items:center;padding:56px 0 64px}
+.hero .shot{border-radius:18px;box-shadow:var(--shadow)}
+.hero h2{margin:14px 0 12px;font-size:clamp(28px,3.2vw,44px);line-height:1.18;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
+.hero .acts{display:flex;gap:10px;margin-top:28px}
+.sec{display:flex;align-items:center;gap:14px;margin:0 0 22px}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec b{font-weight:500;color:var(--fg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:36px 24px;margin-bottom:72px}
+.card{position:relative;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.card>a.main{display:block;text-decoration:none;color:inherit;outline:0}
+.shot{position:relative;display:block;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#0b0b0c;box-shadow:0 0 0 1px var(--ring)}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.shot img.contain{object-fit:contain;object-position:center}
+.shot::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.55));opacity:0;transition:opacity .3s}
+.card:hover .shot::after,.main:focus-visible .shot::after{opacity:1}
+.card.site:hover .shot img{transform:scale(1.035)}
+.main:focus-visible .shot{box-shadow:0 0 0 2px var(--fg)}
+.tag{position:absolute;left:12px;bottom:11px;z-index:2;color:#fff;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
+.card:hover .tag,.main:focus-visible .tag{opacity:1;transform:none}
+.segs{position:absolute;left:10px;right:10px;top:10px;z-index:2;display:flex;gap:3px;opacity:0;transition:opacity .25s}
+.card:hover .segs{opacity:1}
+.segs i{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.3)}
+.segs i.on{background:#fff}
+.meta{display:flex;align-items:baseline;gap:12px;padding:14px 2px 0}
+.title{flex:1;min-width:0;font-size:15px;font-weight:550;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.desc{padding:3px 2px 0;font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.desc.mono{font-size:11px;padding-top:5px}
+.act{position:absolute;top:10px;right:10px;z-index:3;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(20,20,22,.6);color:#fff;text-decoration:none;font-size:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);opacity:0;transform:scale(.9);transition:opacity .25s,transform .25s,background .2s}
+.card:hover .act,.act:focus-visible{opacity:1;transform:none}
+.act:hover{background:#fff;color:#000}
+.card.deck .act{top:22px}
+@media (hover:none){.act{opacity:1;transform:none}.card.deck .act{top:10px}}
+.empty{text-align:center;color:var(--mute);padding:120px 0}
+.empty b{display:block;color:var(--fg);font-size:18px;font-weight:550;margin-bottom:6px}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify-content:space-between}
+
+@media (max-width:860px){
+  .wrap{padding:0 16px}
+  header .wrap{height:auto;padding-top:12px;padding-bottom:12px;flex-wrap:wrap;gap:10px}
+  .search{order:3;width:100%}.search input,.search input:focus{width:100%}.search kbd{display:none}
+  .map{padding:24px 0 64px}
+  .latest{position:static;display:grid;grid-template-columns:120px 1fr;gap:2px 14px;align-content:center;width:calc(100% - 32px);max-width:420px;margin-bottom:36px}
+  .latest .shot{margin:0;grid-row:span 2}
+  .latest>span.mono{align-self:end}.latest b{align-self:start}
+  .gbar{position:static}
+  .gscroll{padding-top:10px;padding-bottom:10px}
+  .ebody{padding-top:24px;padding-bottom:64px}
+  .up form{grid-template-columns:1fr}
+  .egrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px 14px}
+  .focus{height:calc(100svh - 110px);min-height:520px}
+  .info{left:16px;top:16px}.back{right:16px;top:16px}
+  .chips{padding:0 16px 20px}
+  .hero{grid-template-columns:1fr;gap:22px;padding:28px 0 44px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:28px 16px;margin-bottom:52px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><h1>簡報庫</h1><input id="q" type="search" placeholder="搜尋簡報…"></header>
+<header><div class="wrap">
+  <a class="brand" href="#"><h1>簡報庫</h1><span class="mono" id="total"></span></a>
+  <div class="tabs" id="tabs">
+    <button data-mode="map" class="on">地圖</button>
+    <button data-mode="list">列表</button>
+    <button data-mode="edit" id="editbtn" hidden>編輯</button>
+  </div>
+  <label class="search"><input id="q" type="search" placeholder="搜尋…" autocomplete="off"><kbd>/</kbd></label>
+</div></header>
 <main id="list"></main>
 <script>
-let decks=[];
-const list=document.getElementById('list');
-function render(){
-  const q=document.getElementById('q').value.trim().toLowerCase();
-  const items=decks.filter(d=>d.title.toLowerCase().includes(q));
-  list.innerHTML=items.length?items.map(d=>`
-    <div class="card">
-      <a class="thumb" href="play.html?deck=${encodeURIComponent(d.id)}">
-        <img src="decks/${d.id}/${d.slides[0]}" loading="lazy" alt="">
-        <div class="meta"><div class="title"></div><div class="sub">${d.slides.length} 頁 · ${d.date||''}</div></div>
-      </a>
-      ${d.pptx?`<a class="dl" title="下載 PPT" href="decks/${d.id}/${d.pptx}" download="${d.title}${d.pptx.slice(d.pptx.lastIndexOf('.'))}">⬇</a>`:''}
-    </div>`).join(''):'<div class="empty">還沒有簡報</div>';
-  list.querySelectorAll('.title').forEach((el,i)=>el.textContent=items[i].title);
+let items=[],groups=new Map(),mode='map';
+const UNC='未分類';
+// 有作品的群組（空群組只在編輯頁出現）
+const live=()=>[...groups].filter(([,w])=>w.length);
+const list=document.getElementById('list'),q=document.getElementById('q');
+const still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const day=d=>(d||'').replace(/-/g,'.');
+const host=u=>{try{return new URL(u).pathname.replace(/\/$/,'').split('/').pop()||new URL(u).host}catch{return''}};
+const full=(d,k)=>`decks/${encodeURIComponent(d.id)}/${d.slides[k]}`;
+// 縮圖 t-XX.jpg（add_deck.py 產生）；舊簡報沒有縮圖時退回原圖
+const thumb=(d,k)=>`decks/${encodeURIComponent(d.id)}/${d.slides[k].replace(/^s-/,'t-')}`;
+const pic=(it,k=0,cls='')=>it.kind==='deck'
+  ?`<img class="${cls}" src="${thumb(it.d,k)}" data-full="${full(it.d,k)}" onerror="this.onerror=null;this.src=this.dataset.full" loading="lazy" draggable="false" alt="">`
+  :`<img class="${cls} ${it.s.fit==='contain'?'contain':''}" src="sites/${esc(it.s.shot)}" loading="lazy" draggable="false" alt="">`;
+const dl=d=>d.pptx?`href="decks/${encodeURIComponent(d.id)}/${d.pptx}" download="${esc(d.title+d.pptx.slice(d.pptx.lastIndexOf('.')))}"`:'';
+const spread=(len,n)=>Array.from({length:n},(_,k)=>Math.round(k*(len-1)/Math.max(n-1,1)));
+// 橫掃預覽：最多取 8 頁，平均抽樣
+const picks=d=>spread(d.slides.length,Math.min(d.slides.length,8));
+const ghref=name=>'#g='+encodeURIComponent(name);
+
+/* 圓環：每件作品佔一段連續的弧，簡報用多張內頁填滿 */
+function ringCards(works,n){
+  const per=Math.max(1,Math.round(n/works.length)),out=[];
+  works.forEach((it,w)=>{
+    if(it.kind==='deck')spread(it.d.slides.length,Math.min(per,it.d.slides.length)).forEach(k=>out.push({w,it,k}));
+    else for(let j=0;j<per;j++)out.push({w,it,k:0});
+  });
+  return out;
 }
-document.getElementById('q').addEventListener('input',render);
-fetch('decks.json',{cache:'no-cache'}).then(r=>r.json()).then(d=>{decks=d.sort((a,b)=>(b.date||'').localeCompare(a.date||''));render()});
+function ring(works,n,link){
+  // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
+  const cs=ringCards(works,n).map(c=>({...c,img:pic(c.it,c.k).replace(' loading="lazy"','')}));
+  return `<div class="ring"${link?' id="ring"':''}>${cs.map((c,i)=>{
+    const a=`class="c" data-w="${c.w}" style="--a:${(i*360/cs.length).toFixed(2)}deg"`;
+    return link?`<a ${a} href="${c.it.href}" draggable="false" tabindex="-1" aria-hidden="true">${c.img}</a>`:`<span ${a}>${c.img}</span>`;
+  }).join('')}</div>`;
+}
+
+function mapView(){
+  const top=items.find(it=>it.kind==='deck');
+  return `<section class="map">
+    ${top?`<a class="latest" href="${top.href}"><span class="shot">${pic(top)}</span><span class="mono">最新加入 · ${day(top.d.date)}</span><b>${esc(top.title)}</b></a>`:''}
+    <div class="hub"><b>簡報庫</b><span class="mono">${pad(live().length)} 群組 · ${pad(items.length)} 件</span></div>
+    ${live().map(([name,works])=>`
+    <a class="node" href="${ghref(name)}">
+      <span class="orbit"><i class="axis"></i>${ring(works,26)}</span>
+      <span class="lab"><b>${esc(name)}</b><span class="mono">${pad(works.length)} 件</span></span>
+    </a>`).join('')}
+    <i class="end"></i>
+  </section>`;
+}
+function focusView(name,works){
+  return `<section class="focus" data-g="${esc(name)}">
+    <div class="info"><div class="pv" id="pv"></div><h2 id="it">${esc(name)}</h2><span class="mono" id="im"></span></div>
+    <a class="btn ghost back" href="#">← 地圖</a>
+    <div class="orbit" id="orbit">${ring(works,40,true)}</div>
+    <nav class="chips" id="chips">${works.map((it,w)=>`<a class="chip" data-w="${w}" href="${it.href}"><span class="mono">${pad(w+1)}</span><b>${esc(it.title)}</b></a>`).join('')}</nav>
+  </section>`;
+}
+
+/* 列表 */
+function card(it,i){
+  return it.kind==='site'?`
+  <div class="card site" style="--i:${i}">
+    <a class="main" href="${it.href}">
+      <span class="shot">${pic(it)}<span class="tag mono">預覽 →</span></span>
+      <div class="meta"><div class="title">${esc(it.title)}</div><span class="mono">${esc(it.meta)}</span></div>
+      <div class="desc">${esc(it.s.desc)}</div>
+    </a>
+    <a class="act" title="開啟網站" href="${esc(it.s.url)}" target="_blank" rel="noopener">↗</a>
+  </div>`:`
+  <div class="card deck" style="--i:${i}" data-deck="${esc(it.d.id)}">
+    <a class="main" href="${it.href}">
+      <span class="shot">${pic(it)}<span class="segs">${picks(it.d).map((_,k)=>`<i class="${k?'':'on'}"></i>`).join('')}</span><span class="tag mono">播放 →</span></span>
+      <div class="meta"><div class="title">${esc(it.title)}</div></div>
+      <div class="desc mono">${esc(it.meta)}</div>
+    </a>
+    ${it.d.pptx?`<a class="act" title="下載 PPT" ${dl(it.d)}>↓</a>`:''}
+  </div>`;
+}
+function hero(it){return `
+  <section class="hero">
+    <a class="shot" href="${it.href}"><img src="${full(it.d,0)}" alt=""></a>
+    <div>
+      <span class="mono">最新 · ${esc(it.meta)}</span>
+      <h2>${esc(it.title)}</h2>
+      <div class="acts"><a class="btn" href="${it.href}">播放 →</a>${it.d.pptx?`<a class="btn ghost" ${dl(it.d)}>下載 PPT</a>`:''}</div>
+    </div>
+  </section>`}
+function listView(k){
+  const hit=items.filter(it=>(it.title+' '+(it.s?.desc||'')+' '+it.group).toLowerCase().includes(k));
+  const top=!k&&hit.find(it=>it.kind==='deck');
+  let i=0;
+  const secs=[...groups.keys()].map(name=>{
+    const cs=hit.filter(it=>it.group===name&&it!==top);
+    return cs.length?`<div class="sec mono"><b>${esc(name)}</b><span>${pad(cs.length)}</span></div><div class="grid">${cs.map(it=>card(it,i++)).join('')}</div>`:'';
+  }).join('');
+  return `<div class="wrap listv">${top?hero(top):'<div style="height:44px"></div>'}${secs||(top?'':'<div class="empty"><b>找不到東西</b>換個關鍵字試試</div>')}
+    <footer class="mono"><span>簡報庫</span><span>${pad(items.length)} 件 · ${pad(live().length)} 群組</span></footer></div>`;
+}
+
+let eg=null,upOpen=false,dragIt=null;
+function editView(){
+  const cur=eg&&groups.has(eg)?eg:UNC,works=groups.get(cur)||[];
+  const tile=(name,inner)=>`<div class="gt ${name===cur?'on':''}" role="button" tabindex="0" data-g="${esc(name)}" ${name===UNC?'':'draggable="true" title="拖曳可以調整順序"'}>${inner}</div>`;
+  return `<div class="edit">
+    <div class="gbar"><div class="wrap gscroll">
+      <div class="gt add" id="gadd" role="button" tabindex="0"><span class="circ">+</span><b>新增群組</b><span class="mono">&nbsp;</span></div>
+      ${tile(UNC,`<span class="circ">${pad((groups.get(UNC)||[]).length)}</span><b>${UNC}</b><span class="mono">件</span>`)}
+      ${[...groups].filter(([n])=>n!==UNC).map(([n,w])=>tile(n,`${w.length?`<span class="orbit">${ring(w,18)}</span>`:'<span class="circ">空</span>'}<b>${esc(n)}</b><span class="mono">${pad(w.length)} 件</span>`)).join('')}
+    </div></div>
+    <div class="wrap ebody">
+      <div class="ehead">
+        ${cur===UNC?`<h2>${UNC}</h2>`:`<input class="gname" value="${esc(cur)}" data-g="${esc(cur)}" aria-label="群組名稱">`}
+        <span class="mono">${pad(works.length)} 件${works.length?' · 把圖示拖到上方的群組就能搬過去':''}</span>
+        <span class="sp"></span>
+        ${cur===UNC?'':'<button class="del" id="gdel">刪除群組</button>'}
+        <button class="btn" id="upbtn">${upOpen?'收起':'＋ 上傳簡報'}</button>
+      </div>
+      ${upOpen?`<section class="up"><form id="up">
+        <label>PDF 檔<input type="file" name="pdf" accept="application/pdf,.pdf" required></label>
+        <label>原始 PPT（選填，提供下載）<input type="file" name="pptx" accept=".pptx,.ppt"></label>
+        <label class="full">標題<input name="title" required maxlength="120"></label>
+        <div class="go"><button class="btn">上傳到「${esc(cur)}」</button><span class="mono" id="ups"></span></div>
+      </form></section>`:''}
+      ${works.length?`<div class="egrid">${works.map(it=>`
+        <div class="ecard" data-kind="${it.kind}" data-id="${esc((it.d||it.s).id)}">
+          <span class="shot" draggable="true" title="拖曳到其他群組">${pic(it)}</span>
+          <input class="f-title" value="${esc(it.title)}" aria-label="標題">
+          <button class="x" title="刪除">×</button>
+        </div>`).join('')}</div>`:`<p class="none">${cur===UNC?'沒有未分類的作品。新上傳的簡報會先出現在這裡。':'這個群組還是空的。到別的群組把圖示拖過來，或直接上傳。'}</p>`}
+      <section class="pub"><button class="btn ghost" id="pub">發佈到線上</button><span class="mono">改動先存在這台電腦，按下才會推上 GitHub</span><pre id="publog"></pre></section>
+    </div>
+  </div>`;
+}
+function render(keep){
+  const k=q.value.trim().toLowerCase();
+  const g=decodeURIComponent((location.hash.match(/^#g=(.*)$/)||[])[1]||'');
+  hot=null;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.mode===(k?'list':mode)));
+  if(!k&&mode==='edit')list.innerHTML=editView();
+  else if(k||mode==='list')list.innerHTML=listView(k);
+  else if(groups.get(g)?.length){list.innerHTML=focusView(g,groups.get(g));setHot(null)}
+  else list.innerHTML=mapView();
+  if(keep!==true)scrollTo(0,0);
+}
+
+/* 群組圓環：自轉、拖曳、滑過點亮同一件作品的整段弧 */
+let rot=0,hot=null,drag=null,moved=false;
+function setHot(w){
+  const sec=list.querySelector('.focus');if(!sec)return;
+  const works=groups.get(sec.dataset.g);hot=w;
+  sec.querySelector('.ring').classList.toggle('has-hot',w!=null);
+  sec.querySelectorAll('.c,.chip').forEach(el=>el.classList.toggle('hot',w!=null&&+el.dataset.w===w));
+  const it=w!=null&&works[w],pv=sec.querySelector('#pv');
+  if(it)pv.innerHTML=pic(it);
+  pv.classList.toggle('on',!!it);
+  sec.querySelector('#it').textContent=it?it.title:sec.dataset.g;
+  sec.querySelector('#im').textContent=it?it.meta:`${pad(works.length)} 件 · 拖曳旋轉`;
+}
+(function tick(){
+  const r=document.getElementById('ring');
+  if(r){if(hot==null&&!drag&&!still)rot+=.07;r.style.setProperty('--rot',rot.toFixed(2)+'deg')}
+  requestAnimationFrame(tick);
+})();
+list.addEventListener('pointerdown',e=>{
+  const o=e.target.closest('#orbit');if(!o)return;
+  drag={x:e.clientX,rot};moved=false;
+});
+addEventListener('pointermove',e=>{
+  if(!drag)return;const dx=e.clientX-drag.x;
+  if(Math.abs(dx)>5&&!moved){moved=true;document.getElementById('orbit')?.classList.add('drag');setHot(null)}
+  if(moved)rot=drag.rot+dx*.3;
+});
+addEventListener('pointerup',()=>{drag=null;document.getElementById('orbit')?.classList.remove('drag')});
+addEventListener('pointercancel',()=>{drag=null});
+list.addEventListener('click',e=>{if(moved&&e.target.closest('#orbit')){e.preventDefault();moved=false}},true);
+list.addEventListener('mouseover',e=>{
+  const el=e.target.closest('#ring .c,.chip');
+  if(el){if(!drag&&hot!==+el.dataset.w)setHot(+el.dataset.w)}
+  else if(hot!=null&&list.querySelector('.focus'))setHot(null);
+});
+list.addEventListener('focusin',e=>{const el=e.target.closest('.chip');if(el)setHot(+el.dataset.w)});
+list.addEventListener('mouseleave',()=>{if(hot!=null)setHot(null)});
+
+/* 列表卡片：橫掃預覽 */
+const deckOf=card=>items.find(it=>it.kind==='deck'&&it.d.id===card.dataset.deck).d;
+list.addEventListener('mousemove',e=>{
+  const shot=e.target.closest('.card.deck .shot');if(!shot)return;
+  const d=deckOf(shot.closest('.card')),p=picks(d),r=shot.getBoundingClientRect();
+  const k=Math.max(0,Math.min(p.length-1,Math.floor((e.clientX-r.left)/r.width*p.length)));
+  if(shot.dataset.k==k)return;shot.dataset.k=k;
+  shot.querySelector('img').src=thumb(d,p[k]);
+  shot.querySelectorAll('.segs i').forEach((el,j)=>el.classList.toggle('on',j<=k));
+});
+list.addEventListener('mouseout',e=>{
+  const c=e.target.closest('.card.deck');if(!c||c.contains(e.relatedTarget))return;
+  const d=deckOf(c),shot=c.querySelector('.shot');
+  delete shot.dataset.k;shot.querySelector('img').src=thumb(d,0);
+  shot.querySelectorAll('.segs i').forEach((el,j)=>el.classList.toggle('on',!j));
+});
+
+document.getElementById('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;mode=b.dataset.mode;q.value='';
+  if(mode==='map'&&location.hash){location.hash='';return}
+  render();
+});
+addEventListener('hashchange',()=>{if(location.hash)mode='map';render()});
+q.addEventListener('input',()=>render());
+addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus()}
+  else if(e.key==='Escape'){
+    if(document.activeElement===q){q.value='';q.blur();render()}
+    else if(location.hash)location.hash='';
+  }
+});
+const get=f=>fetch(f,{cache:'no-cache'}).then(r=>r.json()).catch(()=>[]);
+function load(keep){
+  return Promise.all([get('decks.json'),get('sites.json'),get('groups.json')]).then(([d,s,gs])=>{
+    // 同一天的，後加入的排前面
+    d.reverse().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    items=[
+      ...d.map(d=>({kind:'deck',d,title:d.title,group:d.group||UNC,href:`play.html?deck=${encodeURIComponent(d.id)}`,meta:`${pad(d.slides.length)} 頁 · ${day(d.date)}`})),
+      ...s.map(s=>({kind:'site',s,title:s.title,group:s.group||UNC,href:`view.html?site=${encodeURIComponent(s.id)}`,meta:host(s.url)})),
+    ];
+    // groups.json 決定順序，也記得空的群組；未分類排最後
+    groups=new Map(gs.map(g=>[g,[]]));
+    items.filter(it=>it.group!==UNC).forEach(it=>groups.set(it.group,[...(groups.get(it.group)||[]),it]));
+    const unc=items.filter(it=>it.group===UNC);if(unc.length)groups.set(UNC,unc);
+    document.getElementById('total').textContent=pad(items.length)+' 件';render(keep);
+  });
+}
+load();
+
+/* 編輯：只有用 admin.py 在本機開啟時才有 */
+const api=(path,body,raw)=>fetch('/api/'+path,{method:'POST',headers:{'X-Admin':'1',...(raw?{}:{'Content-Type':'application/json'})},body:raw?body:JSON.stringify(body||{})})
+  .then(async r=>{const j=await r.json().catch(()=>({error:'伺服器沒有回應'}));if(!r.ok)throw new Error(j.error||'失敗');return j});
+fetch('/api/ping').then(r=>r.ok&&r.json()).then(j=>{if(j&&j.ok)document.getElementById('editbtn').hidden=false}).catch(()=>{});
+function ask(msg,{input=false,ok='確定',danger=false}={}){
+  return new Promise(done=>{
+    const d=document.createElement('dialog');d.className='dlg';
+    d.innerHTML=`<form method="dialog"><p></p>${input?'<input maxlength="120" required>':''}<div class="go"><button type="button" class="btn ghost">取消</button><button value="ok" class="btn ${danger?'danger':''}">${ok}</button></div></form>`;
+    d.querySelector('p').textContent=msg;
+    d.querySelector('[type=button]').onclick=()=>d.close('');
+    d.onclose=()=>{const yes=d.returnValue==='ok',v=input?(yes?d.querySelector('input').value.trim():''):yes;d.remove();done(v)};
+    document.body.append(d);d.showModal();
+  });
+}
+const act=(path,body)=>api(path,body).then(()=>load(true)).catch(e=>{alert(e.message);load(true)});
+const idOf=el=>{const c=el.closest('.ecard');return{kind:c.dataset.kind,id:c.dataset.id}};
+list.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.classList.contains('gname')){const to=el.value.trim();if(to)eg=to;act('group-rename',{from:el.dataset.g,to})}
+  else if(el.classList.contains('f-title'))act('update',{...idOf(el),title:el.value});
+});
+list.addEventListener('click',e=>{
+  const on=sel=>e.target.closest(sel);
+  if(on('#gadd')){
+    ask('新群組的名稱',{input:true,ok:'新增'}).then(name=>{if(name){eg=name;act('group-add',{name})}});
+  }else if(on('.gt')){eg=on('.gt').dataset.g;render(true)}
+  else if(on('#upbtn')){upOpen=!upOpen;render(true)}
+  else if(on('#gdel')){
+    const name=document.querySelector('.gname').dataset.g;
+    ask(`刪除群組「${name}」？\n裡面的作品不會被刪，會回到未分類。`,{ok:'刪除群組',danger:true}).then(y=>{if(y){eg=null;act('group-delete',{name})}});
+  }else if(on('.ecard .x')){
+    const c=on('.ecard');
+    const it=idOf(c);
+    ask(`刪除「${c.querySelector('.f-title').value}」？\n檔案會移到 .trash 資料夾，不會真的消失。`,{ok:'刪除',danger:true}).then(y=>{if(y)act('delete',it)});
+  }else if(on('#pub')){
+    const b=on('#pub'),log=document.getElementById('publog');
+    ask('把目前的改動推上 GitHub，線上版會跟著更新。',{ok:'發佈'}).then(y=>{
+      if(!y)return;b.disabled=true;log.className='';log.textContent='發佈中…';
+      api('publish').then(j=>log.textContent='已發佈，線上版約一分鐘後更新。\n'+j.log).catch(err=>{log.className='err';log.textContent=err.message}).finally(()=>b.disabled=false);
+    });
+  }
+});
+/* 拖群組調整順序 */
+let dragG=null;
+const insSide=(t,e)=>{const r=t.getBoundingClientRect();return e.clientX<r.left+r.width/2?'ins-l':'ins-r'};
+list.addEventListener('dragstart',e=>{
+  const t=e.target.closest('.gt[draggable]');if(!t||e.target.closest('.ecard'))return;
+  dragG=t.dataset.g;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragG);
+  setTimeout(()=>t.classList.add('lift'));
+});
+list.addEventListener('dragover',e=>{
+  if(!dragG)return;const t=e.target.closest('.gt[draggable]');
+  list.querySelectorAll('.ins-l,.ins-r').forEach(el=>el.classList.remove('ins-l','ins-r'));
+  if(!t||t.dataset.g===dragG)return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';t.classList.add(insSide(t,e));
+});
+list.addEventListener('drop',e=>{
+  if(!dragG)return;const t=e.target.closest('.gt[draggable]'),g=dragG;dragG=null;
+  if(!t||t.dataset.g===g)return;e.preventDefault();
+  const names=[...list.querySelectorAll('.gt[draggable]')].map(el=>el.dataset.g).filter(n=>n!==g);
+  names.splice(names.indexOf(t.dataset.g)+(insSide(t,e)==='ins-r'?1:0),0,g);
+  act('group-order',{names});
+});
+list.addEventListener('dragend',()=>{dragG=null;list.querySelectorAll('.lift,.ins-l,.ins-r').forEach(el=>el.classList.remove('lift','ins-l','ins-r'))});
+list.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.gt'))e.target.click()});
+
+/* 拖曳圖示換群組 */
+list.addEventListener('dragstart',e=>{
+  const c=e.target.closest('.ecard');if(!c)return;
+  dragIt=idOf(c);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragIt.id);
+  // 等瀏覽器拍完拖曳縮圖再變淡
+  setTimeout(()=>{c.classList.add('ghost');list.querySelector('.edit')?.classList.add('dragging')});
+});
+list.addEventListener('dragend',()=>{dragIt=null;list.querySelectorAll('.ghost,.dragging,.over').forEach(el=>el.classList.remove('ghost','dragging','over'))});
+list.addEventListener('dragover',e=>{
+  const t=e.target.closest('.gt');if(!dragIt||!t||t.classList.contains('on'))return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';t.classList.add('over');
+});
+list.addEventListener('dragleave',e=>{const t=e.target.closest('.gt');if(t&&!t.contains(e.relatedTarget))t.classList.remove('over')});
+list.addEventListener('drop',e=>{
+  const t=e.target.closest('.gt');if(!dragIt||!t||t.classList.contains('on'))return;
+  e.preventDefault();const it=dragIt;dragIt=null;
+  const move=g=>g?act('update',{...it,group:g===UNC?'':g}):load(true);
+  t.id==='gadd'?ask('新群組的名稱',{input:true,ok:'新增並搬過去'}).then(move):move(t.dataset.g);
+});
+list.addEventListener('submit',e=>{
+  if(e.target.id!=='up')return;e.preventDefault();
+  const f=e.target,pdf=f.pdf.files[0],ppt=f.pptx.files[0],st=document.getElementById('ups'),btn=f.querySelector('button');
+  const qs=o=>new URLSearchParams(o).toString(),g=eg&&groups.has(eg)&&eg!==UNC?eg:'';
+  btn.disabled=true;st.className='mono';st.textContent='上傳並轉檔中，頁數多的話要等半分鐘…';
+  api('upload?'+qs({title:f.title.value,group:g,name:pdf.name}),pdf,true)
+    .then(j=>ppt?api('pptx?'+qs({id:j.id,name:ppt.name}),ppt,true):j)
+    .then(()=>{upOpen=false;return load(true)})
+    .catch(err=>{st.className='mono err';st.textContent=err.message;btn.disabled=false});
+});
 </script>
 </body>
 </html>

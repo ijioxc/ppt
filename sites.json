@@ -1,0 +1,51 @@
+[
+  {
+    "id": "nkust-racing",
+    "title": "NKUST Racing",
+    "desc": "高科大學生方程式車隊官網",
+    "url": "https://ijioxc.github.io/nkust-racing/",
+    "shot": "nkust-racing.png",
+    "fit": "contain",
+    "group": "車隊"
+  },
+  {
+    "id": "ijiock",
+    "title": "MarketWatch",
+    "desc": "自動盯盤：即時行情、技術分析、AI 顧問",
+    "url": "https://ijioxc.github.io/ijiock/",
+    "shot": "ijiock.jpg",
+    "group": "公司"
+  },
+  {
+    "id": "calendar",
+    "title": "機械系學會月曆",
+    "desc": "每月封面與行事曆",
+    "url": "https://ijioxc.github.io/calendar/",
+    "shot": "calendar.jpg",
+    "group": "系學會"
+  },
+  {
+    "id": "ijiwords",
+    "title": "ijiWords",
+    "desc": "英文期末整理：單字、文法、聽力",
+    "url": "https://ijioxc.github.io/ijiwords/",
+    "shot": "ijiwords.jpg",
+    "group": "公司"
+  },
+  {
+    "id": "towan",
+    "title": "TOWAN 數位影像",
+    "desc": "數位影像工作室網站",
+    "url": "https://ijioxc.github.io/towan/",
+    "shot": "towan.jpg",
+    "group": "公司"
+  },
+  {
+    "id": "dynamics",
+    "title": "Dynamics Final Report",
+    "desc": "動力學期末報告：電梯傳動系統（網頁版，含 3D 與轉場）",
+    "url": "web/dynamics/",
+    "shot": "dynamics.jpg",
+    "group": "課程報告"
+  }
+]

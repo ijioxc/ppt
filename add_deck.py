@@ -14,17 +14,23 @@ MANIFEST = ROOT / "decks.json"
 def load(): return json.loads(MANIFEST.read_text("utf-8"))
 def save(d): MANIFEST.write_text(json.dumps(d, ensure_ascii=False, indent=2) + "\n", "utf-8")
 
-def add(pdf, title, pptx=None):
+def add(pdf, title, pptx=None, group=None, unique=False):
     pdf = Path(pdf).expanduser()
     if pdf.suffix.lower() != ".pdf":
         sys.exit("請先把簡報匯出成 PDF")
     deck_id = re.sub(r"[^a-z0-9]+", "-", pdf.stem.lower()).strip("-") or "deck"
     deck_id = f"{datetime.date.today():%Y%m%d}-{deck_id}"
+    if unique:  # 網頁上傳：同一天同檔名不覆蓋，改編號
+        base, n = deck_id, 2
+        while (ROOT / "decks" / deck_id).exists():
+            deck_id, n = f"{base}-{n}", n + 1
     out = ROOT / "decks" / deck_id
     if out.exists(): shutil.rmtree(out)
     out.mkdir(parents=True)
     subprocess.run(["pdftoppm", "-jpeg", "-jpegopt", "quality=92", "-r", "200", str(pdf), str(out / "s")], check=True)
     slides = sorted(p.name for p in out.glob("s-*.jpg"))
+    # 縮圖（t-XX.jpg）：首頁的圓環與卡片用
+    subprocess.run(["pdftoppm", "-jpeg", "-scale-to", "640", str(pdf), str(out / "t")], check=True)
 
     pptx_name = None
     if pptx:
@@ -38,9 +44,12 @@ def add(pdf, title, pptx=None):
     entry = {"id": deck_id, "title": title or pdf.stem, "date": f"{datetime.date.today()}", "slides": slides}
     if pptx_name:
         entry["pptx"] = pptx_name
+    if group:
+        entry["group"] = group
     decks.append(entry)
     save(decks)
     print(f"已新增 {deck_id}：{len(slides)} 頁" + ("（含原始檔下載）" if pptx_name else ""))
+    return deck_id
 
 def remove(deck_id):
     shutil.rmtree(ROOT / "decks" / deck_id, ignore_errors=True)
