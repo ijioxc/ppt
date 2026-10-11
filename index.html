@@ -184,6 +184,7 @@ main{position:relative;z-index:1}
 .act{position:absolute;top:10px;right:10px;z-index:3;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(20,20,22,.6);color:#fff;text-decoration:none;font-size:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);opacity:0;transform:scale(.9);transition:opacity .25s,transform .25s,background .2s}
 .card:hover .act,.act:focus-visible{opacity:1;transform:none}
 .act:hover{background:#fff;color:#000}
+.act.dl{right:50px}
 .card.deck .act{top:22px}
 @media (hover:none){.act{opacity:1;transform:none}.card.deck .act{top:10px}}
 .empty{text-align:center;color:var(--mute);padding:120px 0}
@@ -296,6 +297,7 @@ function card(it,i){
       <div class="desc">${esc(it.s.desc)}</div>
     </a>
     <a class="act" title="開啟網站" href="${esc(it.s.url)}" target="_blank" rel="noopener">↗</a>
+    ${it.s.download?`<a class="act dl" title="下載 PDF" href="${esc(it.s.download)}" download>↓</a>`:''}
   </div>`:`
   <div class="card deck" style="--i:${i}" data-deck="${esc(it.d.id)}">
     <a class="main" href="${it.href}">

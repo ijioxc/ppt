@@ -47,5 +47,14 @@
     "url": "web/dynamics/",
     "shot": "dynamics.jpg",
     "group": "課程報告"
+  },
+  {
+    "id": "missile-journey",
+    "title": "認識軍工產業：從一枚 1.3 億元的飛彈說起",
+    "desc": "通識報告：全球化的挑戰與因應（網頁版，下載為 PDF）",
+    "url": "web/missile-journey/",
+    "shot": "missile-journey.jpg",
+    "download": "web/missile-journey/missile-journey.pdf",
+    "group": "課程報告"
   }
 ]
