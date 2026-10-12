@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>桌布</title>
+<style>
+:root{--bg:#ececec;--fg:#111113;--mute:#6c6c73;--ring:rgba(0,0,0,.1)}
+@media (prefers-color-scheme:dark){:root{--bg:#141415;--fg:#f4f4f5;--mute:#9a9aa1;--ring:rgba(255,255,255,.12)}}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+header{display:flex;align-items:baseline;gap:14px;padding:28px 16px 18px;max-width:1280px;margin:0 auto}
+header a{color:var(--mute);text-decoration:none;font-size:14px}
+header a:hover{color:var(--fg)}
+h1{font-size:22px;font-weight:600;letter-spacing:.02em}
+header span{margin-left:auto;font:11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:var(--mute)}
+#grid{column-width:300px;column-gap:14px;max-width:1280px;margin:0 auto;padding:0 16px 48px}
+#grid button{display:block;width:100%;margin:0 0 14px;padding:0;border:0;background:none;cursor:zoom-in;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px var(--ring);break-inside:avoid;transition:transform .25s}
+#grid button:hover,#grid button:focus-visible{transform:translateY(-3px);outline:0}
+#grid img{display:block;width:100%;height:auto}
+#lb{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center}
+#lb.on{display:flex}
+#lb img{max-width:94vw;max-height:88vh;border-radius:6px}
+#lb .bar{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:14px;color:#fff;font-size:13px}
+#lb .bar a,#lb .bar button{color:#fff;background:rgba(255,255,255,.12);border:0;border-radius:99px;padding:8px 16px;font:inherit;text-decoration:none;cursor:pointer}
+#lb .bar a:hover,#lb .bar button:hover{background:#fff;color:#000}
+</style>
+</head>
+<body>
+<header><a href="../../">← 簡報庫</a><h1>桌布</h1><span id="count"></span></header>
+<main id="grid"></main>
+<div id="lb" role="dialog" aria-modal="true"><img alt=""><div class="bar"><button id="prev">‹</button><a id="dl" download>下載原檔</a><button id="next">›</button><button id="close">關閉</button></div></div>
+<script>
+let list=[],cur=0;
+const $=s=>document.querySelector(s),lb=$('#lb');
+fetch('list.json').then(r=>r.json()).then(l=>{
+  list=l;$('#count').textContent=l.length+' 張';
+  $('#grid').innerHTML=l.map((it,i)=>`<button data-i="${i}" aria-label="${it.name}"><img src="${it.thumb}" width="${it.w}" height="${it.h}" loading="lazy" alt=""></button>`).join('');
+});
+function show(i){cur=(i+list.length)%list.length;const it=list[cur];$('#lb img').src=it.src;const a=$('#dl');a.href=it.src;a.download=it.name+it.src.slice(it.src.lastIndexOf('.'));lb.classList.add('on')}
+$('#grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(+b.dataset.i)});
+$('#prev').onclick=()=>show(cur-1);$('#next').onclick=()=>show(cur+1);
+$('#close').onclick=()=>lb.classList.remove('on');
+lb.addEventListener('click',e=>{if(e.target===lb)lb.classList.remove('on')});
+addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;
+  if(e.key==='Escape')lb.classList.remove('on');if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1)});
+</script>
+</body>
+</html>

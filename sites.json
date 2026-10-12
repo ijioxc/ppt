@@ -1,9 +1,36 @@
 [
   {
-    "id": "nkust-racing",
-    "title": "NKUST Racing",
-    "desc": "高科大學生方程式車隊官網",
-    "url": "https://ijioxc.github.io/nkust-racing/",
+    "id": "nkust-racing-dashboard",
+    "title": "NKUST Racing・工作台",
+    "desc": "賽車團隊工作台",
+    "url": "https://ijioxc.github.io/nkust-racing/#dashboard",
+    "shot": "nkust-racing.png",
+    "fit": "contain",
+    "group": "車隊"
+  },
+  {
+    "id": "nkust-racing-blueprint",
+    "title": "NKUST Racing・車體圖解",
+    "desc": "車體結構圖解",
+    "url": "https://ijioxc.github.io/nkust-racing/#blueprint",
+    "shot": "nkust-racing.png",
+    "fit": "contain",
+    "group": "車隊"
+  },
+  {
+    "id": "nkust-racing-essay",
+    "title": "NKUST Racing・技術手冊",
+    "desc": "技術手冊",
+    "url": "https://ijioxc.github.io/nkust-racing/#essay",
+    "shot": "nkust-racing.png",
+    "fit": "contain",
+    "group": "車隊"
+  },
+  {
+    "id": "nkust-racing-deck",
+    "title": "NKUST Racing・簡報",
+    "desc": "車隊簡報",
+    "url": "https://ijioxc.github.io/nkust-racing/#deck",
     "shot": "nkust-racing.png",
     "fit": "contain",
     "group": "車隊"
@@ -56,5 +83,13 @@
     "shot": "missile-journey.jpg",
     "download": "web/missile-journey/missile-journey.pdf",
     "group": "課程報告"
+  },
+  {
+    "id": "wallpapers",
+    "title": "桌布",
+    "desc": "桌布圖片牆：點開看大圖、下載原檔",
+    "url": "web/wallpapers/",
+    "shot": "wallpapers.jpg",
+    "group": "桌布"
   }
 ]
