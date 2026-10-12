@@ -22,3 +22,4 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font:14px -apple-
 #hud button,#hud a{pointer-events:auto;background:rgba(255,255,255,.14);border:0;color:#fff;padding:7px 12px;border-radius:8px;font:inherit;cursor:pointer;text-decoration:none}
 #hud.hide button,#hud.hide a{pointer-events:none}
 #hud span{min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+@media (pointer:coarse){#hud button,#hud a{min-width:44px;min-height:44px}}

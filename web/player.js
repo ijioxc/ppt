@@ -297,7 +297,14 @@ const prev = () => show(cur - 1);
 
 /* ---------- 操作 ---------- */
 const fs = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-document.getElementById('fit').onclick = e => e.clientX < innerWidth / 3 ? prev() : next();
+// 觸控沒有滑鼠可以晃出選單：點左右兩側翻頁，點中間開關選單
+let lastTouch = 0;
+document.getElementById('fit').onclick = e => {
+  const x = e.clientX / innerWidth;
+  if (Date.now() - lastTouch < 700 && x > 1 / 3 && x < 2 / 3) hud.classList.contains('hide') ? wake(5000) : (clearTimeout(idle), hud.classList.add('hide'));
+  else x < 1 / 3 ? prev() : next();
+};
+if (!document.documentElement.requestFullscreen) document.getElementById('fs').hidden = true;   // iPhone 的 Safari 不能把網頁全螢幕
 document.getElementById('prev').onclick = prev; document.getElementById('next').onclick = next; document.getElementById('fs').onclick = fs;
 addEventListener('keydown', e => {
   if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
@@ -305,11 +312,16 @@ addEventListener('keydown', e => {
   else if (e.key === 'Home') show(0); else if (e.key === 'End') show(deck.slides.length - 1);
   else if (e.key === 'f' || e.key === 'F') fs();
 });
-let tx = null, idle;
-addEventListener('touchstart', e => tx = e.touches[0].clientX, { passive: true });
-addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 40) dx < 0 ? next() : prev(); tx = null; });
-const wake = () => { hud.classList.remove('hide'); clearTimeout(idle); idle = setTimeout(() => hud.classList.add('hide'), 2200); };
-addEventListener('mousemove', wake); wake();
+let tx = null, ty = 0, idle;
+addEventListener('touchstart', e => { lastTouch = Date.now(); tx = e.touches.length === 1 && !e.target.closest('#hud') ? e.touches[0].clientX : null; ty = e.touches[0].clientY; }, { passive: true });
+addEventListener('touchend', e => {
+  lastTouch = Date.now(); if (tx == null) return;
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+  // 兩指縮放、放大檢視中的拖曳、上下滑都不翻頁
+  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5 && (window.visualViewport?.scale || 1) < 1.05) dx < 0 ? next() : prev();
+});
+const wake = ms => { hud.classList.remove('hide'); clearTimeout(idle); idle = setTimeout(() => hud.classList.add('hide'), ms > 0 ? ms : 2200); };
+addEventListener('mousemove', () => { if (Date.now() - lastTouch > 800) wake(); }); wake();   // 手指點一下也會補發 mousemove，不算
 for (const s of deck.slides) for (const x of JSON.stringify(s).matchAll(/"media\/[^"]+\.(?:png|jpe?g)"/gi)) new Image().src = JSON.parse(x[0]);
 window.deckPlayer = { show, next, prev, get index() { return cur; }, model };
 show((parseInt(location.hash.slice(1)) || 1) - 1, true);

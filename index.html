@@ -2,11 +2,12 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>簡報庫</title>
 <style>
 :root{--bg:#ececec;--fg:#111113;--mute:#6c6c73;--faint:#a5a5ab;--line:rgba(0,0,0,.09);--panel:rgba(0,0,0,.05);--ring:rgba(0,0,0,.1);--bar:rgba(246,246,246,.78);--glow:rgba(255,255,255,.6);--btn:#111113;--on-btn:#fff;--shadow:0 24px 50px -24px rgba(0,0,0,.35)}
 *{box-sizing:border-box}
+html{-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,"SF Pro Text","PingFang TC","Noto Sans TC",sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
 body::before{content:"";position:fixed;inset:0 0 auto;height:520px;background:radial-gradient(60% 100% at 50% 0,var(--glow),transparent 70%);pointer-events:none;z-index:0}
 .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -20,9 +21,16 @@ header svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5
 .brand{display:flex;align-items:center;gap:10px;margin-right:auto;text-decoration:none;color:inherit}
 .brand svg{width:30px;height:30px;stroke-width:1.3}
 .tabs{display:flex;padding:3px;background:var(--panel);border-radius:999px}
-.tabs button{border:0;background:none;color:var(--mute);padding:6px 13px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s}
+.tabs button{display:flex;align-items:center;gap:6px;border:0;background:none;color:var(--mute);font:inherit;font-size:13px;padding:6px 13px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s}
 .tabs button:hover{color:var(--fg)}
 .tabs button.on{background:var(--btn);color:var(--on-btn)}
+/* 觸控沒有滑鼠停留可以看 title：選中的那一顆直接把名稱寫出來，按鈕也放大到好按的尺寸 */
+.tl,.tabs button[hidden]{display:none}
+.touch .tabs button{padding:10px 15px}
+.touch .tabs button.on .tl{display:inline}
+.touch .search{height:42px}
+.touch .search svg{margin:0 13px}
+.touch header:has(.search:focus-within) :is(.tl,#total),.touch header:has(.search input:not(:placeholder-shown)) :is(.tl,#total){display:none}
 /* 搜尋平常只有放大鏡，點了（或有輸入內容時）才展開 */
 .search{display:flex;align-items:center;height:34px;border-radius:999px;background:var(--panel);color:var(--mute);cursor:text;transition:color .2s}
 .search:hover,.search:focus-within{color:var(--fg)}
@@ -60,6 +68,11 @@ main{position:relative;z-index:1}
 .node .ring{animation:spin 60s linear infinite}
 .node:nth-of-type(even) .ring{animation-direction:reverse}
 .node:hover .orbit,.node:focus-visible .orbit{transform:scale(1.07)}
+/* 觸控：滑到畫面中段的那一組代替滑鼠停留，按下去會縮一下 */
+.touch .node:hover .orbit{transform:none}
+.touch .node.near .orbit{transform:scale(1.07)}
+.touch .node:active .orbit{transform:scale(.96)}
+.touch .latest:active,.touch .card .main:active{opacity:.7}
 .lab{position:absolute;top:50%;left:calc(50% + 215px);transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;white-space:nowrap}
 .node:nth-of-type(even) .lab{left:auto;right:calc(50% + 215px);text-align:right}
 .lab b{font-size:20px;font-weight:650}
@@ -83,13 +96,17 @@ main{position:relative;z-index:1}
 .info{pointer-events:none}
 .side h3{margin:0 0 8px;font-size:11px;font-weight:500;color:var(--faint);letter-spacing:.08em}
 .side .chips{flex-direction:column;flex-wrap:nowrap;justify-content:flex-start;gap:2px;padding:0}
-.side .chip,.side .chip:hover,.side .chip.hot,.side .chip:focus-visible{box-shadow:none;background:none;color:var(--fg);padding:5px 0;border-radius:0}
+.side .chip,.side .chip.hot,.side .chip:focus-visible{box-shadow:none;background:none;color:var(--fg);padding:5px 0;border-radius:0}
 .side .chip{color:var(--mute)}
-.side .chip:hover,.side .chip.hot,.side .chip:focus-visible{color:var(--fg)}
-.side .chip:hover b,.side .chip.hot b{text-decoration:underline;text-underline-offset:4px}
+.side .chip.hot,.side .chip:focus-visible{color:var(--fg)}
+.side .chip.hot b{text-decoration:underline;text-underline-offset:4px}
 .glist{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:-8px}
 .glist a{color:var(--mute);text-decoration:none;font-size:13px;transition:color .2s}
 .glist a:hover{color:var(--fg)}
+.glist .cur{display:none}
+/* 觸控：點卡片或標題是「選起來看預覽」，這顆才是開啟 */
+.go{margin-top:14px;padding:9px 18px;pointer-events:auto;white-space:nowrap}
+.go[hidden],html:not(.touch) .go{display:none}
 /* 預覽圖只鎖高度：位置一直留著，寬度跟著圖片比例走，直式、橫式都完整顯示不裁切。標題固定兩行、說明固定一行，清單不會被推動 */
 .info .pv{height:146px;margin-bottom:14px}
 .info .pv img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left top;display:block;border-radius:10px;box-shadow:0 0 0 1px var(--ring);opacity:0;transition:opacity .25s}
@@ -100,8 +117,8 @@ main{position:relative;z-index:1}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 28px 30px}
 .chip{display:flex;align-items:baseline;gap:8px;max-width:100%;padding:7px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ring);text-decoration:none;color:var(--fg);font-size:13px;transition:background .2s,color .2s}
 .chip b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip:hover,.chip.hot,.chip:focus-visible{background:var(--btn);color:var(--on-btn);outline:0}
-.chip:hover .mono,.chip.hot .mono,.chip:focus-visible .mono{color:inherit;opacity:.6}
+.chip.hot,.chip:focus-visible{background:var(--btn);color:var(--on-btn);outline:0}
+.chip.hot .mono,.chip:focus-visible .mono{color:inherit;opacity:.6}
 
 /* 最新加入 */
 .latest{position:absolute;left:28px;top:28px;width:230px;display:flex;flex-direction:column;gap:3px;text-decoration:none;color:inherit;outline:0}
@@ -208,7 +225,11 @@ main{position:relative;z-index:1}
 .tag{position:absolute;left:12px;bottom:11px;z-index:2;color:#fff;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
 .card:hover .tag,.main:focus-visible .tag{opacity:1;transform:none}
 .segs{position:absolute;left:10px;right:10px;top:10px;z-index:2;display:flex;gap:3px;opacity:0;transition:opacity .25s}
-.card:hover .segs{opacity:1}
+.card:hover .segs,.card.live .segs{opacity:1}
+.segs{filter:drop-shadow(0 0 1px rgba(0,0,0,.55))}
+.card.deck .shot{touch-action:pan-y}
+/* 觸控：頁數條移到縮圖下緣（右上角是下載鈕），墊一塊深色底，白底的投影片上也看得到 */
+.touch .segs{top:auto;bottom:10px;padding:5px 6px;border-radius:7px;background:rgba(20,20,22,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .segs i{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.3)}
 .segs i.on{background:#fff}
 .meta{display:flex;align-items:baseline;gap:12px;padding:14px 2px 0}
@@ -240,10 +261,25 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .ecard{grid-template-columns:auto 64px 1fr auto auto;gap:10px}
   .ecard .shot{--sh:40px}
   .focus{height:calc(100svh - 61px);min-height:520px}
-  .side{position:relative;left:auto;top:auto;bottom:auto;width:auto;max-height:none;overflow:visible;gap:14px;padding:16px 110px 0 16px;flex:none}
-  .info .pv{display:none}
+  /* 群組頁改成由上到下：群組切換｜圓環｜作品標題（橫向捲）｜底部預覽列 */
+  .side{display:contents}
+  .glist{order:1;flex:none;flex-wrap:nowrap;gap:0 18px;margin:0 112px 0 0;padding:14px 16px 0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .glist::-webkit-scrollbar,.side .chips::-webkit-scrollbar{display:none}
+  .glist a{font-size:15px;padding:8px 0}
+  .glist .cur{display:inline;color:var(--fg);font-weight:650}
   .back{right:16px;top:16px}
-  .focus .orbit{--r:clamp(110px,34vw,200px)}
+  .focus .orbit{order:2;--r:clamp(110px,42vw,220px)}
+  .side .chips{order:3;flex:none;flex-direction:row;gap:8px;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none}
+  .side .chips .chip{flex:none;max-width:72vw;padding:9px 15px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ring);color:var(--fg)}
+  .side .chips .chip.hot{background:var(--btn);color:var(--on-btn);box-shadow:none}
+  .side .chip.hot b{text-decoration:none}
+  .info{order:4;flex:none;display:flex;align-items:center;min-height:80px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bar);pointer-events:auto}
+  .info .pv{display:none;flex:none;height:54px;margin:0 12px 0 0}
+  .info .pv.on{display:block}
+  .info .pv img{border-radius:7px}
+  .info .tx{flex:1;min-width:0}
+  .info h2{font-size:16px;height:auto;-webkit-line-clamp:1;margin:0 0 2px}
+  .go{margin:0 0 0 12px}
   .hero{grid-template-columns:1fr;gap:22px;padding:28px 0 44px}
   .hero .shot{--sh:min(56vw,300px)}
   .grid{gap:28px 16px;margin-bottom:52px;--sh:168px}
@@ -263,9 +299,9 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
 <header><div class="wrap">
   <a class="brand" href="#" title="簡報庫" aria-label="簡報庫"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.0 13.0L22.6 13.7M16.4 14.6L19.8 16.7M13.6 15.6L14.8 18.4M10.4 15.6L9.2 18.4M7.6 14.6L4.2 16.7M6.0 13.0L1.4 13.7M6.0 11.0L1.4 10.3M7.6 9.4L4.2 7.3M10.4 8.4L9.2 5.6M13.6 8.4L14.8 5.6M16.4 9.4L19.8 7.3M18.0 11.0L22.6 10.3"/></svg><span class="mono" id="total"></span></a>
   <div class="tabs" id="tabs">
-    <button data-mode="map" class="on" title="地圖" aria-label="地圖"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.2v1.6M8 10.2v1.6"/><circle cx="8" cy="2.6" r="1.6"/><circle cx="8" cy="8" r="2.2"/><circle cx="8" cy="13.4" r="1.6"/></svg></button>
-    <button data-mode="list" title="列表" aria-label="列表"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button>
-    <button data-mode="edit" id="editbtn" hidden title="編輯" aria-label="編輯"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.2 2.3l2.5 2.5L5.5 13H3v-2.5z"/><path d="M9.6 3.9l2.5 2.5"/></svg></button>
+    <button data-mode="map" class="on" title="地圖" aria-label="地圖"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.2v1.6M8 10.2v1.6"/><circle cx="8" cy="2.6" r="1.6"/><circle cx="8" cy="8" r="2.2"/><circle cx="8" cy="13.4" r="1.6"/></svg><span class="tl">地圖</span></button>
+    <button data-mode="list" title="列表" aria-label="列表"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg><span class="tl">列表</span></button>
+    <button data-mode="edit" id="editbtn" hidden title="編輯" aria-label="編輯"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.2 2.3l2.5 2.5L5.5 13H3v-2.5z"/><path d="M9.6 3.9l2.5 2.5"/></svg><span class="tl">編輯</span></button>
   </div>
   <label class="search" title="搜尋（按 / ）"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg><input id="q" type="search" placeholder=" " aria-label="搜尋" autocomplete="off"></label>
 </div></header>
@@ -277,6 +313,11 @@ const UNC='未分類';
 const live=()=>[...groups].filter(([,w])=>w.length);
 const list=document.getElementById('list'),q=document.getElementById('q');
 const still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+// 觸控沒有滑鼠停留：html.touch 打開替代的操作方式。以最近一次按下的是手指還是滑鼠為準
+let touch=false;
+const setTouch=v=>{touch=v;document.documentElement.classList.toggle('touch',v)};
+setTouch(matchMedia('(hover:none)').matches);
+addEventListener('pointerdown',e=>setTouch(e.pointerType==='touch'),true);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
 const day=d=>(d||'').replace(/-/g,'.');
@@ -330,11 +371,11 @@ function mapView(){
   </section>`;
 }
 function focusView(name,works){
-  const others=live().filter(([n])=>n!==name&&n!==UNC);
+  const others=live().filter(([n])=>n===name||n!==UNC);   // 目前這組只在手機版顯示（當作頁籤）
   return `<section class="focus" data-g="${esc(name)}">
     <aside class="side">
-      ${others.length?`<nav class="glist">${others.map(([n])=>`<a href="${ghref(n)}">${esc(n)}</a>`).join('')}</nav>`:''}
-      <div class="info"><div class="pv" id="pv"></div><h2 id="it">${esc(name)}</h2><span class="mono" id="im"></span></div>
+      ${others.length>1?`<nav class="glist">${others.map(([n])=>`<a href="${ghref(n)}"${n===name?' class="cur" aria-current="true"':''}>${esc(n)}</a>`).join('')}</nav>`:''}
+      <div class="info"><div class="pv" id="pv"></div><div class="tx"><h2 id="it">${esc(name)}</h2><span class="mono" id="im"></span></div><a class="btn go" id="go" hidden></a></div>
       <nav class="chips" id="chips">${works.map((it,w)=>`<a class="chip" data-w="${w}" href="${it.href}"${tg(it)}><span class="mono">${pad(w+1)}</span><b>${esc(it.title)}</b></a>`).join('')}</nav>
     </aside>
     <a class="btn ghost back" href="#">← 地圖</a>
@@ -422,17 +463,18 @@ function editView(){
 function render(keep){
   const k=q.value.trim().toLowerCase();
   const g=decodeURIComponent((location.hash.match(/^#g=(.*)$/)||[])[1]||'');
-  hot=null;
+  hot=null;goal=null;stopPv();io.disconnect();
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.mode===(k?'list':mode)));
   if(!k&&mode==='edit')list.innerHTML=editView();
   else if(k||mode==='list')list.innerHTML=listView(k);
   else if(groups.get(g)?.length){list.innerHTML=focusView(g,groups.get(g));setHot(null)}
   else list.innerHTML=mapView();
   if(keep!==true)scrollTo(0,0);
+  list.querySelectorAll('.node,.card.deck').forEach(el=>io.observe(el));
 }
 
 /* 群組圓環：自轉、拖曳、滑過點亮同一件作品的整段弧 */
-let rot=0,hot=null,drag=null,moved=false;
+let rot=0,hot=null,drag=null,moved=false,goal=null;   // goal：圓環要轉過去的角度
 function setHot(w){
   const sec=list.querySelector('.focus');if(!sec)return;
   const works=groups.get(sec.dataset.g);hot=w;
@@ -442,11 +484,27 @@ function setHot(w){
   if(it)pv.innerHTML=pic(it);
   pv.classList.toggle('on',!!it);
   sec.querySelector('#it').textContent=it?it.title:sec.dataset.g;
-  sec.querySelector('#im').textContent=it?it.meta:`${pad(works.length)} 件 · 拖曳旋轉`;
+  sec.querySelector('#im').textContent=it?it.meta:`${pad(works.length)} 件 · ${touch?'點卡片看預覽':'拖曳旋轉'}`;
+  const go=sec.querySelector('#go');go.hidden=!it;
+  if(it){go.href=it.href;go.target=it.kind==='site'?'_blank':'';go.rel=it.kind==='site'?'noopener':'';go.textContent=it.kind==='deck'?'播放 →':'開啟 ↗'}
+}
+/* 觸控版的「滑過」：點一下選起來，圓環把那張卡轉到正面朝外的位置，底部出現預覽和開啟鈕；再點一次才開啟 */
+const FACE=-50;
+const off=c=>((parseFloat(c.style.getPropertyValue('--a'))+rot-FACE)%360+540)%360-180;   // 這張卡離正面位置還差幾度
+function pick(w){
+  setHot(w);goal=null;if(w==null)return;
+  goal=rot-off(list.querySelector(`#ring .c[data-w="${w}"]`));
+  // 手機版的標題列是橫向捲的：把選中的那顆捲到中間
+  const chip=list.querySelector(`.chip[data-w="${w}"]`),box=chip.parentNode,a=chip.getBoundingClientRect(),b=box.getBoundingClientRect();
+  box.scrollTo({left:box.scrollLeft+a.left-b.left-(b.width-a.width)/2,behavior:still?'auto':'smooth'});
 }
 (function tick(){
   const r=document.getElementById('ring');
-  if(r){if(hot==null&&!drag&&!still)rot+=.07;r.style.setProperty('--rot',rot.toFixed(2)+'deg')}
+  if(r){
+    if(goal!=null&&!drag){rot+=(goal-rot)*(still?1:.14);if(Math.abs(goal-rot)<.05){rot=goal;goal=null}}
+    else if(hot==null&&!drag&&!still)rot+=.07;
+    r.style.setProperty('--rot',rot.toFixed(2)+'deg');
+  }
   requestAnimationFrame(tick);
 })();
 list.addEventListener('pointerdown',e=>{
@@ -458,33 +516,87 @@ addEventListener('pointermove',e=>{
   if(Math.abs(dx)>5&&!moved){moved=true;document.getElementById('orbit')?.classList.add('drag');setHot(null)}
   if(moved)rot=drag.rot+dx*.3;
 });
-addEventListener('pointerup',()=>{drag=null;document.getElementById('orbit')?.classList.remove('drag')});
+addEventListener('pointerup',()=>{
+  // 觸控：放手時最靠近正面位置的那件自動選起來
+  if(drag&&moved&&touch){
+    const c=[...list.querySelectorAll('#ring .c[data-w]')].sort((a,b)=>Math.abs(off(a))-Math.abs(off(b)))[0];
+    if(c&&Math.abs(off(c))<24)pick(+c.dataset.w);
+  }
+  drag=null;document.getElementById('orbit')?.classList.remove('drag');
+});
 addEventListener('pointercancel',()=>{drag=null});
-list.addEventListener('click',e=>{if(moved&&e.target.closest('#orbit')){e.preventDefault();moved=false}},true);
+list.addEventListener('click',e=>{
+  if(Date.now()-scrubEnd<400&&e.target.closest('.card')){e.preventDefault();return}   // 剛在縮圖上橫滑完，不算點擊
+  if(!e.target.closest('.focus'))return;
+  if(moved&&e.target.closest('#orbit')){e.preventDefault();moved=false;return}
+  if(!touch)return;
+  const el=e.target.closest('#ring .c[data-w],.chip');
+  if(el){if(hot!==+el.dataset.w){e.preventDefault();pick(+el.dataset.w)}}
+  else if(hot!=null&&e.target.closest('#orbit'))pick(null);
+},true);
 list.addEventListener('mouseover',e=>{
+  if(touch)return;   // 手指點一下也會補發 mouseover，會搶在 click 前面把它選起來
   const el=e.target.closest('#ring .c[data-w],.chip');
   if(el){if(!drag&&hot!==+el.dataset.w)setHot(+el.dataset.w)}
   else if(hot!=null&&list.querySelector('.focus'))setHot(null);
 });
-list.addEventListener('focusin',e=>{const el=e.target.closest('.chip');if(el)setHot(+el.dataset.w)});
-list.addEventListener('mouseleave',()=>{if(hot!=null)setHot(null)});
+list.addEventListener('focusin',e=>{const el=e.target.closest('.chip');if(el&&!touch)setHot(+el.dataset.w)});
+list.addEventListener('mouseleave',()=>{if(hot!=null&&!touch)setHot(null)});
 
 /* 列表卡片：橫掃預覽 */
 const deckOf=card=>items.find(it=>it.kind==='deck'&&it.d.id===card.dataset.deck).d;
-list.addEventListener('mousemove',e=>{
-  const shot=e.target.closest('.card.deck .shot');if(!shot)return;
-  const d=deckOf(shot.closest('.card')),p=picks(d),r=shot.getBoundingClientRect();
-  const k=Math.max(0,Math.min(p.length-1,Math.floor((e.clientX-r.left)/r.width*p.length)));
-  if(shot.dataset.k==k)return;shot.dataset.k=k;
+function setPage(shot,d,k){
+  const p=picks(d);shot.dataset.k=k;
   shot.querySelector('img').src=thumb(d,p[k]);
   shot.querySelectorAll('.segs i').forEach((el,j)=>el.classList.toggle('on',j<=k));
+}
+function scrub(shot,x){
+  const d=deckOf(shot.closest('.card')),r=shot.getBoundingClientRect();
+  const k=Math.max(0,Math.min(picks(d).length-1,Math.floor((x-r.left)/r.width*picks(d).length)));
+  if(shot.dataset.k!=k)setPage(shot,d,k);
+}
+function resetShot(c){
+  const d=deckOf(c),shot=c.querySelector('.shot');
+  delete shot.dataset.k;shot.querySelector('img').src=thumb(d,d.cover??0);
+  shot.querySelectorAll('.segs i').forEach((el,j)=>el.classList.toggle('on',!j));
+}
+list.addEventListener('mousemove',e=>{
+  const shot=!touch&&e.target.closest('.card.deck .shot');if(shot)scrub(shot,e.clientX);
 });
 list.addEventListener('mouseout',e=>{
-  const c=e.target.closest('.card.deck');if(!c||c.contains(e.relatedTarget))return;
-  const d=deckOf(c),shot=c.querySelector('.shot');
-  delete shot.dataset.k;shot.querySelector('img').src=thumb(d,0);
-  shot.querySelectorAll('.segs i').forEach((el,j)=>el.classList.toggle('on',!j));
+  const c=!touch&&e.target.closest('.card.deck');if(c&&!c.contains(e.relatedTarget))resetShot(c);
 });
+/* 觸控版的橫掃預覽：卡片捲到畫面中段自動翻一輪；手指在縮圖上左右滑可以自己翻 */
+let pv=null,sc=null,scrubEnd=0;
+function stopPv(){if(!pv)return;clearInterval(pv.t);if(pv.c.isConnected){pv.c.classList.remove('live');resetShot(pv.c)}pv=null}
+function startPv(c){
+  stopPv();const d=deckOf(c),shot=c.querySelector('.shot'),n=picks(d).length;let k=0;
+  if(n<2)return;c.classList.add('live');
+  pv={c,t:setInterval(()=>++k<n?setPage(shot,d,k):stopPv(),700)};
+}
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  const el=e.target;
+  if(el.matches('.node'))el.classList.toggle('near',e.isIntersecting);
+  else if(e.isIntersecting){if(touch&&!still&&!sc)startPv(el)}
+  else if(pv?.c===el)stopPv();
+}),{rootMargin:'-45% 0px -45% 0px'});
+list.addEventListener('pointerdown',e=>{
+  const shot=e.pointerType==='touch'&&e.target.closest('.card.deck .shot');
+  if(shot)sc={shot,x:e.clientX,on:false};
+});
+addEventListener('pointermove',e=>{
+  if(!sc)return;
+  if(!sc.on&&Math.abs(e.clientX-sc.x)>10){sc.on=true;stopPv();sc.shot.closest('.card').classList.add('live')}
+  if(sc.on)scrub(sc.shot,e.clientX);
+});
+const scEnd=()=>{
+  if(sc?.on){
+    const c=sc.shot.closest('.card');scrubEnd=Date.now();
+    setTimeout(()=>{if(c.isConnected&&pv?.c!==c&&!sc){c.classList.remove('live');resetShot(c)}},1600);
+  }
+  sc=null;
+};
+addEventListener('pointerup',scEnd);addEventListener('pointercancel',scEnd);
 
 document.getElementById('tabs').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;mode=b.dataset.mode;q.value='';
