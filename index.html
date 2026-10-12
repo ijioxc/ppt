@@ -107,6 +107,11 @@ main{position:relative;z-index:1}
 /* 觸控：點卡片或標題是「選起來看預覽」，這顆才是開啟 */
 .go{margin-top:14px;padding:9px 18px;pointer-events:auto;white-space:nowrap}
 .go[hidden],html:not(.touch) .go{display:none}
+/* 觸控：圓環當成滾輪，上下滑一格換一件 */
+.touch .focus .orbit{touch-action:none}
+.swipe{display:none}
+.touch .swipe{display:block;flex:none;order:3;text-align:center;padding-bottom:12px;transition:opacity .5s}
+.swiped .swipe{opacity:0}
 /* 預覽圖只鎖高度：位置一直留著，寬度跟著圖片比例走，直式、橫式都完整顯示不裁切。標題固定兩行、說明固定一行，清單不會被推動 */
 .info .pv{height:146px;margin-bottom:14px}
 .info .pv img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left top;display:block;border-radius:10px;box-shadow:0 0 0 1px var(--ring);opacity:0;transition:opacity .25s}
@@ -268,18 +273,22 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .glist a{font-size:15px;padding:8px 0}
   .glist .cur{display:inline;color:var(--fg);font-weight:650}
   .back{right:16px;top:16px}
-  .focus .orbit{order:2;--r:clamp(110px,42vw,220px)}
-  .side .chips{order:3;flex:none;flex-direction:row;gap:8px;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none}
-  .side .chips .chip{flex:none;max-width:72vw;padding:9px 15px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ring);color:var(--fg)}
-  .side .chips .chip.hot{background:var(--btn);color:var(--on-btn);box-shadow:none}
-  .side .chip.hot b{text-decoration:none}
-  .info{order:4;flex:none;display:flex;align-items:center;min-height:80px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bar);pointer-events:auto}
-  .info .pv{display:none;flex:none;height:54px;margin:0 12px 0 0}
-  .info .pv.on{display:block}
-  .info .pv img{border-radius:7px}
-  .info .tx{flex:1;min-width:0}
+  .focus .orbit{order:2;--r:clamp(110px,42vw,220px);padding-bottom:18vh}
+  /* 作品標題放在右下角直排、靠右對齊；選中的那件被轉到圓環左前方，兩邊剛好錯開 */
+  .side .chips{position:absolute;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:2;width:min(72vw,320px);max-height:180px;flex-direction:column;align-items:flex-end;gap:0;padding:0;overflow-y:auto;scrollbar-width:none}
+  .side .chips .chip{flex:none;height:36px;align-items:center;max-width:100%;padding:0;font-size:14px}
+  .side .chip.hot b{font-weight:650;text-decoration:none}
+  /* 觸控：這一排是滾輪，選中的固定在中間那一格，離得越遠越淡 */
+  .touch .side .chips{height:180px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent)}
+  .touch .side .chips .chip{transform:translateY(calc((2 - var(--sel,0))*36px));opacity:max(0,calc(1 - var(--d,1)*.34));transition:transform .3s cubic-bezier(.2,.7,.2,1),opacity .3s,font-size .3s}
+  .touch .side .chips .chip.hot{font-size:17px}
+  .info{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:flex-end;gap:12px;max-width:calc(100% - 32px);text-align:right;pointer-events:auto}
+  .info .pv{display:none}
+  .info .tx{min-width:0}
   .info h2{font-size:16px;height:auto;-webkit-line-clamp:1;margin:0 0 2px}
-  .go{margin:0 0 0 12px}
+  .touch .info h2{display:none}
+  .go{margin:0}
+  .touch .swipe{position:absolute;left:16px;bottom:calc(28px + env(safe-area-inset-bottom));padding:0}
   .hero{grid-template-columns:1fr;gap:22px;padding:28px 0 44px}
   .hero .shot{--sh:min(56vw,300px)}
   .grid{gap:28px 16px;margin-bottom:52px;--sh:168px}
@@ -380,6 +389,7 @@ function focusView(name,works){
     </aside>
     <a class="btn ghost back" href="#">← 地圖</a>
     <div class="orbit" id="orbit">${ring(works,40,true)}</div>
+    <span class="mono swipe">↕ 上下滑動選擇</span>
   </section>`;
 }
 
@@ -467,7 +477,7 @@ function render(keep){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.mode===(k?'list':mode)));
   if(!k&&mode==='edit')list.innerHTML=editView();
   else if(k||mode==='list')list.innerHTML=listView(k);
-  else if(groups.get(g)?.length){list.innerHTML=focusView(g,groups.get(g));setHot(null)}
+  else if(groups.get(g)?.length){list.innerHTML=focusView(g,groups.get(g));touch?pick(0):setHot(null)}
   else list.innerHTML=mapView();
   if(keep!==true)scrollTo(0,0);
   list.querySelectorAll('.node,.card.deck').forEach(el=>io.observe(el));
@@ -480,23 +490,26 @@ function setHot(w){
   const works=groups.get(sec.dataset.g);hot=w;
   sec.querySelector('.ring').classList.toggle('has-hot',w!=null);
   sec.querySelectorAll('.c,.chip').forEach(el=>el.classList.toggle('hot',w!=null&&+el.dataset.w===w));
+  // 手機版右下的標題滾輪：記住選中第幾件、每一件離它多遠
+  if(w!=null){const box=sec.querySelector('#chips');box.style.setProperty('--sel',w);box.querySelectorAll('.chip').forEach(c=>c.style.setProperty('--d',Math.abs(c.dataset.w-w)))}
   const it=w!=null&&works[w],pv=sec.querySelector('#pv');
   if(it)pv.innerHTML=pic(it);
   pv.classList.toggle('on',!!it);
   sec.querySelector('#it').textContent=it?it.title:sec.dataset.g;
-  sec.querySelector('#im').textContent=it?it.meta:`${pad(works.length)} 件 · ${touch?'點卡片看預覽':'拖曳旋轉'}`;
+  sec.querySelector('#im').textContent=it?it.meta:`${pad(works.length)} 件 · ${touch?'上下滑動選擇':'拖曳旋轉'}`;
   const go=sec.querySelector('#go');go.hidden=!it;
   if(it){go.href=it.href;go.target=it.kind==='site'?'_blank':'';go.rel=it.kind==='site'?'noopener':'';go.textContent=it.kind==='deck'?'播放 →':'開啟 ↗'}
 }
-/* 觸控版的「滑過」：點一下選起來，圓環把那張卡轉到正面朝外的位置，底部出現預覽和開啟鈕；再點一次才開啟 */
+/* 觸控版的「滑過」：圓環是一個滾輪。上下滑（或左右拖）轉動它，轉到正面位置的那件就是選中的，底部出現預覽和開啟鈕；
+   點卡片或標題也是選取，再點一次才開啟 */
 const FACE=-50;
-const off=c=>((parseFloat(c.style.getPropertyValue('--a'))+rot-FACE)%360+540)%360-180;   // 這張卡離正面位置還差幾度
+const norm=d=>(d%360+540)%360-180;
+const aOf=c=>parseFloat(c.style.getPropertyValue('--a'));
+const off=c=>norm(aOf(c)+rot-FACE);   // 這張卡離正面位置還差幾度
+const near=(r=rot)=>[...list.querySelectorAll('#ring .c[data-w]')].sort((a,b)=>Math.abs(norm(aOf(a)+r-FACE))-Math.abs(norm(aOf(b)+r-FACE)))[0];
 function pick(w){
   setHot(w);goal=null;if(w==null)return;
   goal=rot-off(list.querySelector(`#ring .c[data-w="${w}"]`));
-  // 手機版的標題列是橫向捲的：把選中的那顆捲到中間
-  const chip=list.querySelector(`.chip[data-w="${w}"]`),box=chip.parentNode,a=chip.getBoundingClientRect(),b=box.getBoundingClientRect();
-  box.scrollTo({left:box.scrollLeft+a.left-b.left-(b.width-a.width)/2,behavior:still?'auto':'smooth'});
 }
 (function tick(){
   const r=document.getElementById('ring');
@@ -508,19 +521,33 @@ function pick(w){
   requestAnimationFrame(tick);
 })();
 list.addEventListener('pointerdown',e=>{
-  const o=e.target.closest('#orbit');if(!o)return;
-  drag={x:e.clientX,rot};moved=false;
+  if(!e.target.closest(touch?'#orbit,#chips':'#orbit'))return;   // 觸控：在右下的標題滾輪上滑也算
+  drag={x:e.clientX,y:e.clientY,rot,t:e.timeStamp,v:0};moved=false;
+  // 觸控：只能在第一件到最後一件之間轉，超過會有阻力
+  const c=touch&&near();
+  if(c){drag.max=rot-off(c)+aOf(c);drag.min=drag.max-aOf([...list.querySelectorAll('#ring .c[data-w]')].pop())}
 });
 addEventListener('pointermove',e=>{
-  if(!drag)return;const dx=e.clientX-drag.x;
-  if(Math.abs(dx)>5&&!moved){moved=true;document.getElementById('orbit')?.classList.add('drag');setHot(null)}
-  if(moved)rot=drag.rot+dx*.3;
+  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(!moved&&Math.max(Math.abs(dx),Math.abs(dy))>6){
+    moved=true;goal=null;document.getElementById('orbit')?.classList.add('drag');
+    if(touch)document.documentElement.classList.add('swiped');else setHot(null);
+  }
+  if(!moved)return;
+  let r=drag.rot+dx*.3+(touch?dy*.3:0);
+  if(drag.max!=null)r=r>drag.max?drag.max+(r-drag.max)*.25:r<drag.min?drag.min+(r-drag.min)*.25:r;
+  const dt=e.timeStamp-drag.t;if(dt>0){drag.v=.6*drag.v+.4*(r-rot)/dt;drag.t=e.timeStamp}
+  rot=r;
+  // 邊轉邊換選中的那件
+  const c=touch&&near();
+  if(c&&+c.dataset.w!==hot){setHot(+c.dataset.w);navigator.vibrate?.(4)}
 });
-addEventListener('pointerup',()=>{
-  // 觸控：放手時最靠近正面位置的那件自動選起來
+addEventListener('pointerup',e=>{
+  // 觸控：放手後順著甩的力道再轉一點，停在最近的一件上
   if(drag&&moved&&touch){
-    const c=[...list.querySelectorAll('#ring .c[data-w]')].sort((a,b)=>Math.abs(off(a))-Math.abs(off(b)))[0];
-    if(c&&Math.abs(off(c))<24)pick(+c.dataset.w);
+    let r=rot+(e.timeStamp-drag.t<90?drag.v*180:0);
+    if(drag.max!=null)r=Math.max(drag.min,Math.min(drag.max,r));
+    const c=near(r);if(c)pick(+c.dataset.w);
   }
   drag=null;document.getElementById('orbit')?.classList.remove('drag');
 });
@@ -528,11 +555,10 @@ addEventListener('pointercancel',()=>{drag=null});
 list.addEventListener('click',e=>{
   if(Date.now()-scrubEnd<400&&e.target.closest('.card')){e.preventDefault();return}   // 剛在縮圖上橫滑完，不算點擊
   if(!e.target.closest('.focus'))return;
-  if(moved&&e.target.closest('#orbit')){e.preventDefault();moved=false;return}
+  if(moved&&e.target.closest('#orbit,#chips')){e.preventDefault();moved=false;return}
   if(!touch)return;
   const el=e.target.closest('#ring .c[data-w],.chip');
-  if(el){if(hot!==+el.dataset.w){e.preventDefault();pick(+el.dataset.w)}}
-  else if(hot!=null&&e.target.closest('#orbit'))pick(null);
+  if(el&&hot!==+el.dataset.w){e.preventDefault();pick(+el.dataset.w)}
 },true);
 list.addEventListener('mouseover',e=>{
   if(touch)return;   // 手指點一下也會補發 mouseover，會搶在 click 前面把它選起來
