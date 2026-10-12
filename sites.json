@@ -4,8 +4,7 @@
     "title": "NKUST Racing・工作台",
     "desc": "賽車團隊工作台",
     "url": "https://ijioxc.github.io/nkust-racing/#dashboard",
-    "shot": "nkust-racing.png",
-    "fit": "contain",
+    "shot": "nkust-racing-dashboard.jpg",
     "group": "車隊"
   },
   {
@@ -13,8 +12,7 @@
     "title": "NKUST Racing・車體圖解",
     "desc": "車體結構圖解",
     "url": "https://ijioxc.github.io/nkust-racing/#blueprint",
-    "shot": "nkust-racing.png",
-    "fit": "contain",
+    "shot": "nkust-racing-blueprint.jpg",
     "group": "車隊"
   },
   {
@@ -22,8 +20,7 @@
     "title": "NKUST Racing・技術手冊",
     "desc": "技術手冊",
     "url": "https://ijioxc.github.io/nkust-racing/#essay",
-    "shot": "nkust-racing.png",
-    "fit": "contain",
+    "shot": "nkust-racing-essay.jpg",
     "group": "車隊"
   },
   {
@@ -31,8 +28,7 @@
     "title": "NKUST Racing・簡報",
     "desc": "車隊簡報",
     "url": "https://ijioxc.github.io/nkust-racing/#deck",
-    "shot": "nkust-racing.png",
-    "fit": "contain",
+    "shot": "nkust-racing-deck.jpg",
     "group": "車隊"
   },
   {
