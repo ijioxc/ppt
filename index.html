@@ -68,7 +68,13 @@ main{position:relative;z-index:1}
 .focus .orbit{--r:clamp(140px,min(30vw,34vh),360px);--w:calc(var(--r)*.52);flex:1;min-height:0;cursor:grab;touch-action:pan-y}
 .focus .orbit.drag{cursor:grabbing}
 .focus .c{cursor:pointer}
+/* 墊底的卡片淡化，這個群組自己的作品浮起來一點當標記 */
+.c.other{opacity:.3}
+.c.other img{filter:grayscale(1) brightness(1.1)}
+.c.blank{opacity:.35}
+.c.own{--lift:calc(var(--w)*-.07)}
 .ring.has-hot .c{opacity:.22}
+.ring.has-hot .c.other,.ring.has-hot .c.blank{opacity:.14}
 .ring.has-hot .c.hot{opacity:1;--lift:calc(var(--w)*-.1)}
 .side{position:absolute;left:28px;top:28px;bottom:28px;width:min(260px,42vw);z-index:2;display:flex;flex-direction:column;gap:22px;overflow:auto;scrollbar-width:none}
 .side::-webkit-scrollbar{display:none}
@@ -263,22 +269,34 @@ const spread=(len,n)=>Array.from({length:n},(_,k)=>Math.round(k*(len-1)/Math.max
 const picks=d=>spread(d.slides.length,Math.min(d.slides.length,8));
 const ghref=name=>'#g='+encodeURIComponent(name);
 
-/* 圓環：每件作品佔一段連續的弧，簡報用多張內頁填滿 */
+/* 圓環：每件作品只放 1–3 張，平均散在一圈；其餘位置用其他群組的作品墊底（淡化），沒有就放空白卡 */
 function ringCards(works,n){
-  const per=Math.max(1,Math.round(n/works.length)),out=[];
-  works.forEach((it,w)=>{
-    if(it.kind==='deck'&&it.d.cover!=null)for(let j=0;j<per;j++)out.push({w,it,k:it.d.cover});
-    else if(it.kind==='deck')spread(it.d.slides.length,Math.min(per,it.d.slides.length)).forEach(k=>out.push({w,it,k}));
-    else for(let j=0;j<per;j++)out.push({w,it,k:0});
+  const per=Math.max(1,Math.min(3,Math.floor(n*.45/works.length))),out=[];
+  const others=items.filter(it=>!works.includes(it));
+  const blocks=works.slice(0,n).map((it,w)=>{
+    if(it.kind!=='deck')return Array.from({length:per},()=>({w,it,k:0}));
+    const ks=spread(it.d.slides.length,Math.min(per,it.d.slides.length));
+    if(it.d.cover!=null)ks[0]=it.d.cover;                       // 第一張用自選封面
+    return ks.map(k=>({w,it,k}));
+  });
+  const fill=n-blocks.reduce((a,b)=>a+b.length,0);let f=0;
+  blocks.forEach((b,i)=>{
+    out.push(...b);
+    const gap=Math.floor(fill/blocks.length)+(i<fill%blocks.length?1:0);
+    for(let j=0;j<gap;j++,f++){const it=others.length?others[f%others.length]:null;out.push(it?{it,k:it.kind==='deck'&&it.d.cover!=null?it.d.cover:0,other:1}:{blank:1})}
   });
   return out;
 }
 function ring(works,n,link){
   // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
-  const cs=ringCards(works,n).map(c=>({...c,img:pic(c.it,c.k).replace(' loading="lazy"','')}));
+  const cs=ringCards(works,n);
   return `<div class="ring"${link?' id="ring"':''}>${cs.map((c,i)=>{
-    const a=`class="c" data-w="${c.w}" style="--a:${(i*360/cs.length).toFixed(2)}deg"`;
-    return link?`<a ${a} href="${c.it.href}"${tg(c.it)} draggable="false" tabindex="-1" aria-hidden="true">${c.img}</a>`:`<span ${a}>${c.img}</span>`;
+    const pos=`style="--a:${(i*360/cs.length).toFixed(2)}deg"`;
+    if(c.blank)return `<span class="c blank" ${pos}></span>`;
+    const img=pic(c.it,c.k).replace(' loading="lazy"','');
+    if(c.other)return `<span class="c other" ${pos}>${img}</span>`;
+    const a=`class="c own" data-w="${c.w}" ${pos}`;
+    return link?`<a ${a} href="${c.it.href}"${tg(c.it)} draggable="false" tabindex="-1" aria-hidden="true">${img}</a>`:`<span ${a}>${img}</span>`;
   }).join('')}</div>`;
 }
 
@@ -427,7 +445,7 @@ addEventListener('pointerup',()=>{drag=null;document.getElementById('orbit')?.cl
 addEventListener('pointercancel',()=>{drag=null});
 list.addEventListener('click',e=>{if(moved&&e.target.closest('#orbit')){e.preventDefault();moved=false}},true);
 list.addEventListener('mouseover',e=>{
-  const el=e.target.closest('#ring .c,.chip');
+  const el=e.target.closest('#ring .c[data-w],.chip');
   if(el){if(!drag&&hot!==+el.dataset.w)setHot(+el.dataset.w)}
   else if(hot!=null&&list.querySelector('.focus'))setHot(null);
 });
