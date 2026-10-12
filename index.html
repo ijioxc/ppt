@@ -50,7 +50,7 @@ main{position:relative;z-index:1}
 .map{position:relative;display:flex;flex-direction:column;align-items:center;padding:56px 0 96px;animation:fade .5s both}
 @keyframes fade{from{opacity:0}}
 .hub{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:18px}
-.hub b{font-size:22px;font-weight:650;letter-spacing:.04em}
+.hub .mono{font-size:15px;color:var(--fg)}
 .hub::after,.end{content:"";width:7px;height:7px;border-radius:50%;background:var(--fg)}
 .hub::after{margin-top:16px}
 .node{position:relative;display:block;text-decoration:none;color:inherit;outline:0}
@@ -312,7 +312,7 @@ function mapView(){
   const top=items.find(it=>it.kind==='deck');
   return `<section class="map">
     ${top?`<a class="latest" href="${top.href}"><span class="shot">${pic(top)}</span><span class="mono">最新加入 · ${day(top.d.date)}</span><b>${esc(top.title)}</b></a>`:''}
-    <div class="hub"><b>簡報庫</b><span class="mono">${pad(live().length)} 群組 · ${pad(items.length)} 件</span></div>
+    <div class="hub" title="${items.length} 件作品"><span class="mono">${pad(items.length)}</span></div>
     ${live().map(([name,works])=>`
     <a class="node" href="${ghref(name)}">
       <span class="orbit"><i class="axis"></i>${ring(works,26)}</span>
