@@ -88,10 +88,12 @@ main{position:relative;z-index:1}
 .glist{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:-8px}
 .glist a{color:var(--mute);text-decoration:none;font-size:13px;transition:color .2s}
 .glist a:hover{color:var(--fg)}
-.info .pv{aspect-ratio:16/9;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--ring);margin-bottom:14px;opacity:0;transition:opacity .25s}
-.info .pv.on{opacity:1}
-.info .pv img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
-.info h2{margin:0 0 4px;font-size:20px;font-weight:650;line-height:1.3;text-wrap:balance}
+/* 預覽圖只鎖高度：位置一直留著，寬度跟著圖片比例走，直式、橫式都完整顯示不裁切。標題固定兩行、說明固定一行，清單不會被推動 */
+.info .pv{height:146px;margin-bottom:14px}
+.info .pv img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left top;display:block;border-radius:10px;box-shadow:0 0 0 1px var(--ring);opacity:0;transition:opacity .25s}
+.info .pv.on img{opacity:1}
+.info h2{margin:0 0 4px;font-size:20px;font-weight:650;line-height:1.3;height:2.6em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.info .mono{display:block;overflow:hidden;text-overflow:ellipsis}
 .back{position:absolute;right:28px;top:28px;z-index:2;padding:8px 16px;font-size:13px}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 28px 30px}
 .chip{display:flex;align-items:baseline;gap:8px;max-width:100%;padding:7px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ring);text-decoration:none;color:var(--fg);font-size:13px;transition:background .2s,color .2s}
@@ -101,7 +103,7 @@ main{position:relative;z-index:1}
 
 /* 最新加入 */
 .latest{position:absolute;left:28px;top:28px;width:230px;display:flex;flex-direction:column;gap:3px;text-decoration:none;color:inherit;outline:0}
-.latest .shot{margin-bottom:11px;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+.latest .shot{--sh:130px;margin-bottom:11px;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
 .latest:hover .shot,.latest:focus-visible .shot{transform:translateY(-3px)}
 .latest b{font-size:15px;font-weight:600;line-height:1.4}
 
@@ -144,17 +146,23 @@ main{position:relative;z-index:1}
 .up label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);min-width:0}
 .up .full{grid-column:1/-1}
 .up .go{grid-column:1/-1;display:flex;align-items:center;gap:14px}
-.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:26px 20px;margin-bottom:56px}
-.ecard{position:relative;display:flex;flex-direction:column;gap:9px}
-.ecard .shot{cursor:grab;transition:transform .25s,box-shadow .25s}
+/* 編輯頁的作品：一列一件（小圖｜標題｜封面頁｜刪除）。小圖放在固定寬的格子裡置中，直式橫式都不會撐出空白 */
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:0 36px;margin-bottom:56px}
+.ecard{display:grid;grid-template-columns:auto 84px 1fr auto auto;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ecard .shot{--sh:48px;justify-self:center;border-radius:6px;cursor:grab;transition:transform .25s,box-shadow .25s}
 .ecard .shot img{pointer-events:none}
-.ecard .shot:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--mute),var(--shadow)}
+.ecard .shot:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--mute),var(--shadow)}
 .ecard.ghost{opacity:.35}
-.cov{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute)}
+/* 拖作品排序：在會插入的那一側畫一條線 */
+.ecard.ins-t{box-shadow:inset 0 2px 0 var(--fg)}
+.ecard.ins-b{box-shadow:inset 0 -2px 0 var(--fg)}
+/* 封面頁欄位平常收起來，點一下圖示才出現 */
+.cov{display:none;align-items:center;gap:6px;font-size:12px;color:var(--mute);white-space:nowrap}
+.ecard.open .cov{display:flex}
+.ecard.open .shot{box-shadow:0 0 0 2px var(--fg)}
 .cov input{width:56px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);font:inherit;outline:0}
-.ecard .x{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(20,20,22,.7);color:#fff;font-size:15px;line-height:1;opacity:.75;transition:opacity .2s,background .2s}
-.ecard:hover .x,.ecard .x:focus-visible{opacity:1}
-.ecard .x:hover{background:#e5484d}
+.ecard .x{grid-column:5;width:26px;height:26px;border-radius:50%;background:none;color:var(--mute);font-size:17px;line-height:1;transition:background .2s,color .2s}
+.ecard .x:hover{background:#e5484d;color:#fff}
 .del{background:none;color:var(--mute);padding:8px 10px;border-radius:8px;font-size:13px}
 .del:hover{background:rgba(255,80,80,.14);color:#ff6b6b}
 .none{color:var(--mute);padding:48px 0 72px;text-align:center}
@@ -173,20 +181,24 @@ main{position:relative;z-index:1}
 
 /* 列表 */
 .listv{padding-bottom:96px}
-.hero{display:grid;grid-template-columns:1.55fr 1fr;gap:48px;align-items:center;padding:56px 0 64px}
-.hero .shot{border-radius:18px;box-shadow:var(--shadow)}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:center;padding:56px 0 64px}
+.hero .shot{--sh:clamp(220px,32vw,400px);border-radius:18px;box-shadow:var(--shadow)}
 .hero h2{margin:14px 0 12px;font-size:clamp(28px,3.2vw,44px);line-height:1.18;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
 .hero .acts{display:flex;gap:10px;margin-top:28px}
 .sec{display:flex;align-items:center;gap:14px;margin:0 0 22px}
 .sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .sec b{font-weight:500;color:var(--fg)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:36px 24px;margin-bottom:72px}
+/* 列表：同一列等高，卡片寬度＝圖片寬度，直式的圖不會佔掉一整欄 */
+.grid{display:flex;flex-wrap:wrap;gap:36px 24px;margin-bottom:72px;--sh:220px}
+.card{flex:none;width:fit-content;min-width:150px;max-width:100%}
+.card .meta,.card .desc{contain:inline-size}
 .card{position:relative;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}}
 .card>a.main{display:block;text-decoration:none;color:inherit;outline:0}
-.shot{position:relative;display:block;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#0b0b0c;box-shadow:0 0 0 1px var(--ring)}
-.shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
-.shot img.contain{object-fit:contain;object-position:center}
+/* 縮圖共用規則：只鎖高度（--sh），寬度跟圖片比例走，整張顯示不裁切。
+   img 的 min-width 是給還沒載入的圖一個寬度，否則寬 0 的 lazy 圖可能不會被載入 */
+.shot{position:relative;display:block;height:var(--sh);width:fit-content;max-width:100%;border-radius:12px;overflow:hidden;background:#0b0b0c;box-shadow:0 0 0 1px var(--ring)}
+.shot img{height:100%;width:auto;min-width:calc(var(--sh)*.4);max-width:100%;object-fit:contain;display:block;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
 .shot::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.55));opacity:0;transition:opacity .3s}
 .card:hover .shot::after,.main:focus-visible .shot::after{opacity:1}
 .card.site:hover .shot img{transform:scale(1.035)}
@@ -198,7 +210,7 @@ main{position:relative;z-index:1}
 .segs i{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.3)}
 .segs i.on{background:#fff}
 .meta{display:flex;align-items:baseline;gap:12px;padding:14px 2px 0}
-.title{flex:1;min-width:0;font-size:15px;font-weight:550;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.title{flex:1;min-width:0;font-size:15px;font-weight:550;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 .desc{padding:3px 2px 0;font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .desc.mono{font-size:11px;padding-top:5px}
 .act{position:absolute;top:10px;right:10px;z-index:3;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(20,20,22,.6);color:#fff;text-decoration:none;font-size:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);opacity:0;transform:scale(.9);transition:opacity .25s,transform .25s,background .2s}
@@ -215,21 +227,24 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   header .wrap{height:auto;padding-top:12px;padding-bottom:12px;flex-wrap:wrap;gap:10px}
   .search{order:3;width:100%}.search input,.search input:focus{width:100%}.search kbd{display:none}
   .map{padding:24px 0 64px}
-  .latest{position:static;display:grid;grid-template-columns:120px 1fr;gap:2px 14px;align-content:center;width:calc(100% - 32px);max-width:420px;margin-bottom:36px}
-  .latest .shot{margin:0;grid-row:span 2}
+  .latest{position:static;display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-content:center;width:calc(100% - 32px);max-width:420px;margin-bottom:36px}
+  .latest .shot{--sh:68px;margin:0;grid-row:span 2}
   .latest>span.mono{align-self:end}.latest b{align-self:start}
   .gbar{position:static}
   .gscroll{padding-top:10px;padding-bottom:10px}
   .ebody{padding-top:24px;padding-bottom:64px}
   .up form{grid-template-columns:1fr}
-  .egrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px 14px}
+  .egrid{grid-template-columns:1fr}
+  .ecard{grid-template-columns:auto 64px 1fr auto auto;gap:10px}
+  .ecard .shot{--sh:40px}
   .focus{height:calc(100svh - 110px);min-height:520px}
   .side{position:relative;left:auto;top:auto;bottom:auto;width:auto;max-height:none;overflow:visible;gap:14px;padding:16px 110px 0 16px;flex:none}
   .info .pv{display:none}
   .back{right:16px;top:16px}
   .focus .orbit{--r:clamp(110px,34vw,200px)}
   .hero{grid-template-columns:1fr;gap:22px;padding:28px 0 44px}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:28px 16px;margin-bottom:52px}
+  .hero .shot{--sh:min(56vw,300px)}
+  .grid{gap:28px 16px;margin-bottom:52px;--sh:168px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -269,23 +284,14 @@ const spread=(len,n)=>Array.from({length:n},(_,k)=>Math.round(k*(len-1)/Math.max
 const picks=d=>spread(d.slides.length,Math.min(d.slides.length,8));
 const ghref=name=>'#g='+encodeURIComponent(name);
 
-/* 圓環：每件作品只放 1–3 張，平均散在一圈；其餘位置用其他群組的作品墊底（淡化），沒有就放空白卡 */
+/* 圓環：一件作品一張封面。這個群組的排在一起（亮），其他群組各自排在一起（淡化），中間用空白卡隔開 */
 function ringCards(works,n){
-  const per=Math.max(1,Math.min(3,Math.floor(n*.45/works.length))),out=[];
-  const others=items.filter(it=>!works.includes(it));
-  const blocks=works.slice(0,n).map((it,w)=>{
-    if(it.kind!=='deck')return Array.from({length:per},()=>({w,it,k:0}));
-    const ks=spread(it.d.slides.length,Math.min(per,it.d.slides.length));
-    if(it.d.cover!=null)ks[0]=it.d.cover;                       // 第一張用自選封面
-    return ks.map(k=>({w,it,k}));
-  });
-  const fill=n-blocks.reduce((a,b)=>a+b.length,0);let f=0;
-  blocks.forEach((b,i)=>{
-    out.push(...b);
-    const gap=Math.floor(fill/blocks.length)+(i<fill%blocks.length?1:0);
-    for(let j=0;j<gap;j++,f++){const it=others.length?others[f%others.length]:null;out.push(it?{it,k:it.kind==='deck'&&it.d.cover!=null?it.d.cover:0,other:1}:{blank:1})}
-  });
-  return out;
+  const own=works.slice(0,n).map((it,w)=>({w,it}));
+  const rest=[...groups.values()].filter(g=>g!==works&&g.length).map(g=>g.map(it=>({it,other:1})));
+  const sections=[own];
+  for(const g of rest)if(sections.flat().length+g.length<=n)sections.push(g);   // 放不下的群組整組略過，不拆開
+  const blanks=n-sections.flat().length;
+  return sections.flatMap((sec,i)=>[...sec,...Array.from({length:Math.floor(blanks/sections.length)+(i<blanks%sections.length?1:0)},()=>({blank:1}))]);
 }
 function ring(works,n,link){
   // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
@@ -293,7 +299,7 @@ function ring(works,n,link){
   return `<div class="ring"${link?' id="ring"':''}>${cs.map((c,i)=>{
     const pos=`style="--a:${(i*360/cs.length).toFixed(2)}deg"`;
     if(c.blank)return `<span class="c blank" ${pos}></span>`;
-    const img=pic(c.it,c.k).replace(' loading="lazy"','');
+    const img=pic(c.it).replace(' loading="lazy"','');   // pic 預設就是封面
     if(c.other)return `<span class="c other" ${pos}>${img}</span>`;
     const a=`class="c own" data-w="${c.w}" ${pos}`;
     return link?`<a ${a} href="${c.it.href}"${tg(c.it)} draggable="false" tabindex="-1" aria-hidden="true">${img}</a>`:`<span ${a}>${img}</span>`;
@@ -360,14 +366,14 @@ function listView(k){
   const top=!k&&hit.find(it=>it.kind==='deck');
   let i=0;
   const secs=[...groups.keys()].map(name=>{
-    const cs=hit.filter(it=>it.group===name&&it!==top);
+    const cs=groups.get(name).filter(it=>hit.includes(it)&&it!==top);
     return cs.length?`<div class="sec mono"><b>${esc(name)}</b><span>${pad(cs.length)}</span></div><div class="grid">${cs.map(it=>card(it,i++)).join('')}</div>`:'';
   }).join('');
   return `<div class="wrap listv">${top?hero(top):'<div style="height:44px"></div>'}${secs||(top?'':'<div class="empty"><b>找不到東西</b>換個關鍵字試試</div>')}
     <footer class="mono"><span>簡報庫</span><span>${pad(items.length)} 件 · ${pad(live().length)} 群組</span></footer></div>`;
 }
 
-let eg=null,upOpen=false,dragIt=null;
+let eg=null,upOpen=false,dragIt=null,covFor=null;   // covFor：正在選封面頁的那張卡
 function editView(){
   const cur=eg&&groups.has(eg)?eg:UNC,works=groups.get(cur)||[];
   const tile=(name,inner)=>`<div class="gt ${name===cur?'on':''}" role="button" tabindex="0" data-g="${esc(name)}" ${name===UNC?'':'draggable="true" title="拖曳可以調整順序"'}>${inner}</div>`;
@@ -380,7 +386,7 @@ function editView(){
     <div class="wrap ebody">
       <div class="ehead">
         ${cur===UNC?`<h2>${UNC}</h2>`:`<input class="gname" value="${esc(cur)}" data-g="${esc(cur)}" aria-label="群組名稱">`}
-        <span class="mono">${pad(works.length)} 件${works.length?' · 把圖示拖到上方的群組就能搬過去':''}</span>
+        <span class="mono">${pad(works.length)} 件${works.length?' · 拖曳圖示可以調整順序，或拖到上方的群組搬過去':''}</span>
         <span class="sp"></span>
         ${cur===UNC?'':'<button class="del" id="gdel">刪除群組</button>'}
         <button class="btn" id="upbtn">${upOpen?'收起':'＋ 上傳簡報'}</button>
@@ -392,8 +398,9 @@ function editView(){
         <div class="go"><button class="btn">上傳到「${esc(cur)}」</button><span class="mono" id="ups"></span></div>
       </form></section>`:''}
       ${works.length?`<div class="egrid">${works.map(it=>`
-        <div class="ecard" data-kind="${it.kind}" data-id="${esc((it.d||it.s).id)}">
-          <span class="shot" draggable="true" title="拖曳到其他群組">${pic(it)}</span>
+        <div class="ecard${it.kind==='deck'&&it.d.id===covFor?' open':''}" data-kind="${it.kind}" data-id="${esc((it.d||it.s).id)}">
+          <span class="mono no">${pad(works.indexOf(it)+1)}</span>
+          <span class="shot" draggable="true" title="${it.kind==='deck'?'點一下選封面頁；':''}拖曳可調整順序或搬到其他群組">${pic(it)}</span>
           <input class="f-title" value="${esc(it.title)}" aria-label="標題">
           ${it.kind==='deck'?`<label class="cov mono">封面第 <input class="f-cover" type="number" min="1" max="${it.d.slides.length}" value="${it.d.cover!=null?it.d.cover+1:''}" placeholder="1"> / ${it.d.slides.length} 頁</label>`:''}
           <button class="x" title="刪除">×</button>
@@ -496,6 +503,9 @@ function load(keep){
     groups=new Map(gs.map(g=>[g,[]]));
     items.filter(it=>it.group!==UNC).forEach(it=>groups.set(it.group,[...(groups.get(it.group)||[]),it]));
     const unc=items.filter(it=>it.group===UNC);if(unc.length)groups.set(UNC,unc);
+    // 群組內照編輯頁排的順序（order）；沒排過的維持原本順序、排在後面
+    const rank=it=>(it.d||it.s).order??1e9;
+    for(const g of groups.values())g.sort((a,b)=>rank(a)-rank(b));
     document.getElementById('total').textContent=pad(items.length)+' 件';render(keep);
   });
 }
@@ -532,6 +542,12 @@ list.addEventListener('click',e=>{
   else if(on('#gdel')){
     const name=document.querySelector('.gname').dataset.g;
     ask(`刪除群組「${name}」？\n裡面的作品不會被刪，會回到未分類。`,{ok:'刪除群組',danger:true}).then(y=>{if(y){eg=null;act('group-delete',{name})}});
+  }else if(on('.ecard .shot')){
+    const c=on('.ecard'),open=!c.classList.contains('open');
+    if(!c.querySelector('.cov'))return;                       // 網站沒有封面頁可選
+    list.querySelectorAll('.ecard.open').forEach(el=>el.classList.remove('open'));
+    c.classList.toggle('open',open);covFor=open?c.dataset.id:null;
+    if(open)c.querySelector('.f-cover').select();
   }else if(on('.ecard .x')){
     const c=on('.ecard');
     const it=idOf(c);
@@ -575,7 +591,22 @@ list.addEventListener('dragstart',e=>{
   // 等瀏覽器拍完拖曳縮圖再變淡
   setTimeout(()=>{c.classList.add('ghost');list.querySelector('.edit')?.classList.add('dragging')});
 });
-list.addEventListener('dragend',()=>{dragIt=null;list.querySelectorAll('.ghost,.dragging,.over').forEach(el=>el.classList.remove('ghost','dragging','over'))});
+list.addEventListener('dragend',()=>{dragIt=null;list.querySelectorAll('.ghost,.dragging,.over,.ins-t,.ins-b').forEach(el=>el.classList.remove('ghost','dragging','over','ins-t','ins-b'))});
+/* 拖到同群組的另一件上：調整順序 */
+const rowSide=(t,e)=>{const r=t.getBoundingClientRect();return e.clientY<r.top+r.height/2?'ins-t':'ins-b'};
+list.addEventListener('dragover',e=>{
+  if(!dragIt)return;const t=e.target.closest('.ecard');
+  list.querySelectorAll('.ins-t,.ins-b').forEach(el=>el.classList.remove('ins-t','ins-b'));
+  if(!t||t.dataset.id===dragIt.id)return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';t.classList.add(rowSide(t,e));
+});
+list.addEventListener('drop',e=>{
+  const t=e.target.closest('.ecard');if(!dragIt||!t||t.dataset.id===dragIt.id)return;
+  e.preventDefault();const it=dragIt;dragIt=null;
+  const order=[...list.querySelectorAll('.ecard')].map(idOf).filter(x=>x.id!==it.id);
+  order.splice(order.findIndex(x=>x.id===t.dataset.id)+(rowSide(t,e)==='ins-b'?1:0),0,it);
+  act('item-order',{items:order});
+});
 list.addEventListener('dragover',e=>{
   const t=e.target.closest('.gt');if(!dragIt||!t||t.classList.contains('on'))return;
   e.preventDefault();e.dataTransfer.dropEffect='move';t.classList.add('over');

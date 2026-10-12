@@ -80,6 +80,15 @@ def group_rename(b):
     regroup(old, new)
     save_groups([new if g == old else g for g in groups()] + [new])
 
+def item_order(b):
+    """群組內的作品順序：照傳來的順序寫進每一筆的 order"""
+    rank = {(text(x.get("kind")), text(x.get("id"))): i for i, x in enumerate(b.get("items", []))}
+    for kind in FILES:
+        items = load(kind)
+        for it in items:
+            if (kind, it["id"]) in rank: it["order"] = rank[(kind, it["id"])]
+        save(kind, items)
+
 def group_order(b):
     names = [text(n) for n in b.get("names", []) if text(n)]
     save_groups(names + [g for g in groups() if g not in names])  # 沒列到的排在後面，不會弄丟
@@ -134,7 +143,7 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             if url.path == "/api/upload": return self.reply(self.upload(qs, size))
             if url.path == "/api/pptx": return self.reply(self.pptx(qs, size))
-            actions = {"/api/update": update, "/api/delete": delete, "/api/group-add": group_add, "/api/group-rename": group_rename, "/api/group-delete": group_delete, "/api/group-order": group_order, "/api/publish": publish}
+            actions = {"/api/update": update, "/api/delete": delete, "/api/group-add": group_add, "/api/group-rename": group_rename, "/api/group-delete": group_delete, "/api/group-order": group_order, "/api/item-order": item_order, "/api/publish": publish}
             if url.path not in actions: return self.reply({"error": "沒有這個功能"}, 404)
             body = json.loads(self.rfile.read(size) or b"{}")
             self.reply(actions[url.path](body) or {"ok": True})

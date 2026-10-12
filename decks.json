@@ -90,13 +90,7 @@
       "s-44.jpg",
       "s-45.jpg",
       "s-46.jpg",
-      "s-47.jpg",
-      "s-48.jpg",
-      "s-49.jpg",
-      "s-50.jpg",
-      "s-51.jpg",
-      "s-52.jpg",
-      "s-53.jpg"
+      "s-47.jpg"
     ],
     "pptx": "original.pptx",
     "group": "系學會"
@@ -125,7 +119,7 @@
   },
   {
     "id": "20260929-a4",
-    "title": "不負責任道路安全講座",
+    "title": "職涯",
     "date": "2026-09-29",
     "slides": [
       "s-1.jpg",
@@ -133,6 +127,58 @@
       "s-3.jpg",
       "s-4.jpg",
       "s-5.jpg"
+    ],
+    "group": "系學會"
+  },
+  {
+    "id": "20261012-fsae-recruit",
+    "title": "高科方程式車隊・招募圖（社群版）",
+    "date": "2026-10-12",
+    "slides": [
+      "s-01.jpg",
+      "s-02.jpg",
+      "s-03.jpg"
+    ],
+    "group": "車隊"
+  },
+  {
+    "id": "20261012-fsae-recruit-a4",
+    "title": "高科方程式車隊・招募海報（A4 橫式）",
+    "date": "2026-10-12",
+    "slides": [
+      "s-01.jpg",
+      "s-02.jpg",
+      "s-03.jpg"
+    ],
+    "group": "車隊"
+  },
+  {
+    "id": "20261012-calendar-covers",
+    "title": "115 機械系學會・行事曆月份封面",
+    "date": "2026-10-12",
+    "slides": [
+      "s-01.jpg",
+      "s-02.jpg",
+      "s-03.jpg",
+      "s-04.jpg",
+      "s-05.jpg",
+      "s-06.jpg",
+      "s-07.jpg",
+      "s-08.jpg",
+      "s-09.jpg",
+      "s-10.jpg",
+      "s-11.jpg",
+      "s-12.jpg"
+    ],
+    "group": "系學會"
+  },
+  {
+    "id": "20261012-freshman-tea",
+    "title": "115 機械系學會・新生茶會主視覺",
+    "date": "2026-10-12",
+    "slides": [
+      "s-01.jpg",
+      "s-02.jpg"
     ],
     "group": "系學會"
   }

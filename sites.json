@@ -81,11 +81,27 @@
     "group": "課程報告"
   },
   {
-    "id": "wallpapers",
-    "title": "桌布",
-    "desc": "桌布圖片牆：點開看大圖、下載原檔",
-    "url": "web/wallpapers/",
-    "shot": "wallpapers.jpg",
-    "group": "桌布"
+    "id": "jcut-auto-imposition",
+    "title": "j-CUT 自動落版",
+    "desc": "Illustrator 自動落版與刀線輸出：多個圖形依數量排版，輸出印刷 PDF 與切割機 DXF",
+    "url": "https://github.com/ijioxc/jcut-auto-imposition",
+    "shot": "jcut-auto-imposition.jpg",
+    "group": "公司"
+  },
+  {
+    "id": "fluid-workbook",
+    "title": "流體力學習題集",
+    "desc": "流體力學習題：標準解法與最速解法並列",
+    "url": "web/fluid-workbook/",
+    "shot": "fluid-workbook.jpg",
+    "group": "課程報告"
+  },
+  {
+    "id": "english-midterm",
+    "title": "大二英文・期中刷題",
+    "desc": "158 題線上刷題：單字、文法、配對、情境、聽力",
+    "url": "web/english-midterm/",
+    "shot": "english-midterm.jpg",
+    "group": "課程報告"
   }
 ]
