@@ -48,6 +48,11 @@ def update(b):
     if "group" in b:  # 空字串＝放回未分類
         if text(b["group"]): it["group"] = text(b["group"]); remember(it["group"])
         else: it.pop("group", None)
+    if "cover" in b and b["kind"] == "deck":  # 封面頁（從 0 起算），null＝自動
+        c = b["cover"]
+        if c is None: it.pop("cover", None)
+        elif isinstance(c, int) and 0 <= c < len(it["slides"]): it["cover"] = c
+        else: raise ValueError("沒有這一頁")
     save(b["kind"], items)
 
 def delete(b):
