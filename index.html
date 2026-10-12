@@ -248,6 +248,14 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .hero .shot{--sh:min(56vw,300px)}
   .grid{gap:28px 16px;margin-bottom:52px;--sh:168px}
 }
+/* 窄螢幕放不下左右兩側的群組標題：改放在圓環中間偏上、只留名稱；軸線在標題那一段斷開，不從字中間穿過 */
+@media (max-width:640px){
+  .node .orbit{--r:108px;--w:60px;height:236px}
+  .lab,.node:nth-of-type(even) .lab{top:50%;left:50%;right:auto;transform:translate(-50%,calc(-100% + 8px));align-items:center;text-align:center}
+  .lab b{font-size:17px}
+  .lab .mono{display:none}
+  .axis{background:linear-gradient(var(--mute) 0 calc(50% - 20px),transparent 0 calc(50% + 11px),var(--mute) 0)}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>

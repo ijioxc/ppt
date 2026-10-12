@@ -185,6 +185,7 @@ class Deck:
             inner = ch[0] if ch is not None and len(ch) else None
             return self.shape(inner, R) if inner is not None else None
         nv = find(el, ".//p:cNvPr")
+        if nv is None: return None
         d = {"id": nv.get("id"), "name": nv.get("name")}
         if t == "grpSp":
             d.update(kind="group", **self.xfrm(find(el, "p:grpSpPr/a:xfrm")))
@@ -199,9 +200,10 @@ class Deck:
             rot = find(tr, "am3d:rot")
             ras = find(m, "am3d:raster/am3d:blip")
             mpu = find(tr, "am3d:meterPerModelUnit")
+            if mpu is None: return None  # 空的 3D 物件（無縮放資訊）
             d.update(
                 glb=self.asset(R[m.get(REMBED)]),
-                raster=self.asset(R[ras.get(REMBED)]) if ras is not None else None,
+                raster=self.asset(R[ras.get(REMBED)]) if ras is not None and ras.get(REMBED) in R else None,
                 unit=int(mpu.get("n")) / int(mpu.get("d")),
                 pre=[v / M3D for v in v3(find(tr, "am3d:preTrans"), ("dx", "dy", "dz"))],
                 post=[v / M3D for v in v3(find(tr, "am3d:postTrans"), ("dx", "dy", "dz"))],

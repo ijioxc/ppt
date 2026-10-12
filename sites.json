@@ -103,5 +103,13 @@
     "url": "web/english-midterm/",
     "shot": "english-midterm.jpg",
     "group": "課程報告"
+  },
+  {
+    "id": "hs-project",
+    "title": "高中專題：車輛非廢氣排放回收",
+    "desc": "高中專題簡報（網頁版，含 3D 模型與轉場動畫）",
+    "url": "web/hs-project/",
+    "shot": "hs-project.jpg",
+    "group": "高中專題"
   }
 ]
