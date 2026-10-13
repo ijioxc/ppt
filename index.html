@@ -278,28 +278,28 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   /* 作品標題放在右下角直排、靠右對齊；選中的那件被轉到圓環左前方，兩邊剛好錯開 */
   .side .chips{position:absolute;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:2;width:min(76vw,340px);max-height:252px;flex-direction:column;align-items:flex-end;gap:0;padding:0;overflow-y:auto;scrollbar-width:none}
   .side .chips .chip{flex:none;height:36px;align-items:center;max-width:100%;padding:0;font-size:14px}
-  .side .chip.hot b{font-weight:650;text-decoration:none}
+  .side .chip.hot b{font-weight:600;text-decoration:none}
   /* 觸控：這一排是滾輪（.wheel 由 JS 掛上），只列目前這一組的作品，上面是群組名稱；滑過這一組的頭尾再多拉一點，上／下一組的名稱會跟著放大，放開就進到那一組。
      位置每一格畫面都跟著圓環的角度算（JS 直接寫 transform／opacity），選中的在中間那一格、離得越遠越淡越小 */
   .side .chips.wheel{height:252px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent)}
   .side .chips.wheel .chip,.chips.wheel .gh{position:absolute;right:0;top:0;display:flex;align-items:center;height:36px;max-width:83%;transform-origin:100% 50%;will-change:transform,opacity;transition:color .25s}
   .chips.wheel .gh{gap:10px;white-space:nowrap}
-  .chips.wheel .gh b{font-size:19px;font-weight:700}
-  /* 上／下一組的名稱：平常淡淡地放在這一組的頭尾外面，旁邊一個箭頭圈。往外拉：灰→黑、放大、圈跟著畫滿；拉滿變橘色彈一下，放開就進去 */
+  .chips.wheel .gh b{font-size:19px;font-weight:600}
+  /* 上／下一組的名稱：平常小小細細、淡淡地放在這一組的頭尾外面，旁邊一個箭頭。往外拉：灰→黑、放大靠近，箭頭像打勾一樣由左到右描成橘色；拉滿整個變橘色彈一下，放開就進去 */
+  .chips.wheel .chip .mono{display:none}
   .chips.wheel .gh b{display:inline-block;transform-origin:100% 50%;transition:transform .45s cubic-bezier(.3,2.2,.5,1)}
-  .gh .ic{display:none;flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.3,2.2,.5,1)}
+  .gh .ic{display:none;flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.3,2.2,.5,1)}
   .gh.pull .ic{display:block}
   .gh.pull .mono{display:none}
   .gh.pull{--hot:#ff5a1f;color:color-mix(in srgb,var(--fg) calc(var(--t,0)*100%),var(--faint));transition:none}
-  .ic .tr{opacity:.3}
-  .ic .pg{stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--t,0));transform:rotate(-90deg);transform-origin:50% 50%;transition:fill .2s}
-  .ic path{transform:translateY(calc(var(--t,0)*1.5px));transform-origin:50% 50%;transition:stroke .2s}
-  .gh.prev .ic path{transform:rotate(180deg) translateY(calc(var(--t,0)*1.5px))}
+  .gh.pull b{font-weight:400}
+  .gh.prev .ic{transform:scaleY(-1)}
+  .ic .tr{opacity:.5}
+  .ic .pg{stroke:var(--hot);stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--t,0));opacity:calc(var(--t,0)*20)}
   .gh.armed{color:var(--hot);transition:color .15s}
-  .gh.armed b{transform:scale(1.1)}
-  .gh.armed .ic{transform:scale(1.25)}
-  .gh.armed .ic .pg{fill:var(--hot)}
-  .gh.armed .ic path{stroke:#fff}
+  .gh.armed b{transform:scale(1.1);font-weight:600}
+  .gh.armed .ic{transform:scale(1.3)}
+  .gh.prev.armed .ic{transform:scale(1.3,-1.3)}
   .info{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:flex-end;gap:12px;max-width:calc(100% - 32px);text-align:right;pointer-events:auto}
   .info .pv{display:none}
   .info .tx{min-width:0}
@@ -409,7 +409,7 @@ function focusView(name){
   const pos=n=>`style="--a:${(n*360/slots).toFixed(2)}deg"`,cards=Array.from({length:slots},(_,n)=>`<span class="c blank" ${pos(n)}></span>`);
   // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
   flat.forEach((f,k)=>cards[f.slot]=`<a class="c" data-w="${k}" ${pos(f.slot)} href="${f.it.href}"${tg(f.it)} draggable="false" tabindex="-1" aria-hidden="true">${pic(f.it).replace(' loading="lazy"','')}</a>`);
-  const heads=live().map(([g,ws])=>`<span class="gh" data-g="${esc(g)}" data-n="${pad(ws.length)} 件" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle class="tr" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="1"/><path d="M8 10.3l4 4 4-4"/></svg><b>${esc(g)}</b></span>`);
+  const heads=live().map(([g,ws])=>`<span class="gh" data-g="${esc(g)}" data-n="${pad(ws.length)} 件" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path class="tr" d="M6 9.5l6 6 6-6"/><path class="pg" pathLength="1" d="M6 9.5l6 6 6-6"/></svg><b>${esc(g)}</b></span>`);
   return `<section class="focus" data-g="${esc(name)}">
     <aside class="side">
       ${live().length>1?`<nav class="glist">${live().map(([n])=>`<a href="${ghref(n)}" data-g="${esc(n)}"${n===UNC?' class="unc"':''}>${esc(n)}</a>`).join('')}</nav>`:''}
@@ -570,7 +570,7 @@ const curG=()=>list.querySelector('.focus').dataset.g;
 const span=()=>{const o=flat.filter(f=>f.g===curG());return[o[0].slot,o[o.length-1].slot]};   // 這一組的第一格、最後一格
 const pullAt=()=>{const [a,b]=span(),p=wheelPos();return(p>b?p-b:p<a?p-a:0)/PULL};   // 拉過頭尾多少：正的往下一組，±1 就是拉滿
 const nextG=d=>{const n=live().map(x=>x[0]);return n.length>1?n[(n.indexOf(curG())+d+n.length)%n.length]:null};   // 頭尾相接
-const teaseP=(d,t,a,b)=>d>0?b+1.3:a-2.6+1.1*t;   // 上／下一組的名稱放在滾輪的第幾格：下一組在最後一件下面；上一組在這一組名稱的上面，拉的時候往下讓到它的位置
+const teaseP=(d,t,a,b)=>d>0?b+1.5-.2*t:a-2.6+1.1*t;   // 上／下一組的名稱放在滾輪的第幾格：下一組在最後一件下面；上一組在這一組名稱的上面，拉的時候往下讓到它的位置
 function enterGroup(g,d){
   const k=flat.findIndex(f=>f.g===g),[a,b]=span();
   pin=(3+teaseP(d,1,a,b)-wheelPos())*36;
@@ -584,6 +584,7 @@ function wheel(){
   const g=curG(),pos=wheelPos(),pl=pulling?pullAt():0,e=enter*enter*(3-2*enter);
   const key=[pos.toFixed(3),g,pl.toFixed(3),enter.toFixed(3)].join();if(box.dataset.on===key)return;box.dataset.on=key;
   const [a,b]=span(),nx=nextG(1),pv=nextG(-1),tp=Math.min(1,Math.abs(pl));
+  const sh=!nx?0:pl>0?-24*tp:72*tp;   // 往外拉的時候這一組整個讓開：往下一組就往上退，往上一組就往下退
   const x=1-enter,boing=enter?Math.exp(-6*x)*Math.cos(8*x):0;   // 放開之後名稱縮回去：縮過頭一點再彈回來
   for(const c of box.children){
     const head=!!c.dataset.n,own=(head?c.dataset.g:flat[c.dataset.w].g)===g;
@@ -592,14 +593,13 @@ function wheel(){
     let y=(3+ +c.dataset.p-pos)*36,sc=1,op=0;
     if(dir){
       const t=pl*dir>0?tp:0;
-      y=(3+teaseP(dir,t,a,b)-pos)*36;sc=1+.75*t**1.4;op=(.75+.25*t)*(1-e);
+      y=(3+teaseP(dir,t,a,b)-pos)*36;sc=.78+.97*t**1.4;op=(.75+.25*t)*(1-e);
       c.style.setProperty('--t',t.toFixed(3));
     }else if(head&&own){
       const d=Math.abs(c.dataset.p-pos);op=Math.max(e,1-Math.max(0,d-.8)*.4);sc=1+.75*boing;
-      if(pin!=null)y+=(pin-y)*e;
-      if(pl<0&&pv)op*=1-tp;   // 往回拉：讓位給上一組的名稱
+      y+=sh;if(pin!=null)y+=(pin-y)*e;
     }else if(own){
-      const d=Math.abs(c.dataset.p-pos);sc=1+.2*Math.max(0,1-d);op=Math.max(0,1-d*.3);
+      const d=Math.abs(c.dataset.p-pos);sc=1+.2*Math.max(0,1-d);op=Math.max(0,1-d*.3);y+=sh;
     }
     if(head){c.classList.toggle('pull',!!dir);c.classList.toggle('prev',dir<0);c.classList.toggle('armed',!!dir&&pl*dir>=1)}
     const hide=op<=0||y<-80||y>300;c.style.visibility=hide?'hidden':'';if(hide)continue;
