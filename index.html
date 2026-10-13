@@ -556,7 +556,7 @@ function wheel(){
   for(const c of box.children){
     const p=+c.dataset.p,d=Math.abs(p-pos),head=c.className==='gh';
     c.style.visibility=d>4?'hidden':'';if(d>4)continue;
-    c.style.transform=`translateY(${((3+p-pos)*36).toFixed(2)}px) scale(${head?1:(1+.2*Math.max(0,1-d)).toFixed(3)})`;
+    c.style.transform=`translateY(${((3+p-pos)*36).toFixed(2)}px) scale(${(1+(head?.75*Math.max(0,1-d/1.6):.2*Math.max(0,1-d))).toFixed(3)})`;   // 群組名稱滑過中間時放大：看得出換組了
     c.style.opacity=(head?Math.max(0,1-Math.max(0,d-.8)*.4):Math.max(0,1-d*.3)).toFixed(3);
   }
 }
