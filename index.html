@@ -103,13 +103,13 @@ main{position:relative;z-index:1}
 .glist{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:-8px}
 .glist a{color:var(--mute);text-decoration:none;font-size:13px;transition:color .2s}
 .glist a:hover{color:var(--fg)}
-.glist .cur{display:none}
+.glist .cur,.glist .unc:not(.cur){display:none}
 /* 觸控：點卡片或標題是「選起來看預覽」，這顆才是開啟 */
 .go{margin-top:14px;padding:9px 18px;pointer-events:auto;white-space:nowrap}
 .go[hidden],html:not(.touch) .go{display:none}
 /* 觸控：圓環當成滾輪，上下滑一格換一件 */
 .touch .focus .orbit{touch-action:none}
-.swipe,.chips .jump{display:none}
+.swipe,.gh,.side .chip:not(.own){display:none}   /* 側欄只列目前這組；群組標題只有手機的滾輪用 */
 .touch .swipe{display:block;flex:none;order:3;text-align:center;padding-bottom:12px;transition:opacity .5s}
 .swiped .swipe{opacity:0}
 /* 預覽圖只鎖高度：位置一直留著，寬度跟著圖片比例走，直式、橫式都完整顯示不裁切。標題固定兩行、說明固定一行，清單不會被推動 */
@@ -272,18 +272,19 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .glist::-webkit-scrollbar,.side .chips::-webkit-scrollbar{display:none}
   .glist a{font-size:15px;padding:8px 0}
   .glist .cur{display:inline;color:var(--fg);font-weight:650}
+  .glist a{transition:color .3s}
   .back{right:16px;top:16px}
   .focus .orbit{order:2;--r:clamp(110px,42vw,220px);padding-bottom:34vh}
   /* 作品標題放在右下角直排、靠右對齊；選中的那件被轉到圓環左前方，兩邊剛好錯開 */
   .side .chips{position:absolute;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:2;width:min(76vw,340px);max-height:252px;flex-direction:column;align-items:flex-end;gap:0;padding:0;overflow-y:auto;scrollbar-width:none}
   .side .chips .chip{flex:none;height:36px;align-items:center;max-width:100%;padding:0;font-size:14px}
   .side .chip.hot b{font-weight:650;text-decoration:none}
-  .side .chips .jump{display:flex;color:var(--faint)}
-  .side .chips .jump.armed{color:var(--fg)}
-  /* 觸控：這一排是滾輪，位置每一格畫面都跟著圓環的角度算（JS 直接寫 transform／opacity），選中的在中間那一格、離得越遠越淡越小。
-     滑過頭尾會露出「上一組／下一組」，拉過去放手就換群組 */
-  .touch .side .chips{height:252px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent)}
-  .touch .side .chips .chip{max-width:83%;transform-origin:100% 50%;will-change:transform,opacity;transition:color .25s}
+  /* 觸控：這一排是滾輪（.wheel 由 JS 掛上），所有群組的作品接成同一條，群組之間夾著群組名稱；一路滑下去就會滑進下一組。
+     位置每一格畫面都跟著圓環的角度算（JS 直接寫 transform／opacity），選中的在中間那一格、離得越遠越淡越小 */
+  .side .chips.wheel{height:252px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent)}
+  .side .chips.wheel .chip,.chips.wheel .gh{position:absolute;right:0;top:0;display:flex;align-items:center;height:36px;max-width:83%;transform-origin:100% 50%;will-change:transform,opacity;transition:color .25s}
+  .chips.wheel .gh{gap:10px;white-space:nowrap}
+  .chips.wheel .gh b{font-size:19px;font-weight:700}
   .info{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:flex-end;gap:12px;max-width:calc(100% - 32px);text-align:right;pointer-events:auto}
   .info .pv{display:none}
   .info .tx{min-width:0}
@@ -381,41 +382,39 @@ function mapView(){
     <i class="end"></i>
   </section>`;
 }
-function sideView(name,works){
-  const others=live().filter(([n])=>n===name||n!==UNC);   // 目前這組只在手機版顯示（當作頁籤）
-  // 手機版：滾輪滑過頭尾可以換到上一組／下一組
-  const all=live().map(([n])=>n),at=all.indexOf(name),n=works.length;
-  const jump=(to,p,label)=>to?`<a class="chip jump" data-p="${p}" href="${ghref(to)}"><span class="mono">${label}</span><b>${esc(to)}</b></a>`:'';
-  return `<aside class="side">
-      ${others.length>1?`<nav class="glist">${others.map(([n])=>`<a href="${ghref(n)}"${n===name?' class="cur" aria-current="true"':''}>${esc(n)}</a>`).join('')}</nav>`:''}
-      <div class="info"><div class="pv" id="pv"></div><div class="tx"><h2 id="it">${esc(name)}</h2><span class="mono" id="im"></span></div><a class="btn go" id="go" hidden></a></div>
-      <nav class="chips" id="chips">${jump(all[at-1],-1,'↑ 上一組')}${works.map((it,w)=>`<a class="chip" data-w="${w}" data-p="${w}" href="${it.href}"${tg(it)}><span class="mono">${pad(w+1)}</span><b>${esc(it.title)}</b></a>`).join('')}${jump(all[at+1],n,'↓ 下一組')}</nav>
-    </aside>`;
-}
-/* 群組頁的圓環：所有群組照順序排成同一圈，中間用空白卡隔開；目前這組亮著、其他淡化。
-   換群組時圓環不重畫，只是轉到那一段、換哪一段亮（tagRing） */
-function fullRing(){
-  const secs=live(),total=secs.reduce((a,[,w])=>a+w.length,0),n=Math.max(40,total+2*secs.length),blanks=n-total;
-  let i=0;const pos=()=>`style="--a:${(i++*360/n).toFixed(2)}deg"`;
+/* 群組頁：所有群組的作品照順序排成同一圈，群組之間隔 GAP 張空白卡，剩下的空白全放在最後一組和第一組之間。
+   flat[k] 是第 k 件：it 作品、g 群組、w 組內第幾件、slot 在圓環上第幾格。
+   換群組不重畫，只是圓環轉到那一段、換哪一段亮（setGroup） */
+const GAP=2;
+let flat=[],slots=40;
+function focusView(name){
+  flat=[];let slot=0;
+  for(const [g,ws] of live()){ws.forEach((it,w)=>flat.push({it,g,w,slot:slot++}));slot+=GAP}
+  slots=Math.max(40,slot);
+  const pos=n=>`style="--a:${(n*360/slots).toFixed(2)}deg"`,cards=Array.from({length:slots},(_,n)=>`<span class="c blank" ${pos(n)}></span>`);
   // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
-  return `<div class="ring" id="ring" data-n="${n}">${secs.map(([g,ws],k)=>
-    ws.map((it,w)=>`<a class="c" data-g="${esc(g)}" data-i="${w}" ${pos()} href="${it.href}"${tg(it)} draggable="false" tabindex="-1" aria-hidden="true">${pic(it).replace(' loading="lazy"','')}</a>`).join('')
-    +Array.from({length:Math.floor(blanks/secs.length)+(k<blanks%secs.length?1:0)},()=>`<span class="c blank" ${pos()}></span>`).join('')).join('')}</div>`;
-}
-function tagRing(name){
-  list.querySelectorAll('#ring a.c').forEach(c=>{
-    const own=c.dataset.g===name;
-    c.classList.toggle('own',own);c.classList.toggle('other',!own);c.classList.remove('hot');
-    if(own)c.dataset.w=c.dataset.i;else delete c.dataset.w;
-  });
-}
-function focusView(name,works){
+  flat.forEach((f,k)=>cards[f.slot]=`<a class="c" data-w="${k}" ${pos(f.slot)} href="${f.it.href}"${tg(f.it)} draggable="false" tabindex="-1" aria-hidden="true">${pic(f.it).replace(' loading="lazy"','')}</a>`);
+  const heads=live().map(([g,ws])=>`<span class="gh" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><b>${esc(g)}</b></span>`);
   return `<section class="focus" data-g="${esc(name)}">
-    ${sideView(name,works)}
+    <aside class="side">
+      ${live().length>1?`<nav class="glist">${live().map(([n])=>`<a href="${ghref(n)}" data-g="${esc(n)}"${n===UNC?' class="unc"':''}>${esc(n)}</a>`).join('')}</nav>`:''}
+      <div class="info"><div class="pv" id="pv"></div><div class="tx"><h2 id="it">${esc(name)}</h2><span class="mono" id="im"></span></div><a class="btn go" id="go" hidden></a></div>
+      <nav class="chips" id="chips">${heads.join('')}${flat.map((f,k)=>`<a class="chip" data-w="${k}" data-p="${f.slot}" href="${f.it.href}"${tg(f.it)}><span class="mono">${pad(f.w+1)}</span><b>${esc(f.it.title)}</b></a>`).join('')}</nav>
+    </aside>
     <a class="btn ghost back" href="#">← 地圖</a>
-    <div class="orbit" id="orbit">${fullRing()}</div>
+    <div class="orbit" id="orbit"><div class="ring" id="ring">${cards.join('')}</div></div>
     <span class="mono swipe">↕ 上下滑動選擇</span>
   </section>`;
+}
+function setGroup(g){
+  const sec=list.querySelector('.focus');if(!sec)return;sec.dataset.g=g;
+  sec.querySelectorAll('#ring a.c,.chip').forEach(el=>{const own=flat[el.dataset.w].g===g;el.classList.toggle('own',own);if(el.matches('.c'))el.classList.toggle('other',!own)});
+  sec.querySelectorAll('.glist a').forEach(a=>{
+    const cur=a.dataset.g===g,box=a.parentNode;a.classList.toggle('cur',cur);
+    // 手機版上方的群組頁籤是橫向捲的：目前這組捲到看得到的地方
+    if(cur&&wheelOn()){const x=a.getBoundingClientRect(),b=box.getBoundingClientRect();box.scrollTo({left:box.scrollLeft+x.left-b.left-(b.width-x.width)/2,behavior:still?'auto':'smooth'})}
+  });
+  if(decodeURIComponent(location.hash.slice(3))!==g)history.replaceState(null,'',ghref(g));
 }
 
 /* 列表 */
@@ -503,27 +502,30 @@ function render(keep){
   if(!k&&mode==='edit')list.innerHTML=editView();
   else if(k||mode==='list')list.innerHTML=listView(k);
   else if(groups.get(g)?.length){
-    // 已經在群組頁、只是換一組：圓環留著，只換側欄和亮的那一段，圓環自己轉過去
-    const works=groups.get(g),sec=soft&&list.querySelector('.focus');
-    if(sec){sec.dataset.g=g;sec.querySelector('.side').outerHTML=sideView(g,works)}
-    else{list.innerHTML=focusView(g,works);vel=0}
-    STEP=360/list.querySelector('#ring').dataset.n;tagRing(g);
-    touch?pick(enterAt==='last'?works.length-1:Math.min(enterAt??0,works.length-1)):setHot(null);
+    const first=()=>flat.findIndex(f=>f.g===g);
+    // 已經在群組頁、只是換一組：什麼都不重畫，圓環自己轉過去
+    if(soft&&list.querySelector('.focus')){setGroup(g);touch?pick(first()):setHot(null)}
+    else{
+      list.innerHTML=focusView(g);STEP=360/slots;vel=0;setGroup(g);
+      if(touch){rebase(first());pick(first())}else setHot(null);
+      wheel();
+    }
   }
   else list.innerHTML=mapView();
-  soft=false;enterAt=null;
+  soft=false;
   if(keep!==true)scrollTo(0,0);
   list.querySelectorAll('.node,.card.deck').forEach(el=>io.observe(el));
 }
 
 /* 群組圓環：自轉、拖曳、滑過點亮同一件作品的整段弧 */
-let rot=0,hot=null,drag=null,moved=false,goal=null,vel=0,base=0,enterAt=null,soft=false;   // goal：圓環要轉過去的角度；vel：角速度（度／秒）；base：第一件在正面位置時的角度
-function setHot(w){
+let rot=0,hot=null,drag=null,moved=false,goal=null,vel=0,base=0,soft=false;   // goal：圓環要轉過去的角度；vel：角速度（度／秒）；base：第 0 格在正面位置時的角度
+function setHot(k){
   const sec=list.querySelector('.focus');if(!sec)return;
-  const works=groups.get(sec.dataset.g);hot=w;
-  sec.querySelector('.ring').classList.toggle('has-hot',w!=null);
-  sec.querySelectorAll('.c,.chip').forEach(el=>el.classList.toggle('hot',w!=null&&+el.dataset.w===w));
-  const it=w!=null&&works[w],pv=sec.querySelector('#pv');
+  const f=k!=null&&flat[k];hot=k;
+  if(f&&f.g!==sec.dataset.g){setGroup(f.g);navigator.vibrate?.(8)}   // 選到別組的作品：整頁跟著換到那一組
+  const works=groups.get(sec.dataset.g),it=f&&f.it,pv=sec.querySelector('#pv');
+  sec.querySelector('.ring').classList.toggle('has-hot',k!=null);
+  sec.querySelectorAll('.c,.chip').forEach(el=>el.classList.toggle('hot',k!=null&&+el.dataset.w===k));
   if(it)pv.innerHTML=pic(it);
   pv.classList.toggle('on',!!it);
   sec.querySelector('#it').textContent=it?it.title:sec.dataset.g;
@@ -531,30 +533,32 @@ function setHot(w){
   const go=sec.querySelector('#go');go.hidden=!it;
   if(it){go.href=it.href;go.target=it.kind==='site'?'_blank':'';go.rel=it.kind==='site'?'noopener':'';go.textContent=it.kind==='deck'?'播放 →':'開啟 ↗'}
 }
-/* 觸控版的「滑過」：圓環是一個滾輪。上下滑（或左右拖）轉動它，轉到正面位置的那件就是選中的，底部出現預覽和開啟鈕；
-   點卡片或標題也是選取，再點一次才開啟 */
-const FACE=-50;let STEP=9;   // STEP：相鄰兩張卡差幾度（render 時照圓環的張數算）
+/* 觸控版的「滑過」：圓環是一個滾輪。上下滑（或左右拖）轉動它，轉到正面位置的那件就是選中的，右下出現標題和開啟鈕；
+   點卡片或標題也是選取，再點一次才開啟。所有群組接在同一條上，滑過一組的最後一件就進到下一組 */
+const FACE=-50;let STEP=9;   // STEP：相鄰兩格差幾度（render 時照圓環的格數算）
 const norm=d=>(d%360+540)%360-180;
 const aOf=c=>parseFloat(c.style.getPropertyValue('--a'));
 const off=c=>norm(aOf(c)+rot-FACE);   // 這張卡離正面位置還差幾度
-const near=(r=rot)=>[...list.querySelectorAll('#ring .c[data-w]')].sort((a,b)=>Math.abs(norm(aOf(a)+r-FACE))-Math.abs(norm(aOf(b)+r-FACE)))[0];
-function pick(w){
-  setHot(w);goal=null;if(w==null)return;
-  goal=rot-off(list.querySelector(`#ring .c[data-w="${w}"]`));base=goal+w*STEP;
+const near=(r=rot)=>[...list.querySelectorAll('#ring a.c')].sort((a,b)=>Math.abs(norm(aOf(a)+r-FACE))-Math.abs(norm(aOf(b)+r-FACE)))[0];
+// 以第 k 件現在的位置為準重新對齊 base（圓環自轉或剛畫出來之後）
+const rebase=k=>base=rot-off(list.querySelector(`#ring .c[data-w="${k}"]`))+flat[k].slot*STEP;
+function pick(k){
+  setHot(k);goal=k==null?null:base-flat[k].slot*STEP;   // 一律沿著清單的方向轉過去，不抄近路穿過尾端的空白
 }
 /* 右下的標題滾輪：位置直接由圓環角度換算，所以拖曳、慣性、回彈都跟圓環完全同步 */
-const wheelPos=()=>(base-rot)/STEP;   // 目前轉到第幾件（有小數）
+const narrow=matchMedia('(max-width:860px)'),wheelOn=()=>touch&&narrow.matches;
+const wheelPos=()=>(base-rot)/STEP;   // 目前轉到第幾格（有小數）
 function wheel(){
   const box=document.getElementById('chips');if(!box)return;
-  if(!touch){if(box.dataset.on){delete box.dataset.on;box.querySelectorAll('.chip').forEach(c=>c.style.cssText='')}return}
+  const on=wheelOn();box.classList.toggle('wheel',on);
+  if(!on){if(box.dataset.on){delete box.dataset.on;[...box.children].forEach(c=>c.style.cssText='')}return}
   const pos=wheelPos();if(box.dataset.on==pos.toFixed(3))return;box.dataset.on=pos.toFixed(3);
-  const n=list.querySelectorAll('#ring .c[data-w]').length,first=+box.firstElementChild.dataset.p;
-  box.querySelectorAll('.chip').forEach(c=>{
-    const p=+c.dataset.p,d=Math.abs(p-pos);
-    c.style.transform=`translateY(${((3+first-pos)*36).toFixed(2)}px) scale(${(1+.2*Math.max(0,1-d)).toFixed(3)})`;
-    c.style.opacity=Math.max(0,1-d*.3).toFixed(3);
-    if(p<0||p>=n)c.classList.toggle('armed',p<0?pos<-.5:pos>n-.5);
-  });
+  for(const c of box.children){
+    const p=+c.dataset.p,d=Math.abs(p-pos),head=c.className==='gh';
+    c.style.visibility=d>4?'hidden':'';if(d>4)continue;
+    c.style.transform=`translateY(${((3+p-pos)*36).toFixed(2)}px) scale(${head?1:(1+.2*Math.max(0,1-d)).toFixed(3)})`;
+    c.style.opacity=(head?Math.max(0,1-Math.max(0,d-.8)*.4):Math.max(0,1-d*.3)).toFixed(3);
+  }
 }
 let lastT=0;
 (function tick(t){
@@ -577,24 +581,17 @@ list.addEventListener('pointerdown',e=>{
   drag={x:e.clientX,y:e.clientY,rot,t:e.timeStamp,v:0};moved=false;
   // 觸控：只能在第一件到最後一件之間轉，超過會有阻力
   const c=touch&&near();
-  if(c){
-    base=rot-off(c)+c.dataset.w*STEP;vel=0;
-    drag.max=base;drag.min=base-(list.querySelectorAll('#ring .c[data-w]').length-1)*STEP;
-    // 要先停在第一件／最後一件，再往外拉才會換群組；從中間一路滑過頭不算，免得誤觸
-    const p=wheelPos(),n=list.querySelectorAll('#ring .c[data-w]').length;
-    drag.prev=p<.5?list.querySelector('.jump[data-p="-1"]'):null;drag.next=p>n-1.5?list.querySelector('.jump:not([data-p="-1"])'):null;
-  }
+  if(c){rebase(+c.dataset.w);drag.max=base;drag.min=base-flat[flat.length-1].slot*STEP}
 });
 addEventListener('pointermove',e=>{
   if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
   if(!moved&&Math.max(Math.abs(dx),Math.abs(dy))>6){
-    moved=true;goal=null;document.getElementById('orbit')?.classList.add('drag');
+    moved=true;goal=null;vel=0;document.getElementById('orbit')?.classList.add('drag');
     if(touch)document.documentElement.classList.add('swiped');else setHot(null);
   }
   if(!moved)return;
   let r=drag.rot+dx*.3+(touch?dy*.3:0);
-  // 頭尾：有上一組／下一組可以換的那一邊阻力小一點，拉過半格就會換
-  if(drag.max!=null)r=r>drag.max?drag.max+(r-drag.max)*(drag.prev?.5:.25):r<drag.min?drag.min+(r-drag.min)*(drag.next?.5:.25):r;
+  if(drag.max!=null)r=r>drag.max?drag.max+(r-drag.max)*.25:r<drag.min?drag.min+(r-drag.min)*.25:r;
   const dt=e.timeStamp-drag.t;if(dt>0){drag.v=.6*drag.v+.4*(r-rot)/dt;drag.t=e.timeStamp}
   rot=r;
   // 邊轉邊換選中的那件
@@ -602,16 +599,10 @@ addEventListener('pointermove',e=>{
   if(c&&+c.dataset.w!==hot){setHot(+c.dataset.w);navigator.vibrate?.(4)}
 });
 addEventListener('pointerup',e=>{
+  // 觸控：放手後順著甩的力道再轉一點，停在最近的一件上
   if(drag&&moved&&touch&&drag.max!=null){
-    const over=rot>drag.max+STEP/2?drag.prev:rot<drag.min-STEP/2?drag.next:null;
-    if(over){
-      // 拉過頭尾：換到上一組（停在它的最後一件）或下一組
-      enterAt=over===drag.prev?'last':0;navigator.vibrate?.(8);location.hash=over.getAttribute('href');
-    }else{
-      // 放手後順著甩的力道再轉一點，停在最近的一件上
-      const v=e.timeStamp-drag.t<90?drag.v:0,c=near(Math.max(drag.min,Math.min(drag.max,rot+v*180)));
-      if(c){pick(+c.dataset.w);vel=v*1000}
-    }
+    const v=e.timeStamp-drag.t<90?drag.v:0,c=near(Math.max(drag.min,Math.min(drag.max,rot+v*180)));
+    if(c){pick(+c.dataset.w);vel=v*1000}
   }
   drag=null;document.getElementById('orbit')?.classList.remove('drag');
 });
@@ -620,20 +611,25 @@ list.addEventListener('click',e=>{
   if(Date.now()-scrubEnd<400&&e.target.closest('.card')){e.preventDefault();return}   // 剛在縮圖上橫滑完，不算點擊
   if(!e.target.closest('.focus'))return;
   if(moved&&e.target.closest('#orbit,#chips')){e.preventDefault();moved=false;return}
-  // 點別組（淡化）的卡片：換到那一組，圓環轉到那一件
-  const o=e.target.closest('#ring a.other');
-  if(o){e.preventDefault();enterAt=+o.dataset.i;location.hash=ghref(o.dataset.g);return}
-  if(!touch)return;
-  const el=e.target.closest('#ring .c[data-w],.chip[data-w]');
+  if(!touch){
+    // 滑鼠點別組（淡化）的卡片：換到那一組
+    const o=e.target.closest('#ring a.other');
+    if(o){e.preventDefault();location.hash=ghref(flat[o.dataset.w].g)}
+    return;
+  }
+  // 觸控：點上方的群組名稱，滾輪直接滑到那一組的第一件
+  const tab=e.target.closest('.glist a');
+  if(tab){e.preventDefault();pick(flat.findIndex(f=>f.g===tab.dataset.g));return}
+  const el=e.target.closest('#ring a.c,.chip');
   if(el&&hot!==+el.dataset.w){e.preventDefault();pick(+el.dataset.w)}
 },true);
 list.addEventListener('mouseover',e=>{
   if(touch)return;   // 手指點一下也會補發 mouseover，會搶在 click 前面把它選起來
-  const el=e.target.closest('#ring .c[data-w],.chip[data-w]');
+  const el=e.target.closest('#ring .c.own,.chip.own');
   if(el){if(!drag&&hot!==+el.dataset.w)setHot(+el.dataset.w)}
   else if(hot!=null&&list.querySelector('.focus'))setHot(null);
 });
-list.addEventListener('focusin',e=>{const el=e.target.closest('.chip[data-w]');if(el&&!touch)setHot(+el.dataset.w)});
+list.addEventListener('focusin',e=>{const el=e.target.closest('.chip.own');if(el&&!touch)setHot(+el.dataset.w)});
 list.addEventListener('mouseleave',()=>{if(hot!=null&&!touch)setHot(null)});
 
 /* 列表卡片：橫掃預覽 */
