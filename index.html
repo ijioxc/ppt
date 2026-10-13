@@ -117,7 +117,7 @@ main{position:relative;z-index:1}
 .info .pv img{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left top;display:block;border-radius:10px;box-shadow:0 0 0 1px var(--ring);opacity:0;transition:opacity .25s}
 .info .pv.on img{opacity:1}
 .info h2{margin:0 0 4px;font-size:20px;font-weight:650;line-height:1.3;height:2.6em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.info .mono{display:block;overflow:hidden;text-overflow:ellipsis}
+.info .mono{display:block;height:17px;line-height:17px;overflow:hidden;text-overflow:ellipsis}   /* 沒有說明文字的作品也留著這一行，清單才不會往上跳 */
 .back{position:absolute;right:28px;top:28px;z-index:2;padding:8px 16px;font-size:13px}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 28px 30px}
 .chip{display:flex;align-items:baseline;gap:8px;max-width:100%;padding:7px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ring);text-decoration:none;color:var(--fg);font-size:13px;transition:background .2s,color .2s}
@@ -279,12 +279,13 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .side .chips{position:absolute;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:2;width:min(76vw,340px);max-height:252px;flex-direction:column;align-items:flex-end;gap:0;padding:0;overflow-y:auto;scrollbar-width:none}
   .side .chips .chip{flex:none;height:36px;align-items:center;max-width:100%;padding:0;font-size:14px}
   .side .chip.hot b{font-weight:650;text-decoration:none}
-  /* 觸控：這一排是滾輪（.wheel 由 JS 掛上），所有群組的作品接成同一條，群組之間夾著群組名稱；一路滑下去就會滑進下一組。
+  /* 觸控：這一排是滾輪（.wheel 由 JS 掛上），只列目前這一組的作品，上面是群組名稱；滑過這一組的頭尾再多拉一點，上／下一組的名稱會跟著放大，放開就進到那一組。
      位置每一格畫面都跟著圓環的角度算（JS 直接寫 transform／opacity），選中的在中間那一格、離得越遠越淡越小 */
   .side .chips.wheel{height:252px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent)}
   .side .chips.wheel .chip,.chips.wheel .gh{position:absolute;right:0;top:0;display:flex;align-items:center;height:36px;max-width:83%;transform-origin:100% 50%;will-change:transform,opacity;transition:color .25s}
   .chips.wheel .gh{gap:10px;white-space:nowrap}
   .chips.wheel .gh b{font-size:19px;font-weight:700}
+  .chips.wheel .gh.pull:not(.armed){color:var(--mute)}
   .info{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:flex-end;gap:12px;max-width:calc(100% - 32px);text-align:right;pointer-events:auto}
   .info .pv{display:none}
   .info .tx{min-width:0}
@@ -394,7 +395,7 @@ function focusView(name){
   const pos=n=>`style="--a:${(n*360/slots).toFixed(2)}deg"`,cards=Array.from({length:slots},(_,n)=>`<span class="c blank" ${pos(n)}></span>`);
   // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
   flat.forEach((f,k)=>cards[f.slot]=`<a class="c" data-w="${k}" ${pos(f.slot)} href="${f.it.href}"${tg(f.it)} draggable="false" tabindex="-1" aria-hidden="true">${pic(f.it).replace(' loading="lazy"','')}</a>`);
-  const heads=live().map(([g,ws])=>`<span class="gh" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><b>${esc(g)}</b></span>`);
+  const heads=live().map(([g,ws])=>`<span class="gh" data-g="${esc(g)}" data-n="${pad(ws.length)} 件" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><b>${esc(g)}</b></span>`);
   return `<section class="focus" data-g="${esc(name)}">
     <aside class="side">
       ${live().length>1?`<nav class="glist">${live().map(([n])=>`<a href="${ghref(n)}" data-g="${esc(n)}"${n===UNC?' class="unc"':''}>${esc(n)}</a>`).join('')}</nav>`:''}
@@ -407,7 +408,7 @@ function focusView(name){
   </section>`;
 }
 function setGroup(g){
-  const sec=list.querySelector('.focus');if(!sec)return;sec.dataset.g=g;
+  const sec=list.querySelector('.focus');if(!sec)return;sec.dataset.g=g;pulling=false;
   sec.querySelectorAll('#ring a.c,.chip').forEach(el=>{const own=flat[el.dataset.w].g===g;el.classList.toggle('own',own);if(el.matches('.c'))el.classList.toggle('other',!own)});
   sec.querySelectorAll('.glist a').forEach(a=>{
     const cur=a.dataset.g===g,box=a.parentNode;a.classList.toggle('cur',cur);
@@ -534,12 +535,12 @@ function setHot(k){
   if(it){go.href=it.href;go.target=it.kind==='site'?'_blank':'';go.rel=it.kind==='site'?'noopener':'';go.textContent=it.kind==='deck'?'播放 →':'開啟 ↗'}
 }
 /* 觸控版的「滑過」：圓環是一個滾輪。上下滑（或左右拖）轉動它，轉到正面位置的那件就是選中的，右下出現標題和開啟鈕；
-   點卡片或標題也是選取，再點一次才開啟。所有群組接在同一條上，滑過一組的最後一件就進到下一組 */
+   點卡片或標題也是選取，再點一次才開啟。寬螢幕的觸控：所有群組接在同一條上，滑過一組的最後一件就進到下一組 */
 const FACE=-50;let STEP=9;   // STEP：相鄰兩格差幾度（render 時照圓環的格數算）
 const norm=d=>(d%360+540)%360-180;
 const aOf=c=>parseFloat(c.style.getPropertyValue('--a'));
 const off=c=>norm(aOf(c)+rot-FACE);   // 這張卡離正面位置還差幾度
-const near=(r=rot)=>[...list.querySelectorAll('#ring a.c')].sort((a,b)=>Math.abs(norm(aOf(a)+r-FACE))-Math.abs(norm(aOf(b)+r-FACE)))[0];
+const near=(r=rot,own='')=>[...list.querySelectorAll('#ring a.c'+own)].sort((a,b)=>Math.abs(norm(aOf(a)+r-FACE))-Math.abs(norm(aOf(b)+r-FACE)))[0];
 // 以第 k 件現在的位置為準重新對齊 base（圓環自轉或剛畫出來之後）
 const rebase=k=>base=rot-off(list.querySelector(`#ring .c[data-w="${k}"]`))+flat[k].slot*STEP;
 function pick(k){
@@ -548,16 +549,46 @@ function pick(k){
 /* 右下的標題滾輪：位置直接由圓環角度換算，所以拖曳、慣性、回彈都跟圓環完全同步 */
 const narrow=matchMedia('(max-width:860px)'),wheelOn=()=>touch&&narrow.matches;
 const wheelPos=()=>(base-rot)/STEP;   // 目前轉到第幾格（有小數）
+/* 手機的滾輪一次只看一組，換組像翻到下一章：滑到這一組的頭尾再多拉，上／下一組的名稱跟著放大，拉滿（PULL 格）放開就進去，
+   名稱從放手的位置縮回它在滾輪上的位置。enter：剛換組的動畫 1→0；pin：放手時名稱在滾輪上的 y；pulling：這次拖曳還沒換過組 */
+const PULL=1;let enter=0,pin=null,pulling=false;
+const curG=()=>list.querySelector('.focus').dataset.g;
+const span=()=>{const o=flat.filter(f=>f.g===curG());return[o[0].slot,o[o.length-1].slot]};   // 這一組的第一格、最後一格
+const pullAt=()=>{const [a,b]=span(),p=wheelPos();return(p>b?p-b:p<a?p-a:0)/PULL};   // 拉過頭尾多少：正的往下一組，±1 就是拉滿
+const nextG=d=>{const n=live().map(x=>x[0]);return n.length>1?n[(n.indexOf(curG())+d+n.length)%n.length]:null};   // 頭尾相接
+function enterGroup(g,d){
+  const k=flat.findIndex(f=>f.g===g),[a,b]=span();
+  pin=(3+(d>0?b+1.6:a-1.5)-wheelPos())*36;
+  if(d>0&&flat[k].slot<b)base-=360;else if(d<0&&flat[k].slot>a)base+=360;   // 最後一組接回第一組：圓環繼續往同一個方向轉
+  enter=still?0:1;vel=0;pick(k);
+}
 function wheel(){
   const box=document.getElementById('chips');if(!box)return;
   const on=wheelOn();box.classList.toggle('wheel',on);
-  if(!on){if(box.dataset.on){delete box.dataset.on;[...box.children].forEach(c=>c.style.cssText='')}return}
-  const pos=wheelPos();if(box.dataset.on==pos.toFixed(3))return;box.dataset.on=pos.toFixed(3);
+  if(!on){if(box.dataset.on){delete box.dataset.on;[...box.children].forEach(c=>{c.style.cssText='';if(c.dataset.n){c.className='gh';c.firstChild.textContent=c.dataset.n}})}return}
+  const g=curG(),pos=wheelPos(),pl=pulling?pullAt():0,t=Math.min(1,Math.abs(pl)),e=enter*enter*(3-2*enter);
+  const key=[pos.toFixed(3),g,pl.toFixed(3),enter.toFixed(3)].join();if(box.dataset.on===key)return;box.dataset.on=key;
+  const [a,b]=span(),nx=pl?nextG(Math.sign(pl)):null;
   for(const c of box.children){
-    const p=+c.dataset.p,d=Math.abs(p-pos),head=c.className==='gh';
-    c.style.visibility=d>4?'hidden':'';if(d>4)continue;
-    c.style.transform=`translateY(${((3+p-pos)*36).toFixed(2)}px) scale(${(1+(head?.75*Math.max(0,1-d/1.6):.2*Math.max(0,1-d))).toFixed(3)})`;   // 群組名稱滑過中間時放大：看得出換組了
-    c.style.opacity=(head?Math.max(0,1-Math.max(0,d-.8)*.4):Math.max(0,1-d*.3)).toFixed(3);
+    const head=!!c.dataset.n,own=(head?c.dataset.g:flat[c.dataset.w].g)===g,tease=head&&!own&&c.dataset.g===nx;
+    let y=(3+ +c.dataset.p-pos)*36,sc=1,op=0;
+    if(tease){   // 拉出來的上／下一組名稱
+      y=(3+(pl>0?b+1.6:a-1.5)-pos)*36;sc=1+.75*t;op=Math.min(1,t*1.3);
+    }else if(head&&own){
+      const d=Math.abs(c.dataset.p-pos);op=Math.max(e,1-Math.max(0,d-.8)*.4);sc=1+.75*e;
+      if(pin!=null)y+=(pin-y)*e;
+      if(pl<0&&nx){y-=57.6*t;op*=1-t}   // 往回拉：讓位給上一組的名稱
+    }else if(own){
+      const d=Math.abs(c.dataset.p-pos);sc=1+.2*Math.max(0,1-d);op=Math.max(0,1-d*.3);
+    }
+    if(head){
+      const txt=tease?(t>=1?'放開進入':pl>0?'下一組':'上一組'):c.dataset.n;
+      if(c.firstChild.textContent!==txt)c.firstChild.textContent=txt;
+      c.classList.toggle('pull',tease);c.classList.toggle('armed',tease&&t>=1);
+    }
+    const hide=op<=0||y<-80||y>300;c.style.visibility=hide?'hidden':'';if(hide)continue;
+    c.style.transform=`translateY(${y.toFixed(2)}px) scale(${sc.toFixed(3)})`;
+    c.style.opacity=op.toFixed(3);
   }
 }
 let lastT=0;
@@ -572,6 +603,7 @@ let lastT=0;
     }
     else if(hot==null&&!drag&&!still)rot+=.07;
     r.style.setProperty('--rot',rot.toFixed(2)+'deg');
+    if(enter>0)enter=Math.max(0,enter-dt/.5);
     wheel();
   }
   requestAnimationFrame(tick);
@@ -582,6 +614,11 @@ list.addEventListener('pointerdown',e=>{
   // 觸控：只能在第一件到最後一件之間轉，超過會有阻力
   const c=touch&&near();
   if(c){rebase(+c.dataset.w);drag.max=base;drag.min=base-flat[flat.length-1].slot*STEP}
+  // 手機的滾輪：只在這一組裡面轉，拉過頭尾是換組
+  if(c&&wheelOn()){
+    if(enter>.05){drag=null;return}   // 換組的動畫還沒跑完
+    const [a,b]=span();drag.max=base-a*STEP;drag.min=base-b*STEP;drag.chap=pulling=true;
+  }
 });
 addEventListener('pointermove',e=>{
   if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
@@ -592,17 +629,21 @@ addEventListener('pointermove',e=>{
   if(!moved)return;
   let r=drag.rot+dx*.3+(touch?dy*.3:0);
   if(drag.max!=null)r=r>drag.max?drag.max+(r-drag.max)*.25:r<drag.min?drag.min+(r-drag.min)*.25:r;
+  if(drag.chap)r=Math.max(drag.min-1.4*STEP,Math.min(drag.max+1.4*STEP,r));   // 拉滿之後就不再跟著走，名稱停在中間
   const dt=e.timeStamp-drag.t;if(dt>0){drag.v=.6*drag.v+.4*(r-rot)/dt;drag.t=e.timeStamp}
   rot=r;
   // 邊轉邊換選中的那件
-  const c=touch&&near();
+  const c=touch&&near(rot,drag.chap?'.own':'');
   if(c&&+c.dataset.w!==hot){setHot(+c.dataset.w);navigator.vibrate?.(4)}
+  if(drag.chap){const p=pullAt(),on=Math.abs(p)>=1&&!!nextG(Math.sign(p));if(on!==!!drag.armed){drag.armed=on;navigator.vibrate?.(on?12:4)}}
 });
 addEventListener('pointerup',e=>{
   // 觸控：放手後順著甩的力道再轉一點，停在最近的一件上
   if(drag&&moved&&touch&&drag.max!=null){
-    const v=e.timeStamp-drag.t<90?drag.v:0,c=near(Math.max(drag.min,Math.min(drag.max,rot+v*180)));
-    if(c){pick(+c.dataset.w);vel=v*1000}
+    const p=drag.chap?pullAt():0,to=Math.abs(p)>=1&&nextG(Math.sign(p));
+    const v=e.timeStamp-drag.t<90?drag.v:0,c=near(Math.max(drag.min,Math.min(drag.max,rot+v*180)),drag.chap?'.own':'');
+    if(to)enterGroup(to,Math.sign(p));
+    else if(c){pick(+c.dataset.w);vel=v*1000}
   }
   drag=null;document.getElementById('orbit')?.classList.remove('drag');
 });
@@ -619,7 +660,7 @@ list.addEventListener('click',e=>{
   }
   // 觸控：點上方的群組名稱，滾輪直接滑到那一組的第一件
   const tab=e.target.closest('.glist a');
-  if(tab){e.preventDefault();pick(flat.findIndex(f=>f.g===tab.dataset.g));return}
+  if(tab){e.preventDefault();if(tab.dataset.g!==curG()){pin=null;enter=still?0:1}pick(flat.findIndex(f=>f.g===tab.dataset.g));return}
   const el=e.target.closest('#ring a.c,.chip');
   if(el&&hot!==+el.dataset.w){e.preventDefault();pick(+el.dataset.w)}
 },true);
