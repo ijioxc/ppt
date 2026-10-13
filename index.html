@@ -285,7 +285,21 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .side .chips.wheel .chip,.chips.wheel .gh{position:absolute;right:0;top:0;display:flex;align-items:center;height:36px;max-width:83%;transform-origin:100% 50%;will-change:transform,opacity;transition:color .25s}
   .chips.wheel .gh{gap:10px;white-space:nowrap}
   .chips.wheel .gh b{font-size:19px;font-weight:700}
-  .chips.wheel .gh.pull:not(.armed){color:var(--mute)}
+  /* 上／下一組的名稱：平常淡淡地放在這一組的頭尾外面，旁邊一個箭頭圈。往外拉：灰→黑、放大、圈跟著畫滿；拉滿變橘色彈一下，放開就進去 */
+  .chips.wheel .gh b{display:inline-block;transform-origin:100% 50%;transition:transform .45s cubic-bezier(.3,2.2,.5,1)}
+  .gh .ic{display:none;flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.3,2.2,.5,1)}
+  .gh.pull .ic{display:block}
+  .gh.pull .mono{display:none}
+  .gh.pull{--hot:#ff5a1f;color:color-mix(in srgb,var(--fg) calc(var(--t,0)*100%),var(--faint));transition:none}
+  .ic .tr{opacity:.3}
+  .ic .pg{stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--t,0));transform:rotate(-90deg);transform-origin:50% 50%;transition:fill .2s}
+  .ic path{transform:translateY(calc(var(--t,0)*1.5px));transform-origin:50% 50%;transition:stroke .2s}
+  .gh.prev .ic path{transform:rotate(180deg) translateY(calc(var(--t,0)*1.5px))}
+  .gh.armed{color:var(--hot);transition:color .15s}
+  .gh.armed b{transform:scale(1.1)}
+  .gh.armed .ic{transform:scale(1.25)}
+  .gh.armed .ic .pg{fill:var(--hot)}
+  .gh.armed .ic path{stroke:#fff}
   .info{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:flex-end;gap:12px;max-width:calc(100% - 32px);text-align:right;pointer-events:auto}
   .info .pv{display:none}
   .info .tx{min-width:0}
@@ -395,7 +409,7 @@ function focusView(name){
   const pos=n=>`style="--a:${(n*360/slots).toFixed(2)}deg"`,cards=Array.from({length:slots},(_,n)=>`<span class="c blank" ${pos(n)}></span>`);
   // 3D 變形裡的 lazy 圖片有時不會觸發載入，縮圖很小，直接載
   flat.forEach((f,k)=>cards[f.slot]=`<a class="c" data-w="${k}" ${pos(f.slot)} href="${f.it.href}"${tg(f.it)} draggable="false" tabindex="-1" aria-hidden="true">${pic(f.it).replace(' loading="lazy"','')}</a>`);
-  const heads=live().map(([g,ws])=>`<span class="gh" data-g="${esc(g)}" data-n="${pad(ws.length)} 件" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><b>${esc(g)}</b></span>`);
+  const heads=live().map(([g,ws])=>`<span class="gh" data-g="${esc(g)}" data-n="${pad(ws.length)} 件" data-p="${flat.find(f=>f.g===g).slot-1.4}"><span class="mono">${pad(ws.length)} 件</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle class="tr" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="1"/><path d="M8 10.3l4 4 4-4"/></svg><b>${esc(g)}</b></span>`);
   return `<section class="focus" data-g="${esc(name)}">
     <aside class="side">
       ${live().length>1?`<nav class="glist">${live().map(([n])=>`<a href="${ghref(n)}" data-g="${esc(n)}"${n===UNC?' class="unc"':''}>${esc(n)}</a>`).join('')}</nav>`:''}
@@ -556,36 +570,38 @@ const curG=()=>list.querySelector('.focus').dataset.g;
 const span=()=>{const o=flat.filter(f=>f.g===curG());return[o[0].slot,o[o.length-1].slot]};   // 這一組的第一格、最後一格
 const pullAt=()=>{const [a,b]=span(),p=wheelPos();return(p>b?p-b:p<a?p-a:0)/PULL};   // 拉過頭尾多少：正的往下一組，±1 就是拉滿
 const nextG=d=>{const n=live().map(x=>x[0]);return n.length>1?n[(n.indexOf(curG())+d+n.length)%n.length]:null};   // 頭尾相接
+const teaseP=(d,t,a,b)=>d>0?b+1.3:a-2.6+1.1*t;   // 上／下一組的名稱放在滾輪的第幾格：下一組在最後一件下面；上一組在這一組名稱的上面，拉的時候往下讓到它的位置
 function enterGroup(g,d){
   const k=flat.findIndex(f=>f.g===g),[a,b]=span();
-  pin=(3+(d>0?b+1.6:a-1.5)-wheelPos())*36;
+  pin=(3+teaseP(d,1,a,b)-wheelPos())*36;
   if(d>0&&flat[k].slot<b)base-=360;else if(d<0&&flat[k].slot>a)base+=360;   // 最後一組接回第一組：圓環繼續往同一個方向轉
   enter=still?0:1;vel=0;pick(k);
 }
 function wheel(){
   const box=document.getElementById('chips');if(!box)return;
   const on=wheelOn();box.classList.toggle('wheel',on);
-  if(!on){if(box.dataset.on){delete box.dataset.on;[...box.children].forEach(c=>{c.style.cssText='';if(c.dataset.n){c.className='gh';c.firstChild.textContent=c.dataset.n}})}return}
-  const g=curG(),pos=wheelPos(),pl=pulling?pullAt():0,t=Math.min(1,Math.abs(pl)),e=enter*enter*(3-2*enter);
+  if(!on){if(box.dataset.on){delete box.dataset.on;[...box.children].forEach(c=>{c.style.cssText='';if(c.dataset.n)c.className='gh'})}return}
+  const g=curG(),pos=wheelPos(),pl=pulling?pullAt():0,e=enter*enter*(3-2*enter);
   const key=[pos.toFixed(3),g,pl.toFixed(3),enter.toFixed(3)].join();if(box.dataset.on===key)return;box.dataset.on=key;
-  const [a,b]=span(),nx=pl?nextG(Math.sign(pl)):null;
+  const [a,b]=span(),nx=nextG(1),pv=nextG(-1),tp=Math.min(1,Math.abs(pl));
+  const x=1-enter,boing=enter?Math.exp(-6*x)*Math.cos(8*x):0;   // 放開之後名稱縮回去：縮過頭一點再彈回來
   for(const c of box.children){
-    const head=!!c.dataset.n,own=(head?c.dataset.g:flat[c.dataset.w].g)===g,tease=head&&!own&&c.dataset.g===nx;
+    const head=!!c.dataset.n,own=(head?c.dataset.g:flat[c.dataset.w].g)===g;
+    // 只有兩組的時候上一組和下一組是同一個：靠近哪一頭就放哪一頭
+    const dir=!head||own?0:c.dataset.g===nx&&(c.dataset.g!==pv||pos>=(a+b)/2)?1:c.dataset.g===pv?-1:0;
     let y=(3+ +c.dataset.p-pos)*36,sc=1,op=0;
-    if(tease){   // 拉出來的上／下一組名稱
-      y=(3+(pl>0?b+1.6:a-1.5)-pos)*36;sc=1+.75*t;op=Math.min(1,t*1.3);
+    if(dir){
+      const t=pl*dir>0?tp:0;
+      y=(3+teaseP(dir,t,a,b)-pos)*36;sc=1+.75*t**1.4;op=(.75+.25*t)*(1-e);
+      c.style.setProperty('--t',t.toFixed(3));
     }else if(head&&own){
-      const d=Math.abs(c.dataset.p-pos);op=Math.max(e,1-Math.max(0,d-.8)*.4);sc=1+.75*e;
+      const d=Math.abs(c.dataset.p-pos);op=Math.max(e,1-Math.max(0,d-.8)*.4);sc=1+.75*boing;
       if(pin!=null)y+=(pin-y)*e;
-      if(pl<0&&nx){y-=57.6*t;op*=1-t}   // 往回拉：讓位給上一組的名稱
+      if(pl<0&&pv)op*=1-tp;   // 往回拉：讓位給上一組的名稱
     }else if(own){
       const d=Math.abs(c.dataset.p-pos);sc=1+.2*Math.max(0,1-d);op=Math.max(0,1-d*.3);
     }
-    if(head){
-      const txt=tease?(t>=1?'放開進入':pl>0?'下一組':'上一組'):c.dataset.n;
-      if(c.firstChild.textContent!==txt)c.firstChild.textContent=txt;
-      c.classList.toggle('pull',tease);c.classList.toggle('armed',tease&&t>=1);
-    }
+    if(head){c.classList.toggle('pull',!!dir);c.classList.toggle('prev',dir<0);c.classList.toggle('armed',!!dir&&pl*dir>=1)}
     const hide=op<=0||y<-80||y>300;c.style.visibility=hide?'hidden':'';if(hide)continue;
     c.style.transform=`translateY(${y.toFixed(2)}px) scale(${sc.toFixed(3)})`;
     c.style.opacity=op.toFixed(3);
@@ -603,7 +619,7 @@ let lastT=0;
     }
     else if(hot==null&&!drag&&!still)rot+=.07;
     r.style.setProperty('--rot',rot.toFixed(2)+'deg');
-    if(enter>0)enter=Math.max(0,enter-dt/.5);
+    if(enter>0)enter=Math.max(0,enter-dt/.6);
     wheel();
   }
   requestAnimationFrame(tick);
