@@ -572,7 +572,8 @@ const narrow=matchMedia('(max-width:860px)'),wheelOn=()=>touch&&narrow.matches;
 const wheelPos=()=>(base-rot)/STEP;   // 目前轉到第幾格（有小數）
 /* 手機的滾輪一次只看一組，換組像翻到下一章：滑到這一組的頭尾再多拉，上／下一組的名稱跟著放大，拉滿（PULL 格）放開就進去，
    名稱從放手的位置縮回它在滾輪上的位置。enter：剛換組的動畫 1→0；pin：放手時名稱在滾輪上的 y；pulling：這次拖曳還沒換過組 */
-const PULL=1;let enter=0,pin=null,pulling=false,gone=null,goneY=0,goneSh=0;   // gone：剛離開的那一組，它的作品跟著淡出、名稱滑到上／下一組的位置
+const PULL=1,REST={1:.78,'-1':.6};   // 上／下一組的名稱平常縮多小：上面那個貼著這一組的名稱，要更小才分得出主從
+let enter=0,pin=null,pulling=false,gone=null,goneY=0,goneSh=0;   // gone：剛離開的那一組，它的作品跟著淡出、名稱滑到上／下一組的位置
 const curG=()=>list.querySelector('.focus').dataset.g;
 const span=()=>{const o=flat.filter(f=>f.g===curG());return[o[0].slot,o[o.length-1].slot]};   // 這一組的第一格、最後一格
 const pullAt=()=>{const [a,b]=span(),p=wheelPos();return(p>b?p-b:p<a?p-a:0)/PULL};   // 拉過頭尾多少：正的往下一組，±1 就是拉滿
@@ -601,13 +602,13 @@ function wheel(){
     let y=(3+ +c.dataset.p-pos)*36,sc=1,op=0;
     if(dir){
       const t=pl*dir>0?tp:0;
-      y=(3+teaseP(dir,t,a,b)-pos)*36;sc=.78+.72*t**1.4;op=(.75+.25*t)*(1-e);
+      y=(3+teaseP(dir,t,a,b)-pos)*36;const r=REST[dir];sc=r+(1.5-r)*t**1.4;op=(.75+.25*t)*(1-e);
       if(cg===out){y+=(goneY-y)*e;op=.75+.25*e}   // 拉的時候已經縮到跟上／下一組一樣小，放開後只要滑過去
       c.style.setProperty('--t',t.toFixed(3));
     }else if(head&&own){
       const d=Math.abs(c.dataset.p-pos);op=Math.max(Math.min(1,e*3),1-Math.max(0,d-.8)*.4);sc=1+.5*boing;
       y+=sh;if(pin!=null)y+=(pin-y)*e;
-      if(nx){sc-=.22*tp;c.style.setProperty('--o',tp.toFixed(3))}   // 往外拉：舊的名稱縮小變淡，新的放大
+      if(nx){sc-=(1-REST[pl>0?-1:1])*tp;c.style.setProperty('--o',tp.toFixed(3))}   // 往外拉：舊的名稱縮小變淡，新的放大
     }else if(own){
       const d=Math.abs(c.dataset.p-pos);sc=1+.12*Math.max(0,1-d);op=Math.max(0,1-d*.3)*Math.max(0,1-2*e);y+=sh;   // 剛換組：作品等名稱縮回去再浮出來，不從名稱底下穿過
     }else if(cg===out){
