@@ -281,7 +281,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;justify
   .side .chip.hot b{font-weight:600;text-decoration:none}
   /* 觸控：這一排是滾輪（.wheel 由 JS 掛上），只列目前這一組的作品，上面是群組名稱；滑過這一組的頭尾再多拉一點，上／下一組的名稱會跟著放大，放開就進到那一組。
      位置每一格畫面都跟著圓環的角度算（JS 直接寫 transform／opacity），選中的在中間那一格、離得越遠越淡越小 */
-  .side .chips.wheel{height:252px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(transparent,#000 26%,#000 74%,transparent)}
+  .side .chips.wheel{height:252px;overflow:hidden;touch-action:none;-webkit-mask-image:linear-gradient(transparent,#000 18%,#000 74%,transparent);mask-image:linear-gradient(transparent,#000 18%,#000 74%,transparent)}
   .side .chips.wheel .chip,.chips.wheel .gh{position:absolute;right:0;top:0;display:flex;align-items:center;height:36px;max-width:83%;transform-origin:100% 50%;will-change:transform,opacity;transition:color .25s}
   .chips.wheel .gh{gap:10px;white-space:nowrap}
   .chips.wheel .gh b{font-size:24px;font-weight:300;letter-spacing:.04em;color:color-mix(in srgb,var(--faint) calc(var(--o,0)*100%),#57575d)}   /* --o：往外拉時這一組的名稱跟著退成灰的 */
@@ -578,7 +578,7 @@ const curG=()=>list.querySelector('.focus').dataset.g;
 const span=()=>{const o=flat.filter(f=>f.g===curG());return[o[0].slot,o[o.length-1].slot]};   // 這一組的第一格、最後一格
 const pullAt=()=>{const [a,b]=span(),p=wheelPos();return(p>b?p-b:p<a?p-a:0)/PULL};   // 拉過頭尾多少：正的往下一組，±1 就是拉滿
 const nextG=d=>{const n=live().map(x=>x[0]);return n.length>1?n[(n.indexOf(curG())+d+n.length)%n.length]:null};   // 頭尾相接
-const teaseP=(d,t,a,b)=>d>0?b+1.5-.2*t:a-2.6+1.1*t;   // 上／下一組的名稱放在滾輪的第幾格：下一組在最後一件下面；上一組在這一組名稱的上面，拉的時候往下讓到它的位置
+const teaseP=(d,t,a,b)=>d>0?b+1.9-.6*t:a-2.9+1.4*t;   // 上／下一組的名稱放在滾輪的第幾格：下一組在最後一件下面；上一組在這一組名稱的上面，拉的時候往下讓到它的位置
 function enterGroup(g,d){
   const k=flat.findIndex(f=>f.g===g),[a,b]=span();
   pin=(3+teaseP(d,1,a,b)-wheelPos())*36;
@@ -602,8 +602,9 @@ function wheel(){
     let y=(3+ +c.dataset.p-pos)*36,sc=1,op=0;
     if(dir){
       const t=pl*dir>0?tp:0;
-      y=(3+teaseP(dir,t,a,b)-pos)*36;const r=REST[dir];sc=r+(1.5-r)*t**1.4;op=(.75+.25*t)*(1-e);
-      if(cg===out){y+=(goneY-y)*e;op=.75+.25*e}   // 拉的時候已經縮到跟上／下一組一樣小，放開後只要滑過去
+      const show=Math.max(0,Math.min(1,1-(dir>0?b-pos:pos-a)/.8));   // 轉到最後（第一）件才浮出來：差一件以上看不到，越靠近越清楚、從外側滑進來
+      y=(3+teaseP(dir,t,a,b)-pos)*36+dir*(1-show)*24;const r=REST[dir];sc=r+(1.5-r)*t**1.4;op=(.75+.25*t)*(1-e)*show;
+      if(cg===out){y+=(goneY-y)*e;op=(.75+.25*e)*Math.max(show,e)}   // 拉的時候已經縮到跟上／下一組一樣小，放開後只要滑過去
       c.style.setProperty('--t',t.toFixed(3));
     }else if(head&&own){
       const d=Math.abs(c.dataset.p-pos);op=Math.max(Math.min(1,e*3),1-Math.max(0,d-.8)*.4);sc=1+.5*boing;
