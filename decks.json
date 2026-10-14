@@ -182,5 +182,25 @@
       "s-02.jpg"
     ],
     "group": "系學會"
+  },
+  {
+    "id": "20261015-weekly-meeting",
+    "title": "115 機械系學會・系週會主視覺",
+    "date": "2026-10-15",
+    "slides": [
+      "s-01.jpg"
+    ],
+    "group": "系學會"
+  },
+  {
+    "id": "20261015-officer-recruit",
+    "title": "115 機械系學會・幹部招募",
+    "date": "2026-10-15",
+    "slides": [
+      "s-01.jpg",
+      "s-02.jpg",
+      "s-03.jpg"
+    ],
+    "group": "系學會"
   }
 ]
