@@ -473,7 +473,7 @@ function listView(k){
   const top=!k&&hit.find(it=>it.kind==='deck');
   let i=0;
   const secs=[...groups.keys()].map(name=>{
-    const cs=groups.get(name).filter(it=>hit.includes(it)&&it!==top);
+    const cs=groups.get(name).filter(it=>hit.includes(it));
     return cs.length?`<div class="sec mono"><b>${esc(name)}</b><span>${pad(cs.length)}</span></div><div class="grid">${cs.map(it=>card(it,i++)).join('')}</div>`:'';
   }).join('');
   return `<div class="wrap listv">${top?hero(top):'<div style="height:44px"></div>'}${secs||(top?'':'<div class="empty"><b>找不到東西</b>換個關鍵字試試</div>')}
