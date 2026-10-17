@@ -115,6 +115,7 @@ fetch('decks.json',{cache:'no-cache'}).then(r=>r.json()).then(all=>{
       const dl=document.getElementById('dl');
       dl.href=`decks/${deck.id}/${deck.pptx}`;
       dl.download=`${deck.title}${deck.pptx.slice(deck.pptx.lastIndexOf('.'))}`;
+      dl.title=/\.pdf$/i.test(deck.pptx)?'下載 PDF':'下載 PPT';
       dl.style.display='';
     }
     show((parseInt(location.hash.slice(1))||1)-1);

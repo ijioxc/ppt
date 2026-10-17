@@ -363,6 +363,7 @@ const pic=(it,k=it.d?.cover??0,cls='')=>it.kind==='deck'
   ?`<img class="${cls}" src="${thumb(it.d,k)}" data-full="${full(it.d,k)}" onerror="this.onerror=null;this.src=this.dataset.full" loading="lazy" draggable="false" alt="">`
   :`<img class="${cls} ${it.s.fit==='contain'?'contain':''}" src="sites/${esc(it.s.shot)}" loading="lazy" draggable="false" alt="">`;
 const tg=it=>it.kind==='site'?' target="_blank" rel="noopener"':'';
+const fmt=d=>/\.pdf$/i.test(d.pptx)?'PDF':'PPT';   // 下載檔可能是 PPT 或 PDF
 const dl=d=>d.pptx?`href="decks/${encodeURIComponent(d.id)}/${d.pptx}" download="${esc(d.title+d.pptx.slice(d.pptx.lastIndexOf('.')))}"`:'';
 const spread=(len,n)=>Array.from({length:n},(_,k)=>Math.round(k*(len-1)/Math.max(n-1,1)));
 // 橫掃預覽：最多取 8 頁，平均抽樣
@@ -456,7 +457,7 @@ function card(it,i){
       <div class="meta"><div class="title">${esc(it.title)}</div></div>
       <div class="desc mono">${esc(it.meta)}</div>
     </a>
-    ${it.d.pptx?`<a class="act" title="下載 PPT" ${dl(it.d)}>↓</a>`:''}
+    ${it.d.pptx?`<a class="act" title="下載 ${fmt(it.d)}" ${dl(it.d)}>↓</a>`:''}
   </div>`;
 }
 function hero(it){return `
@@ -465,7 +466,7 @@ function hero(it){return `
     <div>
       <span class="mono">最新 · ${esc(it.meta)}</span>
       <h2>${esc(it.title)}</h2>
-      <div class="acts"><a class="btn" href="${it.href}">播放 →</a>${it.d.pptx?`<a class="btn ghost" ${dl(it.d)}>下載 PPT</a>`:''}</div>
+      <div class="acts"><a class="btn" href="${it.href}">播放 →</a>${it.d.pptx?`<a class="btn ghost" ${dl(it.d)}>下載 ${fmt(it.d)}</a>`:''}</div>
     </div>
   </section>`}
 function listView(k){
