@@ -285,9 +285,10 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .nav button:focus-visible{outline:2px solid #fff}
 .nav .cnt{font:600 13px/1 Arial;min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
 .bar{position:fixed;left:0;top:0;height:3px;background:var(--red);z-index:10;width:0;transition:width .25s}
-.home{position:fixed;left:18px;top:14px;z-index:10;font-size:13px;text-decoration:none;color:var(--mute);background:rgba(214,207,197,.85);padding:4px 10px;border-radius:999px;opacity:0;transition:opacity .3s}
+.home{position:fixed;left:18px;top:14px;z-index:10;font-size:13px;font-weight:500;text-decoration:none;color:var(--mute);padding:4px 2px;opacity:0;transition:opacity .3s,color .3s}
 /* 平常隱藏，滑鼠移到左上角才出現；觸控裝置沒有滑鼠，淡淡顯示 */
 .home:hover,.home:focus-visible{opacity:1;color:var(--red)}
+.on-cover .home{color:var(--on2)} .on-cover .home:hover{color:var(--on)}
 @media (hover:none){.home{opacity:.5}}
 .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10;font-size:13px;color:var(--on2);transition:opacity .4s}
 .hint kbd{font:600 12px Arial;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin:0 2px}
@@ -1372,6 +1373,7 @@ function step(dir) {
 function sync() {
   cur = current();
   cnt.textContent = `${pad(cur + 1)} / ${N}`;
+  document.body.classList.toggle('on-cover', cur === 0);
   bar.style.width = `${(cur + 1) / N * 100}%`;
   if (cur && hint) hint.style.opacity = 0;
 }
