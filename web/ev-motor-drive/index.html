@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第五章 電動車馬達驅動控制與電能轉換</title>
+<meta name="description" content="電池高壓直流經轉換器變成三相交流驅動馬達：四種電能轉換器、功率半導體、變頻器控制與預充電路，含 800V、SiC 等新技術。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#d6cfc5; --card:#e6e0d8; --card2:#ede8e1; --red:#a8423f; --red-d:#8e3633;
+  --ink:#3f3532; --txt:#5a4d49; --mute:#7a6c66; --wm:#cdc5ba; --on:#fbf1ee; --on2:#ebc9c3; --line:#bfb5a9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);scroll-snap-type:y proximity;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+b,strong{color:var(--red);font-weight:700}
+sub{font-size:.7em}
+
+/* 每一節＝一頁簡報 */
+.pg{position:relative;min-height:100vh;min-height:100svh;scroll-snap-align:start;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;padding:72px max(24px,calc((100vw - 1180px)/2)) 84px}
+.pg>*{position:relative;z-index:1}
+.wm{position:absolute;right:-.04em;bottom:-.2em;z-index:0;font:900 clamp(140px,24vw,300px)/1 Arial,sans-serif;letter-spacing:-.06em;color:var(--wm);pointer-events:none;user-select:none}
+.eye{font-size:13px;font-weight:700;letter-spacing:.25em;color:var(--red);margin-bottom:6px}
+.eye .new{display:inline-block;letter-spacing:.1em;background:var(--red);color:var(--on);border-radius:4px;padding:0 8px;margin-left:8px;font-size:12px}
+h2{font-size:clamp(28px,4vw,42px);line-height:1.3;font-weight:900;color:var(--red);margin-bottom:30px}
+.lede{max-width:900px;margin:-14px 0 28px;font-size:17px}
+.foot{position:absolute;left:max(24px,calc((100vw - 1180px)/2));bottom:26px;font-size:12.5px;color:var(--mute)}
+
+/* 卡片 */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.c{background:var(--card);border-radius:14px;padding:24px 26px}
+.c.r{background:var(--red);color:var(--on2)} .c.r h3,.c.r .big,.c.r b{color:var(--on)}
+.c h3{font-size:19px;font-weight:700;color:var(--red);margin-bottom:6px;line-height:1.45}
+.c p{font-size:15.5px;line-height:1.7}
+.c .tag{font-size:12px;letter-spacing:.2em;color:var(--mute);font-weight:700;margin-bottom:4px}
+.c.r .tag{color:var(--on2)}
+.big{font:900 clamp(34px,4vw,46px)/1.1 "Noto Sans TC",sans-serif;color:var(--red);letter-spacing:-.01em;margin-bottom:10px}
+.big small{font-size:.42em;font-weight:700;margin-left:4px}
+.g4 .big{font-size:clamp(28px,2.7vw,38px);white-space:nowrap}
+.note{margin-top:22px;font-size:15px}
+.note b{margin-right:4px}
+.row{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:center}
+.flex{display:flex;gap:18px;flex-wrap:wrap}
+ul.dot{list-style:none}
+ul.dot li{position:relative;padding-left:18px;margin:6px 0}
+ul.dot li::before{content:"";position:absolute;left:2px;top:.72em;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.c.r ul.dot li::before{background:var(--on)}
+.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.95em}
+
+/* 表格 */
+table{width:100%;border-collapse:separate;border-spacing:0 8px;font-size:15.5px}
+th{font-size:13px;letter-spacing:.15em;color:var(--mute);text-align:left;padding:0 18px}
+td{background:var(--card);padding:13px 18px}
+td:first-child{border-radius:10px 0 0 10px;color:var(--red);font-weight:700;background:transparent;padding-left:0}
+td:last-child{border-radius:0 10px 10px 0}
+td.hi{background:var(--red);color:var(--on);font-weight:500}
+.tbl-wrap{overflow-x:auto}
+
+/* 封面 */
+.cover{background:var(--red);color:var(--on2)}
+.cover .wm{color:#b5524e}
+.cover .eye{color:var(--on2)}
+.cover h1{font-size:clamp(40px,7vw,84px);line-height:1.15;font-weight:900;color:var(--on);margin:8px 0 24px}
+.cover .flow{font-size:clamp(16px,2vw,21px);color:var(--on);margin-bottom:46px}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1000px}
+.toc a{display:block;text-decoration:none;border-top:2px solid var(--on2);padding-top:10px}
+.toc span{display:block;font:900 26px/1 Arial,sans-serif;color:var(--on)}
+.toc em{font-style:normal;font-size:15px}
+.cover .by{margin-top:44px;font-size:14px;color:var(--on2)}
+
+/* 分節頁 */
+.split{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center}
+.split .slab{background:var(--red);border-radius:16px;padding:48px;color:var(--on);min-height:360px;position:relative;overflow:hidden}
+.split .slab .eye{color:var(--on2)}
+.split .slab h2{color:var(--on);font-size:clamp(34px,5vw,58px)}
+.split .slab i{position:absolute;right:-10px;bottom:-40px;font:900 200px/1 Arial;color:#b5524e;font-style:normal}
+.bound{border-top:2px solid var(--red);padding:14px 0 30px}
+.bound .t{font-size:13px;letter-spacing:.2em;color:var(--mute)}
+.bound .n{font:900 40px/1.2 Arial,sans-serif;color:var(--red)}
+
+/* 公式 */
+.eq{font:700 clamp(24px,3vw,34px)/1.3 "Noto Sans TC",sans-serif;color:var(--red);margin:6px 0 8px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:16px;align-items:center}
+.vs .op{font:900 44px/1 Arial;color:var(--red);text-align:center}
+
+/* 步驟 */
+.steps{counter-reset:s;display:grid;gap:12px}
+.steps li{list-style:none;counter-increment:s;background:var(--card);border-radius:12px;padding:14px 18px 14px 62px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:18px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--red);color:var(--on);font:700 15px/30px Arial;text-align:center}
+
+/* 考點 */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.stats div{background:var(--card);border-radius:12px;padding:14px 16px}
+.stats div.n{background:var(--red)} .stats div.n span,.stats div.n b{color:var(--on)}
+.stats span{display:block;font-size:12.5px;color:var(--mute)}
+.stats b{display:block;font:900 22px/1.3 Arial,"Noto Sans TC",sans-serif}
+.mix{margin-top:18px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px 28px;font-size:15px}
+
+svg text{font-family:"Noto Sans TC",sans-serif}
+.fig{width:100%;height:auto;display:block}
+
+/* 換頁控制 */
+.nav{position:fixed;right:18px;bottom:18px;z-index:10;display:flex;align-items:center;gap:6px;background:rgba(63,53,50,.88);color:#fff;border-radius:999px;padding:5px;backdrop-filter:blur(6px)}
+.nav button{all:unset;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+.nav button:hover{background:rgba(255,255,255,.15)}
+.nav button:focus-visible{outline:2px solid #fff}
+.nav .cnt{font:600 13px/1 Arial;min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
+.bar{position:fixed;left:0;top:0;height:3px;background:var(--red);z-index:10;width:0;transition:width .25s}
+.home{position:fixed;left:18px;top:14px;z-index:10;font-size:13px;text-decoration:none;color:var(--mute);background:rgba(214,207,197,.85);padding:4px 10px;border-radius:999px}
+.home:hover{color:var(--red)}
+.hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10;font-size:13px;color:var(--on2);transition:opacity .4s}
+.hint kbd{font:600 12px Arial;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin:0 2px}
+
+@media (max-width:860px){
+  .pg{padding:64px 16px 90px;justify-content:flex-start}
+  .g3,.g4,.toc{grid-template-columns:1fr 1fr}
+  .row,.split,.g2{grid-template-columns:1fr}
+  .vs{grid-template-columns:1fr}
+  .vs .op{font-size:30px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .mix{grid-template-columns:1fr}
+  td:first-child{min-width:5.5em;padding-right:10px}
+  .split .slab{min-height:0;padding:30px}
+  .hint{display:none}
+  .foot{display:none}
+}
+@media (max-width:520px){ .g3,.g4{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<a class="home" href="../../">← 簡報庫</a>
+
+<!-- 01 封面 -->
+<section class="pg cover" id="p1">
+  <div class="wm">EV</div>
+  <p class="eye">CHAPTER 05</p>
+  <h1>電動車馬達驅動控制<br>與電能轉換</h1>
+  <p class="flow">電池（高壓 DC）→ 轉換器 → 馬達（三相 AC）</p>
+  <nav class="toc" aria-label="目錄">
+    <a href="#p4"><span>01</span><em>四種電能轉換器</em></a>
+    <a href="#p9"><span>02</span><em>功率半導體元件</em></a>
+    <a href="#p17"><span>03</span><em>變頻器控制馬達</em></a>
+    <a href="#p22"><span>04</span><em>預充電路</em></a>
+  </nav>
+  <p class="by">重點報告　Mr.張　2026.10.20</p>
+  <p class="hint" id="hint">按 <kbd>→</kbd> <kbd>←</kbd> 或 <kbd>空白鍵</kbd> 換頁，也可以直接往下捲</p>
+</section>
+
+<!-- 02 四條能量路徑 -->
+<section class="pg" id="p2">
+  <div class="wm">EV</div>
+  <p class="eye">總覽 · 圖5-1、5-13</p>
+  <h2>三電之間的四條能量路徑</h2>
+  <p class="lede">電動車效能取決於電池、電控、電機「三電」之間的能量轉換與調配。第二條驅動路徑是本章主線。</p>
+  <div class="grid g2">
+    <div class="c"><p class="tag">01</p><h3>充電</h3><p>公用電網 → AC-DC 充電器 → 動力電池（儲存高壓 DC）</p></div>
+    <div class="c r"><p class="tag">02 · 本章主線</p><h3>驅動</h3><p>動力電池 → DC/DC → DC/AC 變頻器 → 驅動馬達 → 傳動裝置 → 車輪</p></div>
+    <div class="c"><p class="tag">03</p><h3>低壓供電</h3><p>動力電池 → DC/DC 轉換器 → 48V／12V 車用負載</p></div>
+    <div class="c"><p class="tag">04 · 反向</p><h3>再生制動</h3><p>煞車時馬達變發電機 → 整流 → 回充電池</p></div>
+  </div>
+</section>
+
+<!-- 03 控制角色 -->
+<section class="pg" id="p3">
+  <div class="wm">EV</div>
+  <p class="eye">總覽</p>
+  <h2>誰在控制，什麼推動了電力電子</h2>
+  <div class="row" style="align-items:start">
+    <div class="grid">
+      <div class="c"><p class="tag">控制角色</p><h3>整車控制器 VCM</h3><p>統籌電池與電機控制器</p></div>
+      <div class="c"><p class="tag">控制角色</p><h3>電機控制器</h3><p>產生驅動功率元件的脈衝訊號</p></div>
+      <div class="c"><p class="tag">成本參考 · 圖5-13</p><p>車身底盤約 <b>16–18%</b>、驅動系統約 <b>15–20%</b></p></div>
+    </div>
+    <div class="c r">
+      <p class="tag">三個推手</p>
+      <h3>功率半導體</h3><p>GTO → BJT → IGBT（1991 年）</p><br>
+      <h3>微處理機</h3><p>8 位元以上，使馬達向量控制得以實現</p><br>
+      <h3>開關切換</h3><p>調控送至馬達的功率，降低損失、提升效率</p>
+    </div>
+  </div>
+  <p class="note">本章架構：轉換器有哪幾種（5-1）→ 用什麼元件做（5-2）→ 變頻器怎麼控制馬達（5-3）→ 高壓上電時如何保護它（5-4）。</p>
+</section>
+
+<!-- 04 四種方向 -->
+<section class="pg" id="p4">
+  <div class="wm">5-1</div>
+  <p class="eye">5-1 · 圖5-2</p>
+  <h2>電能轉換只有四種方向</h2>
+  <div class="grid g2">
+    <div class="c r"><div class="big">DC → AC</div><h3>變頻器 Inverter（逆變器）</h3><p>橋式電路切換開關｜電池高壓 DC 轉三相 AC 驅動馬達。最核心。</p></div>
+    <div class="c"><div class="big">AC → AC</div><h3>變壓器 Transformer</h3><p>電磁互感｜升／降交流電壓；可變換電壓、電流、阻抗</p></div>
+    <div class="c"><div class="big">AC → DC</div><h3>整流器 Rectifier</h3><p>二極體單向導通｜再生制動：馬達發出的 AC 整流後回充電池</p></div>
+    <div class="c"><div class="big">DC → DC</div><h3>斬波器 Chopper（直流截波器）</h3><p>週期性快速開／關｜高壓電池降壓約 14 V 充 12 V 鉛酸電池</p></div>
+  </div>
+</section>
+
+<!-- 05 變頻器三型式 -->
+<section class="pg" id="p5">
+  <div class="wm">5-1</div>
+  <p class="eye">5-1 · DC → AC · 圖5-3、5-4</p>
+  <h2>變頻器的三種型式</h2>
+  <div class="row">
+    <div class="grid">
+      <div class="c"><h3>單相半橋</h3><p>2 顆開關 + 2 顆分壓電容，輸出 ±Vcc/2。</p></div>
+      <div class="c"><h3>單相全橋</h3><p>4 顆開關 T1–T4。T1、T4 導通 → 正電壓；T2、T3 導通 → 負電壓。交替切換即得交流。</p></div>
+      <div class="c r"><h3>三相橋式（右圖）</h3><p>6 顆開關 = 3 組半橋。線電壓 ±Vcc 方波；相電壓 ±Vcc/3、±2Vcc/3 階梯波；中性點 ±Vcc/6。</p></div>
+    </div>
+    <div class="c" style="padding:18px">
+      <svg class="fig" viewBox="0 0 420 300" role="img" aria-label="三相橋式變頻器：上臂 T1、T3、T5，下臂 T4、T6、T2，輸出 A、B、C">
+        <g stroke="#5a4d49" stroke-width="2" fill="none">
+          <line x1="40" y1="40" x2="380" y2="40"/><line x1="40" y1="260" x2="380" y2="260"/>
+          <line x1="40" y1="40" x2="40" y2="125"/><line x1="40" y1="175" x2="40" y2="260"/>
+          <line x1="22" y1="125" x2="58" y2="125"/><line x1="30" y1="135" x2="50" y2="135" stroke-width="4"/>
+          <line x1="22" y1="165" x2="58" y2="165"/><line x1="30" y1="175" x2="50" y2="175" stroke-width="4"/>
+          <line x1="40" y1="135" x2="40" y2="165" stroke-dasharray="3 4"/>
+          <g id="leg">
+            <line x1="150" y1="40" x2="150" y2="70"/><line x1="150" y1="120" x2="150" y2="180"/><line x1="150" y1="230" x2="150" y2="260"/>
+          </g>
+          <line x1="260" y1="40" x2="260" y2="70"/><line x1="260" y1="120" x2="260" y2="180"/><line x1="260" y1="230" x2="260" y2="260"/>
+          <line x1="370" y1="40" x2="370" y2="70"/><line x1="370" y1="120" x2="370" y2="180"/><line x1="370" y1="230" x2="370" y2="260"/>
+          <line x1="150" y1="150" x2="190" y2="150"/><line x1="260" y1="150" x2="300" y2="150"/><line x1="370" y1="150" x2="405" y2="150"/>
+        </g>
+        <g fill="#a8423f">
+          <rect x="128" y="70" width="44" height="50" rx="6"/><rect x="128" y="180" width="44" height="50" rx="6"/>
+          <rect x="238" y="70" width="44" height="50" rx="6"/><rect x="238" y="180" width="44" height="50" rx="6"/>
+          <rect x="348" y="70" width="44" height="50" rx="6"/><rect x="348" y="180" width="44" height="50" rx="6"/>
+        </g>
+        <g fill="#fbf1ee" font-size="15" font-weight="700" text-anchor="middle">
+          <text x="150" y="100">T1</text><text x="150" y="210">T4</text>
+          <text x="260" y="100">T3</text><text x="260" y="210">T6</text>
+          <text x="370" y="100">T5</text><text x="370" y="210">T2</text>
+        </g>
+        <g fill="#a8423f" font-size="16" font-weight="700">
+          <text x="194" y="145">A</text><text x="304" y="145">B</text><text x="392" y="140">C</text>
+          <text x="8" y="120">+</text><text x="10" y="190">−</text>
+        </g>
+        <text x="62" y="155" fill="#5a4d49" font-size="14" font-weight="700">DC</text>
+      </svg>
+      <p style="font-size:13px;color:var(--mute);margin-top:6px">上臂 T1、T3、T5，下臂 T4、T6、T2；每顆開關實際上還並聯續流二極體（圖中省略）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06 整流器 -->
+<section class="pg" id="p6">
+  <div class="wm">5-1</div>
+  <p class="eye">5-1 · AC → DC · 圖5-5</p>
+  <h2>整流器：讓煞車變成充電</h2>
+  <div class="row">
+    <div class="c r" style="padding:40px">
+      <div class="big" style="font-size:96px">6<small>個二極體 D1–D6</small></div>
+      <h3>三相橋式全波整流</h3><p>電動車常用的整流電路；原理是二極體單向導通。</p>
+    </div>
+    <div class="grid">
+      <div class="c"><h3>減速時馬達 = 三相發電機</h3><p>轉速愈快，三相電壓愈高</p></div>
+      <div class="c"><h3>整流 → 濾波 → 穩壓 → 回充</h3><p>這就是再生制動的電能路徑</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 斬波器 -->
+<section class="pg" id="p7">
+  <div class="wm">5-1</div>
+  <p class="eye">5-1 · DC → DC</p>
+  <h2>斬波器：把電壓「斬」成脈衝</h2>
+  <div class="row">
+    <div class="c r" style="padding:36px">
+      <p class="tag">觸發條件</p>
+      <p>電系電池 &lt; 12 V 時，動力電池經斬波器輸出約</p>
+      <div class="big" style="font-size:88px;margin:8px 0">14<small>V</small></div>
+      <p>充電，供 ECU 與車身電器並充 12 V 鉛酸電池。</p>
+    </div>
+    <div class="grid">
+      <div class="c"><h3>本質 = PWM 降壓</h3><p>改變脈衝寬度或頻率，調整平均電壓</p></div>
+      <div class="c"><h3>其他用途</h3><p>直流電動機速度控制、交換式電源供應</p></div>
+      <div class="c"><h3>簡易實例（圖5-6）</h3><p>TL494 PWM 控制 IC + IRFB260N MOSFET 作開關</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 新：800V -->
+<section class="pg" id="p8">
+  <div class="wm">5-1</div>
+  <p class="eye">5-1 · 新趨勢<span class="new">NEW</span></p>
+  <h2>800V 高壓架構：電壓加倍，電流減半</h2>
+  <div class="row" style="grid-template-columns:1.7fr 1fr;align-items:stretch">
+    <div class="c">
+      <h3>為什麼要升到 800V</h3>
+      <ul class="dot">
+        <li><b>電流更小</b>　相同功率 P = V × I，電壓加倍 → 電流減半</li>
+        <li><b>線材更細、更輕</b>　高壓線束截面積縮小，整車減重</li>
+        <li><b>銅損降低</b>　I²R 損失隨電流平方下降</li>
+        <li><b>變頻器效率提升</b>　導通損失與發熱同步減少</li>
+        <li><b>超高速充電</b>　支援可達 350 kW 等級的快充</li>
+      </ul>
+    </div>
+    <div class="c r">
+      <h3>已導入的車款</h3>
+      <ul class="dot"><li>Hyundai E-GMP 平台</li><li>Kia EV6</li><li>Porsche Taycan</li><li>Lotus Eletre</li><li>Lucid Air</li></ul>
+    </div>
+  </div>
+  <p class="note"><b>搭配：</b>800V 系統通常搭配 SiC（碳化矽）功率元件，進一步提升效率與功率密度 → 見 5-2。</p>
+</section>
+
+<!-- 09 分節 5-2 -->
+<section class="pg" id="p9">
+  <div class="split">
+    <div class="slab"><p class="eye">5-2　功率半導體元件</p><h2>以 10 kW 為界</h2><i>kW</i></div>
+    <div>
+      <div class="bound"><p class="t">10 kW 以下</p><p class="n">MOSFET</p><p>快速、高頻</p></div>
+      <div class="bound"><p class="t">中、大功率</p><p class="n">IGBT</p><p>電動車驅動馬達的主力</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 四種元件 -->
+<section class="pg" id="p10">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 2.1</p>
+  <h2>四種元件，各在哪裡用</h2>
+  <div class="grid g2">
+    <div class="c"><h3>BJT 雙極性接面電晶體</h3><p>電流驅動｜承受不了高壓大電流，近期鮮少使用</p></div>
+    <div class="c"><h3>MOSFET 金氧半場效電晶體</h3><p>快速、高頻｜中低功率電力轉換、小功率高頻場合</p></div>
+    <div class="c r"><h3>IGBT 絕緣柵雙極電晶體</h3><p>結合 BJT 與 MOSFET 優點｜600 A、約 20 kHz｜驅動馬達主力</p></div>
+    <div class="c"><h3>GTO 閘極截止閘流體</h3><p>正脈衝導通、負脈衝關斷｜歷史元件，火車 VVVF 牽引變頻器</p></div>
+  </div>
+</section>
+
+<!-- 11 比較表 -->
+<section class="pg" id="p11">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 表5-1～5-3 合併</p>
+  <h2>BJT、MOSFET、IGBT 比較</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>比較項目</th><th>BJT</th><th>MOSFET</th><th>IGBT</th></tr></thead>
+    <tbody>
+      <tr><td>導通電阻</td><td>小</td><td>大</td><td class="hi">小</td></tr>
+      <tr><td>驅動電流</td><td>大</td><td>小</td><td class="hi">小</td></tr>
+      <tr><td>導通／截止時間</td><td>—</td><td>3 μs／10 μs</td><td class="hi">6 μs／14 μs</td></tr>
+      <tr><td>工作電壓</td><td>—</td><td>100 V 以下</td><td class="hi">300 V 以上</td></tr>
+      <tr><td>工作電流</td><td>—</td><td>300 A 以下</td><td class="hi">可達 600 A</td></tr>
+      <tr><td>工作頻率</td><td>—</td><td>可達 20 kHz 以上</td><td class="hi">20 kHz 以下</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">μs 開關時間為課本數值；實際元件多為數十到數百 ns 級，考試照課本作答即可。</p>
+</section>
+
+<!-- 12 IGBT 一句話 -->
+<section class="pg" id="p12">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 一句話記住 IGBT</p>
+  <div class="vs">
+    <div class="c r" style="text-align:center;padding:40px 20px"><div class="big" style="font-size:64px;margin:0">IGBT</div></div>
+    <div class="op">=</div>
+    <div class="c"><p class="tag">輸入端</p><div class="big">MOSFET</div><p>電壓驅動、驅動電流小</p></div>
+    <div class="op">+</div>
+    <div class="c"><p class="tag">輸出端</p><div class="big">BJT</div><p>導通電阻低、耐高壓大電流</p></div>
+  </div>
+  <p class="note">代價是切換較慢，但對馬達控制已綽綽有餘。MOSFET 功耗較小；兩者驅動電路相同、可互換。</p>
+</section>
+
+<!-- 13 IGBT 開關 -->
+<section class="pg" id="p13">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 2.3 · 圖5-8～5-10</p>
+  <h2>IGBT 怎麼開、怎麼關</h2>
+  <p class="lede">閘極 G 控制 MOSFET，MOSFET 再驅動 BJT；三腳 G 閘極、C 集極、E 射極。</p>
+  <div class="grid g2">
+    <div class="c r"><h3>導通</h3><p>V<sub>GE</sub> 為正且 &gt; V<sub>GE(th)</sub> → 形成溝道 → I<sub>C</sub> 隨 V<sub>GE</sub> 上升</p></div>
+    <div class="c"><h3>截止</h3><p>閘射極加反向電壓或不加訊號 → 溝道消失</p></div>
+    <div class="c"><h3>四大特性</h3><p>高輸入阻抗 · 快速切換 · 耐高壓大電流 · 電壓驅動</p></div>
+    <div class="c"><h3>切換波形</h3><p>T<sub>ON</sub> = 開通延遲 t<sub>d(on)</sub> + 電流上升 t<sub>r</sub><br>T<sub>OFF</sub> = 關斷延遲 t<sub>d(off)</sub> + 電流下降 t<sub>fi1</sub>、t<sub>fi2</sub>（後段為拖尾電流）</p></div>
+  </div>
+</section>
+
+<!-- 14 量測 -->
+<section class="pg" id="p14">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 2.4 · 圖5-11、5-12</p>
+  <h2>用三用電表量測元件</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>步驟</th><th>Power MOSFET</th><th>IGBT</th></tr></thead>
+    <tbody>
+      <tr><td>1. 辨腳</td><td>diode 檔決定 D、S 極</td><td>diode 檔決定 C、E 極</td></tr>
+      <tr><td>2. Ω 檔</td><td>G-S 呈電容效應</td><td>G-E、G-C 皆為 ∞</td></tr>
+      <tr><td>3. 加正偏</td><td>G+ S− → D-S 低電阻</td><td class="hi">G→E 正偏 → C-E 導通（約 0.004 Ω）</td></tr>
+      <tr><td>4. 歸零</td><td>G− S+ → D-S 截止</td><td>手指觸摸三腳放電 → 回到開路</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 15 新：SiC -->
+<section class="pg" id="p15">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 新元件<span class="new">NEW</span></p>
+  <h2>SiC MOSFET：取代 Si IGBT 的下一代開關</h2>
+  <div class="grid g4">
+    <div class="c"><div class="big">800–1200<small>V</small></div><h3>耐高電壓</h3><p>直接對應 800V 高壓平台</p></div>
+    <div class="c"><div class="big">3<small>倍</small></div><h3>耐高溫、導熱快</h3><p>熱導率為 Si 的 3 倍；結溫從 150°C 提升至 175–200°C</p></div>
+    <div class="c"><div class="big">−50<small>%</small></div><h3>開關速度更快</h3><p>被動元件體積縮小 50% 以上，逆變器更輕更小、車內空間變大</p></div>
+    <div class="c r"><div class="big">−70~80<small>%</small></div><h3>損耗更低</h3><p>開關損耗比 Si IGBT 低 70–80%，更多電能送往馬達</p></div>
+  </div>
+  <p class="note"><b>瓶頸在封裝：</b>SiC 晶片 300–400°C 仍不壞，但銲錫、封裝塑料、打線（Wire bonding）在 200°C 以上就會熔化或老化斷裂。</p>
+</section>
+
+<!-- 16 新：雙面冷卻 -->
+<section class="pg" id="p16">
+  <div class="wm">5-2</div>
+  <p class="eye">5-2 · 新散熱<span class="new">NEW</span></p>
+  <h2>IGBT 雙面冷卻：熱從兩面一起散</h2>
+  <p class="lede">晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；適合空間受限、發熱量極高的逆變器。</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>傳統單面冷卻</th><th>雙面冷卻</th></tr></thead>
+    <tbody>
+      <tr><td>散熱路徑</td><td>僅晶片背面向下傳導</td><td class="hi">正面與背面同時傳導</td></tr>
+      <tr><td>內部連接</td><td>晶片正面用鋁打線（Wire Bonding）</td><td class="hi">兩面以金屬墊片與導熱基板焊接</td></tr>
+      <tr><td>熱阻 R<sub>thjc</sub></td><td>基準 100%</td><td class="hi"><strong style="color:var(--on);border:0">約降低 50%</strong></td></tr>
+      <tr><td>功率密度</td><td>較低，受限單面散熱</td><td class="hi">較高，逆變器體積與重量大幅縮小</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 17 5-3 三樣可調 -->
+<section class="pg" id="p17">
+  <div class="wm">5-3</div>
+  <p class="eye">5-3 · 變頻器在電動車上的應用</p>
+  <h2>電能上真正能調的只有三樣</h2>
+  <div class="grid g3" style="margin-bottom:22px">
+    <div class="c r" style="text-align:center"><div class="big" style="margin:0">電壓大小</div></div>
+    <div class="c r" style="text-align:center"><div class="big" style="margin:0">電流方向</div></div>
+    <div class="c r" style="text-align:center"><div class="big" style="margin:0">頻率</div></div>
+  </div>
+  <h3 style="color:var(--red);margin-bottom:8px">選用原則</h3>
+  <ol class="steps">
+    <li>輸入容量 ≈ 輸出負載的 <b>1.8 倍</b></li>
+    <li>額定輸出容量 = 1.732 × V<sub>o</sub> × I<sub>o</sub>（1.732 即 √3）</li>
+    <li>頻率範圍以額定轉矩 50～100% 連續運轉為準</li>
+    <li>注意轉矩—速度曲線，尤其滿載啟動轉矩</li>
+  </ol>
+</section>
+
+<!-- 18 三相橋式與轉速 -->
+<section class="pg" id="p18">
+  <div class="wm">5-3</div>
+  <p class="eye">5-3 · 圖5-14</p>
+  <h2>三相橋式變頻器與轉速控制</h2>
+  <div class="row" style="align-items:start">
+    <div class="grid">
+      <div class="c"><p>6 顆 IGBT／MOSFET（上臂 1、3、5，下臂 4、6、2），每顆並聯<b>續流二極體</b>。</p></div>
+      <div class="c"><p>輸出三相：<b>幅值相等、頻率相等、相位差 120°</b>，對繞組作正弦激磁。</p></div>
+      <div class="c"><p>控制輸入：電池、煞車／加速踏板、溫度、速度、電流、轉子位置</p></div>
+    </div>
+    <div class="c r">
+      <p class="tag">感應馬達轉速</p>
+      <div class="eq" style="color:var(--on)">n = 60f / P × (1 − s)</div>
+      <p style="font-size:14px">n 轉速 rpm · f 頻率 · P 極對數 · s 轉差率</p>
+      <p style="margin-top:14px">五種調速：改變 P、<b>改變 f（變頻器，最主要）</b>、改變 s、改變電壓、改變轉子電阻（僅繞線式，少用）</p>
+    </div>
+  </div>
+</section>
+
+<!-- 19 SPWM -->
+<section class="pg" id="p19">
+  <div class="wm">5-3</div>
+  <p class="eye">5-3 · 3.4 · 圖5-15、5-16</p>
+  <h2>SPWM：用脈衝拼出正弦波</h2>
+  <div class="row">
+    <div class="c" style="padding:18px"><svg class="fig" id="spwm" viewBox="0 0 480 220" role="img" aria-label="單極性 SPWM：脈寬隨正弦變化，正半週脈衝向上、負半週向下"></svg></div>
+    <div class="grid">
+      <div class="c r"><p>每段脈衝面積 = 對應區間正弦波面積。改變調製波的頻率與幅值 → 調整輸出電壓的頻率、相位、幅值。</p></div>
+      <div class="c"><h3>單極性調製（左圖）</h3><p>正半週只有 0 / +V，負半週只有 0 / −V</p></div>
+      <div class="c"><h3>雙極性調製</h3><p>正弦波與三角載波比較，輸出在 +V<sub>d</sub> 與 −V<sub>d</sub> 間切換</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 Leaf -->
+<section class="pg" id="p20">
+  <div class="wm">5-3</div>
+  <p class="eye">5-3 · 實例 · 圖5-17～5-19</p>
+  <h2>Nissan Leaf 的變頻器與再生制動</h2>
+  <div class="grid g2">
+    <div class="c"><h3>組成</h3><p>馬達控制器、驅動器、平流電容器、2 個電流感知器、冷卻液溫度感知器、電源模組（6 顆 IGBT）</p></div>
+    <div class="c"><h3>訊號鏈</h3><p>解析器（轉子位置）+ 電流感知器 → 馬達控制器 → 驅動器 → IGBT</p></div>
+    <div class="c"><h3>永磁同步馬達</h3><p>扭力 ∝ 電流；轉速由三相電流頻率決定。依馬達溫度限制輸出扭力。</p></div>
+    <div class="c r"><h3>再生制動 · 圖5-18</h3><p>減速時馬達短暫作發電機；變頻器內的二極體把 AC 整流成 DC 回充鋰電池。</p><p class="mono" style="margin-top:8px;color:var(--on)">V<sub>an</sub> = −2V<sub>dc</sub>/3　V<sub>bn</sub> = V<sub>cn</sub> = +V<sub>dc</sub>/3</p></div>
+  </div>
+</section>
+
+<!-- 21 新：變頻器新方向 -->
+<section class="pg" id="p21">
+  <div class="wm">5-3</div>
+  <p class="eye">5-3 · 新趨勢<span class="new">NEW</span></p>
+  <h2>變頻器的三個新方向</h2>
+  <div class="grid g3">
+    <div class="c r"><div class="big">+5~10<small>% 續航</small></div><h3>SiC 功率模組全面導入</h3><p>逐步取代 Si IGBT，承受極高頻切換、熱損耗低。相同電池容量續航約多 5–10%（Tesla Model 3、Porsche Macan EV）。</p></div>
+    <div class="c"><div class="big">400→800<small>V</small></div><h3>搭配 800V 高壓架構</h3><p>為縮短充電時間升壓，變頻器需耐更高電壓；搭配 SiC，高壓低電流讓線束變細、整車減重。</p></div>
+    <div class="c"><div class="big">X-in-1</div><h3>多合一電驅 e-Axle</h3><p>馬達、變頻器、減速器甚至 BMS 整合於同一殼體，減少外部高壓線束，冷卻效率與空間利用更好。</p></div>
+  </div>
+  <p class="note">三者互相搭配：SiC 讓 800V 可行，800V 讓線束變細，e-Axle 再把整套縮進一個殼體。</p>
+</section>
+
+<!-- 22 5-4 預充 -->
+<section class="pg" id="p22">
+  <div class="wm">5-4</div>
+  <p class="eye">5-4 預充電路 · 圖5-20、5-22</p>
+  <h2>超過 90 V 就需要預充電路</h2>
+  <div class="row">
+    <div class="c" style="padding:18px">
+      <svg class="fig" viewBox="0 0 440 250" role="img" aria-label="預充電路：電池 V_B 經 K+ 與並聯的 K_P 串 R_P 到變頻器電容 C，負端經 K−">
+        <g stroke="#5a4d49" stroke-width="2" fill="none">
+          <line x1="50" y1="60" x2="50" y2="105"/><line x1="50" y1="145" x2="50" y2="200"/>
+          <line x1="32" y1="105" x2="68" y2="105"/><line x1="40" y1="115" x2="60" y2="115" stroke-width="4"/>
+          <line x1="32" y1="135" x2="68" y2="135"/><line x1="40" y1="145" x2="60" y2="145" stroke-width="4"/>
+          <line x1="50" y1="115" x2="50" y2="135" stroke-dasharray="3 4"/>
+          <line x1="50" y1="60" x2="150" y2="60"/><line x1="190" y1="60" x2="330" y2="60"/>
+          <line x1="150" y1="60" x2="185" y2="48"/><circle cx="150" cy="60" r="3" fill="#5a4d49"/><circle cx="190" cy="60" r="3" fill="#5a4d49"/>
+          <line x1="50" y1="200" x2="150" y2="200"/><line x1="190" y1="200" x2="330" y2="200"/>
+          <line x1="150" y1="200" x2="185" y2="188"/><circle cx="150" cy="200" r="3" fill="#5a4d49"/><circle cx="190" cy="200" r="3" fill="#5a4d49"/>
+          <line x1="330" y1="60" x2="330" y2="118"/><line x1="330" y1="142" x2="330" y2="200"/>
+          <line x1="306" y1="118" x2="354" y2="118"/><line x1="306" y1="142" x2="354" y2="142"/>
+          <line x1="330" y1="60" x2="410" y2="60"/><line x1="330" y1="200" x2="410" y2="200"/>
+        </g>
+        <g stroke="#a8423f" stroke-width="2.5" fill="none">
+          <line x1="100" y1="60" x2="100" y2="20"/><line x1="100" y1="20" x2="120" y2="20"/>
+          <line x1="120" y1="20" x2="148" y2="10"/><circle cx="120" cy="20" r="3" fill="#a8423f"/><circle cx="152" cy="20" r="3" fill="#a8423f"/>
+          <line x1="152" y1="20" x2="200" y2="20"/><rect x="200" y="12" width="44" height="16" fill="#ebc9c3"/>
+          <line x1="244" y1="20" x2="270" y2="20"/><line x1="270" y1="20" x2="270" y2="60"/>
+        </g>
+        <g font-size="14" font-weight="700" fill="#5a4d49">
+          <text x="8" y="130">V<tspan font-size="10" dy="3">B</tspan></text>
+          <text x="158" y="86">K+</text><text x="158" y="226">K−</text><text x="350" y="135">C</text>
+          <text x="370" y="232">變頻器</text>
+        </g>
+        <g font-size="14" font-weight="700" fill="#a8423f">
+          <text x="122" y="44">K<tspan font-size="10" dy="3">P</tspan></text><text x="206" y="46">R<tspan font-size="10" dy="3">P</tspan></text>
+        </g>
+      </svg>
+      <p style="font-size:13px;color:var(--mute);margin-top:6px">紅色支路是預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與主繼電器 K+ 並聯。Leaf 變頻器前端電容為 1000 μF / 500 V。</p>
+    </div>
+    <div class="grid">
+      <div class="c r"><h3>為什麼需要</h3><p>大電容 C 冷啟動時約 0 V，直接接通 = 瞬間短路（迴路 ≪ 20 mΩ）。依 i = C·dv/dt 產生湧浪電流，打壞 IGBT 與繼電器。</p></div>
+      <ol class="steps">
+        <li><b>預充</b>　K−、K<sub>P</sub> 閉合，經 R<sub>P</sub> 慢慢充 C</li>
+        <li><b>判斷完成</b>　V<sub>C</sub> 接近 V<sub>B</sub>，ΔV 典型 30 V</li>
+        <li><b>工作</b>　K<sub>P</sub> 斷開，K+、K− 閉合</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 23 兩實車 -->
+<section class="pg" id="p23">
+  <div class="wm">5-4</div>
+  <p class="eye">5-4 · 實例 · 圖5-21、5-23～5-25</p>
+  <h2>兩個實車的上電順序</h2>
+  <div class="grid g2">
+    <div class="c">
+      <p class="tag">NISSAN LEAF</p>
+      <p>三顆繼電器：主電源 1（K+）、主電源 2（K−）、預充（K<sub>P</sub>），全由 VCM 控制；預充電路在電池組的電池連接盒。</p>
+      <p style="margin-top:10px">電容充滿 → 變頻器送「高壓準備完成」給 VCM → 閉合主繼電器 1、斷開預充繼電器。</p>
+    </div>
+    <div class="c">
+      <p class="tag">TOYOTA ALTIS 油電</p>
+      <p>SMRB = B+ 主　SMRG = B− 主　SMRP = 預充</p>
+      <h3 style="margin-top:12px">上電 ON → READY</h3>
+      <p>SMRB → SMRP 預充約 <b>500 ms</b> → SMRG → SMRP 斷</p>
+      <h3 style="margin-top:12px">下電 READY → OFF</h3>
+      <p><b>先斷 SMRG（B−）→ 再斷 SMRB（B+）</b>→ SMRP 動作一次，偵測接點黏滯</p>
+    </div>
+  </div>
+</section>
+
+<!-- 24 新：高壓安全 -->
+<section class="pg" id="p24">
+  <div class="wm">5-4</div>
+  <p class="eye">5-4 · 新趨勢<span class="new">NEW</span></p>
+  <h2>高壓安全與預充的新技術</h2>
+  <div class="grid g3">
+    <div class="c"><div class="big">百萬次</div><h3>固態繼電器 SSC</h3><p>機械繼電器長期大電流易「電弧燒蝕」或接點黏死。改用半導體開關取代金屬接點，可百萬次無損開關，反應達微秒級。</p></div>
+    <div class="c r"><div class="big">1<small>ms</small></div><h3>引爆型保險絲 Pyro-fuse</h3><p>與安全氣囊連動：嚴重碰撞時引爆微型炸藥，1 毫秒內徹底切斷高壓電池，解決傳統熔斷保險絲熔斷不夠快的風險。</p></div>
+    <div class="c"><div class="big">DC-DC</div><h3>主動式預充</h3><p>不再只靠會發熱的預充電阻，改用小型 DC-DC 轉換器主動把電容電壓拉到目標值：速度更快，連續啟動也不會讓電阻過熱燒毀。</p></div>
+  </div>
+  <p class="note">對照前兩頁：SSC 取代 K+／K−、SMR 這類機械繼電器；主動式預充取代 R<sub>P</sub> 預充電阻。</p>
+</section>
+
+<!-- 25 考點 -->
+<section class="pg" id="p25">
+  <div class="wm">05</div>
+  <p class="eye">考點速記</p>
+  <h2>必背數字與易混淆處</h2>
+  <div class="stats">
+    <div><span>IGBT 問世</span><b>1991</b></div>
+    <div><span>IGBT</span><b>600 A／20 kHz</b></div>
+    <div><span>MOSFET/IGBT 分界</span><b>10 kW</b></div>
+    <div><span>整流二極體</span><b>6 個</b></div>
+    <div><span>斬波器輸出</span><b>約 14 V</b></div>
+    <div><span>輸入容量</span><b>1.8 倍</b></div>
+    <div><span>三相相位差</span><b>120°</b></div>
+    <div><span>需預充</span><b>&gt; 90 V</b></div>
+    <div><span>預充完成 ΔV</span><b>30 V</b></div>
+    <div><span>Altis 預充</span><b>500 ms</b></div>
+    <div><span>IGBT C-E</span><b>0.004 Ω</b></div>
+    <div><span>未預充迴路</span><b>≪ 20 mΩ</b></div>
+    <div class="n"><span>高壓快充</span><b>800V／350 kW</b></div>
+    <div class="n"><span>SiC 開關損耗</span><b>−70~80%</b></div>
+    <div class="n"><span>SiC 結溫</span><b>175–200°C</b></div>
+    <div class="n"><span>雙面冷卻熱阻</span><b>−50%</b></div>
+    <div class="n"><span>SiC 續航</span><b>+5~10%</b></div>
+    <div class="n"><span>Pyro-fuse</span><b>1 ms</b></div>
+  </div>
+  <div class="mix">
+    <p>· 變頻器 = 逆變器（DC→AC）；整流器反向</p>
+    <p>· 導通電阻：MOSFET 大、IGBT 小</p>
+    <p>· 驅動電流：BJT 大，其餘小</p>
+    <p>· Altis 下電：先 B− 後 B+</p>
+    <p>· 勘誤：第 53 頁應為 i = C·dv/dt</p>
+    <p>· 紅底為新技術補充</p>
+  </div>
+</section>
+
+<div class="nav" role="navigation" aria-label="換頁">
+  <button id="prev" aria-label="上一頁"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="cnt" id="cnt">01 / 25</span>
+  <button id="next" aria-label="下一頁"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+</div>
+
+<script>
+// 頁尾頁碼
+const pages = [...document.querySelectorAll('.pg')];
+const N = pages.length, pad = n => String(n).padStart(2, '0');
+pages.forEach((p, i) => { if (i) p.insertAdjacentHTML('beforeend', `<p class="foot">第五章 電動車馬達驅動控制與電能轉換　·　${pad(i + 1)}</p>`); });
+
+// SPWM 示意圖（單極性）：脈寬 ∝ |sin|
+(() => {
+  const svg = document.getElementById('spwm'), W = 440, x0 = 30, mid = 110, A = 80, K = 24;
+  let s = `<line x1="${x0}" y1="${mid}" x2="${x0 + W}" y2="${mid}" stroke="#bfb5a9" stroke-width="1.5"/>`;
+  for (let k = 0; k < K; k++) {
+    const c = (k + .5) / K, v = Math.sin(2 * Math.PI * c), w = Math.abs(v) * W / K * .92;
+    const x = x0 + c * W - w / 2;
+    s += `<rect x="${x.toFixed(1)}" y="${v > 0 ? mid - A : mid}" width="${w.toFixed(1)}" height="${A}" fill="#a8423f" opacity=".85"/>`;
+  }
+  let d = '';
+  for (let i = 0; i <= 200; i++) { const t = i / 200; d += `${i ? 'L' : 'M'}${(x0 + t * W).toFixed(1)},${(mid - A * Math.sin(2 * Math.PI * t)).toFixed(1)}`; }
+  s += `<path d="${d}" fill="none" stroke="#3f3532" stroke-width="2.2"/>`;
+  s += `<text x="${x0 - 6}" y="${mid - A + 4}" text-anchor="end" font-size="13" fill="#5a4d49">+V</text><text x="${x0 - 6}" y="${mid + A + 4}" text-anchor="end" font-size="13" fill="#5a4d49">−V</text><text x="${x0 - 6}" y="${mid + 4}" text-anchor="end" font-size="13" fill="#5a4d49">0</text>`;
+  svg.innerHTML = s;
+})();
+
+// 換頁：→ ↓ PageDown 空白 下一頁；← ↑ PageUp 上一頁；Home／End 首末頁
+const cnt = document.getElementById('cnt'), bar = document.getElementById('bar'), hint = document.getElementById('hint');
+let cur = 0;
+function current() {
+  const y = innerHeight * .4;
+  let n = 0;
+  pages.forEach((p, i) => { if (p.getBoundingClientRect().top <= y) n = i; });
+  return n;
+}
+function go(i) {
+  pages[Math.max(0, Math.min(N - 1, i))].scrollIntoView({block: 'start'});
+}
+// 比一個畫面高的頁（手機），先捲完該頁再換下一頁
+function step(dir) {
+  const p = pages[cur], r = p.getBoundingClientRect();
+  if (dir > 0 && r.bottom > innerHeight + 4) { scrollBy({top: Math.min(innerHeight * .85, r.bottom - innerHeight)}); return; }
+  if (dir < 0 && r.top < -4) { scrollBy({top: Math.max(-innerHeight * .85, r.top)}); return; }
+  go(cur + dir);
+}
+function sync() {
+  cur = current();
+  cnt.textContent = `${pad(cur + 1)} / ${N}`;
+  bar.style.width = `${(cur + 1) / N * 100}%`;
+  if (cur && hint) hint.style.opacity = 0;
+}
+addEventListener('scroll', () => requestAnimationFrame(sync), {passive: true});
+addEventListener('resize', sync);
+addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  const k = e.key;
+  if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); step(e.shiftKey && k === ' ' ? -1 : 1); }
+  else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); step(-1); }
+  else if (k === 'Home') { e.preventDefault(); go(0); }
+  else if (k === 'End') { e.preventDefault(); go(N - 1); }
+});
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+sync();
+</script>
+</body>
+</html>

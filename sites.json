@@ -105,6 +105,14 @@
     "group": "課程報告"
   },
   {
+    "id": "ev-motor-drive",
+    "title": "第五章 電動車馬達驅動控制與電能轉換",
+    "desc": "重點報告（網頁版，可用方向鍵換頁）：轉換器、功率半導體、變頻器、預充電路，含 800V、SiC 等新技術",
+    "url": "web/ev-motor-drive/",
+    "shot": "ev-motor-drive.jpg",
+    "group": "課程報告"
+  },
+  {
     "id": "hs-project",
     "title": "高中專題：車輛非廢氣排放回收",
     "desc": "高中專題簡報（網頁版，含 3D 模型與轉場動畫）",
