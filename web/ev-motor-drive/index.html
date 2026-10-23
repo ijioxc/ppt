@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <style>
 :root{
   color-scheme:light;
@@ -34,7 +35,7 @@ h2{font-size:clamp(28px,4vw,42px);line-height:1.3;font-weight:900;color:var(--re
 
 /* 卡片 */
 .grid{display:grid;gap:18px}
-.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)} .g3x{grid-template-columns:1fr 1fr 1.15fr} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
 .c{background:var(--card);border-radius:14px;padding:24px 26px}
 .c.r{background:var(--red);color:var(--on2)} .c.r h3,.c.r .big,.c.r b{color:var(--on)}
 .c h3{font-size:19px;font-weight:700;color:var(--red);margin-bottom:6px;line-height:1.45}
@@ -53,6 +54,7 @@ h2{font-size:clamp(28px,4vw,42px);line-height:1.3;font-weight:900;color:var(--re
 .chain .ar{align-self:center;font:900 30px/1 Arial;color:var(--red)}
 .sub{font-size:14px;font-weight:700;letter-spacing:.15em;color:var(--mute);margin:22px 0 10px}
 .row{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:center}
+.row>*,.grid>*{min-width:0}
 .flex{display:flex;gap:18px;flex-wrap:wrap}
 ul.dot{list-style:none}
 ul.dot li{position:relative;padding-left:18px;margin:6px 0}
@@ -68,6 +70,7 @@ td:first-child{border-radius:10px 0 0 10px;color:var(--red);font-weight:700;back
 td:last-child{border-radius:0 10px 10px 0}
 td.hi{background:var(--red);color:var(--on);font-weight:500}
 .tbl-wrap{overflow-x:auto}
+.nw1 td:first-child{white-space:nowrap;padding-right:12px}
 
 /* 封面 */
 .cover{background:var(--red);color:var(--on2)}
@@ -111,6 +114,48 @@ td.hi{background:var(--red);color:var(--on);font-weight:500}
 
 svg text{font-family:"Noto Sans TC",sans-serif}
 .fig{width:100%;height:auto;display:block}
+.cap{font-size:13px;color:var(--mute);margin-top:6px;line-height:1.6}
+.cap a{color:var(--mute);text-underline-offset:2px}
+
+/* 互動圖的控制列 */
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:10px;font-size:14px}
+.ctl button{all:unset;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--red);border:1.5px solid var(--red);border-radius:999px;padding:3px 12px;line-height:1.5}
+.ctl button:hover{background:var(--card2)}
+.ctl button.on,.ctl button:active{background:var(--red);color:var(--on)}
+.ctl button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ctl .seg{display:inline-flex}
+.ctl .seg button{border-radius:0}
+.ctl .seg button:first-child{border-radius:999px 0 0 999px}
+.ctl .seg button+button{border-left:0;border-radius:0 999px 999px 0}
+.ctl label{display:inline-flex;align-items:center;gap:6px;color:var(--txt);white-space:nowrap}
+.ctl input[type=range]{accent-color:var(--red);width:110px}
+.ctl output{font-variant-numeric:tabular-nums;font-weight:700;color:var(--red);min-width:2.4em}
+.st{font-size:14px;color:var(--ink);min-height:1.7em}
+.st b{font-variant-numeric:tabular-nums}
+.steps li{transition:background .3s,color .3s}
+.steps li.on{background:var(--red);color:var(--on2)} .steps li.on b{color:var(--on)}
+.steps li.on::before{background:var(--on);color:var(--red)}
+
+/* 實物照片 */
+.ph{margin:0;background:var(--card);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.ph img{display:block;width:100%;height:100%;object-fit:cover;min-height:0;flex:1}
+.ph figcaption{padding:10px 16px 12px;font-size:13.5px;line-height:1.55}
+.ph figcaption small{display:block;font-size:11.5px;color:var(--mute);margin-top:2px}
+.ph figcaption small a{color:var(--mute)}
+
+/* 800V 電流對照 */
+.bars{margin-top:16px;display:grid;gap:8px;font-size:14px}
+.bars div{display:grid;grid-template-columns:3.6em 1fr 3.6em;align-items:center;gap:10px}
+.bars i{display:block;height:14px;border-radius:7px;background:var(--red)}
+.bars i.lt{background:var(--line)}
+.bars span{font-weight:700;color:var(--red);font-variant-numeric:tabular-nums;text-align:right}
+
+/* 3D */
+.three{position:relative;height:clamp(260px,40vh,420px);border-radius:10px;overflow:hidden;background:var(--card2);cursor:grab}
+.three canvas{display:block}
+.three .lb{position:absolute;left:0;top:0;opacity:0;font-size:12.5px;font-weight:700;color:var(--ink);background:rgba(237,232,225,.86);padding:1px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;transition:opacity .3s}
+.three .lb.hot{color:var(--red)}
+.three .msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font-size:14px}
 
 /* 換頁控制 */
 .nav{position:fixed;right:18px;bottom:18px;z-index:10;display:flex;align-items:center;gap:6px;background:rgba(63,53,50,.88);color:#fff;border-radius:999px;padding:5px;backdrop-filter:blur(6px)}
@@ -137,6 +182,8 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   .split .slab{min-height:0;padding:30px}
   .hint{display:none}
   .foot{display:none}
+  .ph img{max-height:300px}
+  .row,.g3x{grid-template-columns:1fr!important}
 }
 @media (max-width:520px){ .g3,.g4{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
@@ -222,37 +269,9 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <div class="c r"><h3>三相橋式（右圖）</h3><p>6 顆開關 = 3 組半橋。線電壓 ±Vcc 方波；相電壓 ±Vcc/3、±2Vcc/3 階梯波；中性點 ±Vcc/6。</p></div>
     </div>
     <div class="c" style="padding:18px">
-      <svg class="fig" viewBox="0 0 420 300" role="img" aria-label="三相橋式變頻器：上臂 T1、T3、T5，下臂 T4、T6、T2，輸出 A、B、C">
-        <g stroke="#5a4d49" stroke-width="2" fill="none">
-          <line x1="40" y1="40" x2="380" y2="40"/><line x1="40" y1="260" x2="380" y2="260"/>
-          <line x1="40" y1="40" x2="40" y2="125"/><line x1="40" y1="175" x2="40" y2="260"/>
-          <line x1="22" y1="125" x2="58" y2="125"/><line x1="30" y1="135" x2="50" y2="135" stroke-width="4"/>
-          <line x1="22" y1="165" x2="58" y2="165"/><line x1="30" y1="175" x2="50" y2="175" stroke-width="4"/>
-          <line x1="40" y1="135" x2="40" y2="165" stroke-dasharray="3 4"/>
-          <g id="leg">
-            <line x1="150" y1="40" x2="150" y2="70"/><line x1="150" y1="120" x2="150" y2="180"/><line x1="150" y1="230" x2="150" y2="260"/>
-          </g>
-          <line x1="260" y1="40" x2="260" y2="70"/><line x1="260" y1="120" x2="260" y2="180"/><line x1="260" y1="230" x2="260" y2="260"/>
-          <line x1="370" y1="40" x2="370" y2="70"/><line x1="370" y1="120" x2="370" y2="180"/><line x1="370" y1="230" x2="370" y2="260"/>
-          <line x1="150" y1="150" x2="190" y2="150"/><line x1="260" y1="150" x2="300" y2="150"/><line x1="370" y1="150" x2="405" y2="150"/>
-        </g>
-        <g fill="#a8423f">
-          <rect x="128" y="70" width="44" height="50" rx="6"/><rect x="128" y="180" width="44" height="50" rx="6"/>
-          <rect x="238" y="70" width="44" height="50" rx="6"/><rect x="238" y="180" width="44" height="50" rx="6"/>
-          <rect x="348" y="70" width="44" height="50" rx="6"/><rect x="348" y="180" width="44" height="50" rx="6"/>
-        </g>
-        <g fill="#fbf1ee" font-size="15" font-weight="700" text-anchor="middle">
-          <text x="150" y="100">T1</text><text x="150" y="210">T4</text>
-          <text x="260" y="100">T3</text><text x="260" y="210">T6</text>
-          <text x="370" y="100">T5</text><text x="370" y="210">T2</text>
-        </g>
-        <g fill="#a8423f" font-size="16" font-weight="700">
-          <text x="194" y="145">A</text><text x="304" y="145">B</text><text x="392" y="140">C</text>
-          <text x="8" y="120">+</text><text x="10" y="190">−</text>
-        </g>
-        <text x="62" y="155" fill="#5a4d49" font-size="14" font-weight="700">DC</text>
-      </svg>
-      <p style="font-size:13px;color:var(--mute);margin-top:6px">上臂 T1、T3、T5，下臂 T4、T6、T2；每顆開關實際上還並聯續流二極體（圖中省略）。</p>
+      <svg class="fig" id="inv" viewBox="0 0 560 372" role="img" aria-label="三相橋式變頻器六步換相動畫：每一步有三顆開關導通，馬達磁場跟著轉 60 度"></svg>
+      <div class="ctl"><button id="invPlay" class="on">❚❚ 暫停</button><button id="invStep">下一步 ›</button><span class="st" id="invSt"></span></div>
+      <p class="cap">六步換相：每 60° 換一組開關，每相上臂或下臂輪流導通 180°。紅色 = 導通。磁場一次跳 60°，所以實際改用 SPWM（第 19 頁）讓它平順地轉。每顆開關另並聯續流二極體（圖中省略）。</p>
     </div>
   </div>
 </section>
@@ -310,6 +329,18 @@ svg text{font-family:"Noto Sans TC",sans-serif}
         <li><b>變頻器效率提升</b>　導通損失與發熱同步減少</li>
         <li><b>超高速充電</b>　350 kW 快充：Ioniq 5 從 10% 充到 80% 約 18 分鐘</li>
       </ul>
+      <div class="grid g2" style="gap:24px">
+      <div class="bars" aria-label="以 350 kW 充電為例的電流">
+        <p class="tag" style="margin:0">以 350 kW 為例　I = P ÷ V</p>
+        <div><em style="font-style:normal">400 V</em><i class="lt" style="width:100%"></i><span>875 A</span></div>
+        <div><em style="font-style:normal">800 V</em><i style="width:50%"></i><span>438 A</span></div>
+      </div>
+      <div class="bars" aria-label="同一條線的銅損">
+        <p class="tag" style="margin:0">銅損 I²R（同一條線）</p>
+        <div><em style="font-style:normal">400 V</em><i class="lt" style="width:100%"></i><span>100%</span></div>
+        <div><em style="font-style:normal">800 V</em><i style="width:25%"></i><span>25%</span></div>
+      </div>
+      </div>
     </div>
     <div class="c r">
       <h3>已導入的車款</h3>
@@ -375,6 +406,10 @@ svg text{font-family:"Noto Sans TC",sans-serif}
     <div class="c"><p class="tag">輸出端</p><div class="big">BJT</div><p>導通電阻低、耐高壓大電流</p></div>
   </div>
   <p class="note">代價是切換較慢，但對馬達控制已綽綽有餘。MOSFET 功耗較小；兩者驅動電路相同、可互換。</p>
+  <div class="grid g2" style="margin-top:22px">
+    <figure class="ph"><img src="img/igbt-module.jpg" alt="Mitsubishi CM1400DU-24NF IGBT 模組外觀，黑色塑膠外殼與上方螺絲端子" loading="lazy" style="flex:none;height:min(220px,26vh)"><figcaption>實物：車用等級的 IGBT 模組（1200 V／1400 A），上方螺絲是大電流端子<small>照片：Sthdhk／<a href="https://commons.wikimedia.org/wiki/File:MITSUBISHI_IGBT_module.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 4.0</small></figcaption></figure>
+    <figure class="ph"><img src="img/igbt-open.jpg" alt="拆開外殼的 CM600DU-24NFH IGBT 模組，可見多顆晶片與大量鋁打線" loading="lazy" style="flex:none;height:min(220px,26vh)"><figcaption>拆開後（600 A 等級）：多顆 IGBT 晶片與續流二極體並聯，靠密密麻麻的鋁打線連接，第 16 頁會再看到它<small>照片：Pslawinski／<a href="https://commons.wikimedia.org/wiki/File:CM600DU-24NFH.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption></figure>
+  </div>
 </section>
 
 <!-- 13 IGBT 開關 -->
@@ -428,8 +463,13 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-2</div>
   <p class="eye">5-2 · 新散熱<span class="new">NEW</span></p>
   <h2>IGBT 雙面冷卻：熱從兩面一起散</h2>
-  <p class="lede">封裝怕熱，就要把熱更快帶走。不論 IGBT 或 SiC 模組都適用：晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；適合空間受限、發熱量極高的逆變器。</p>
-  <div class="tbl-wrap"><table>
+  <p class="lede">封裝怕熱，就要把熱更快帶走。晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；IGBT 與 SiC 模組都適用。</p>
+  <div class="row" style="grid-template-columns:1.05fr 1fr;align-items:stretch">
+  <div class="c" style="padding:14px">
+    <div class="three" id="mod3d"><div class="msg">3D 模型載入中…</div></div>
+    <div class="ctl"><span class="seg"><button data-c="1" class="on">單面冷卻</button><button data-c="2">雙面冷卻</button></span><button id="m3Ex" class="on">組合</button><span class="st">拖曳可旋轉；橘點 = 熱流</span></div>
+  </div>
+  <div class="tbl-wrap" style="align-self:center"><table style="font-size:14.5px" class="nw1">
     <thead><tr><th></th><th>傳統單面冷卻</th><th>雙面冷卻</th></tr></thead>
     <tbody>
       <tr><td>散熱路徑</td><td>僅晶片背面向下傳導</td><td class="hi">正面與背面同時傳導</td></tr>
@@ -438,6 +478,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <tr><td>功率密度</td><td>較低，受限單面散熱</td><td class="hi">較高，逆變器體積與重量大幅縮小</td></tr>
     </tbody>
   </table></div>
+  </div>
   <p class="src">熱阻降幅依各研究實測：<a href="https://saemobilus.sae.org/content/2017-01-2456" target="_blank" rel="noopener">SAE 2017-01-2456（−23%）</a>、<a href="https://ieeexplore.ieee.org/document/8046403" target="_blank" rel="noopener">IEEE 平面封裝模組（−26.7%）</a>、<a href="https://publica.fraunhofer.de/entities/publication/5cfc393b-4545-4efe-ba92-040b51d673ea" target="_blank" rel="noopener">Fraunhofer IZM（−40%）</a></p>
 </section>
 
@@ -486,10 +527,18 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <p class="eye">5-3 · 3.4 · 圖5-15、5-16</p>
   <h2>SPWM：用脈衝拼出正弦波</h2>
   <div class="row">
-    <div class="c" style="padding:18px"><svg class="fig" id="spwm" viewBox="0 0 480 220" role="img" aria-label="單極性 SPWM：脈寬隨正弦變化，正半週脈衝向上、負半週向下"></svg></div>
+    <div class="c" style="padding:18px">
+      <svg class="fig" id="spwm" viewBox="0 0 480 270" role="img" aria-label="SPWM：上半為正弦調製波與三角載波比較，下半為輸出脈衝與其平均值"></svg>
+      <div class="ctl">
+        <span class="seg"><button data-m="uni" class="on">單極性</button><button data-m="bi">雙極性</button></span>
+        <label>幅值 m <input type="range" id="spA" min="0.1" max="1" step="0.05" value="0.8"><output id="spAo">0.80</output></label>
+        <label>頻率 f <input type="range" id="spF" min="0.5" max="2" step="0.25" value="1"><output id="spFo">1.00</output></label>
+      </div>
+      <p class="cap">上：調製波（正弦）與三角載波比較；下：輸出脈衝，虛線是它的平均值（馬達實際感受到的電壓）。拉滑桿看輸出幅值與頻率怎麼跟著變。</p>
+    </div>
     <div class="grid">
       <div class="c r"><p>每段脈衝面積 = 對應區間正弦波面積。改變調製波的頻率與幅值 → 調整輸出電壓的頻率、相位、幅值。</p></div>
-      <div class="c"><h3>單極性調製（左圖）</h3><p>正半週只有 0 / +V，負半週只有 0 / −V</p></div>
+      <div class="c"><h3>單極性調製</h3><p>正半週只有 0 / +V，負半週只有 0 / −V</p></div>
       <div class="c"><h3>雙極性調製</h3><p>正弦波與三角載波比較，輸出在 +V<sub>d</sub> 與 −V<sub>d</sub> 間切換</p></div>
     </div>
   </div>
@@ -500,11 +549,14 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-3</div>
   <p class="eye">5-3 · 實例 · 圖5-17～5-19</p>
   <h2>Nissan Leaf 的變頻器與再生制動</h2>
+  <div class="row" style="grid-template-columns:.8fr 1.6fr;align-items:stretch">
+  <figure class="ph"><img src="img/leaf-powertrain.jpg" alt="Nissan Leaf ZE1 動力總成：上方黑色外殼為變頻器，下方為 EM57 馬達，橘色為高壓線" loading="lazy"><figcaption>Leaf 動力總成：上方黑殼是<b>變頻器</b>，下方是 EM57 馬達，橘色線為高壓線<small>照片：TTTNIS／<a href="https://commons.wikimedia.org/wiki/File:Nissan_Leaf_ZE1_powertrain_02.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC0</small></figcaption></figure>
   <div class="grid g2">
     <div class="c"><h3>組成</h3><p>馬達控制器、驅動器、平流電容器、2 個電流感知器、冷卻液溫度感知器、電源模組（6 顆 IGBT）</p></div>
     <div class="c"><h3>訊號鏈</h3><p>解析器（轉子位置）+ 電流感知器 → 馬達控制器 → 驅動器 → IGBT</p></div>
     <div class="c"><h3>永磁同步馬達</h3><p>扭力 ∝ 電流；轉速由三相電流頻率決定。依馬達溫度限制輸出扭力。</p></div>
     <div class="c r"><h3>再生制動 · 圖5-18</h3><p>減速時馬達短暫作發電機；變頻器內的二極體把 AC 整流成 DC 回充鋰電池。</p><p class="mono" style="margin-top:8px;color:var(--on)">V<sub>an</sub> = −2V<sub>dc</sub>/3　V<sub>bn</sub> = V<sub>cn</sub> = +V<sub>dc</sub>/3</p></div>
+  </div>
   </div>
 </section>
 
@@ -521,9 +573,10 @@ svg text{font-family:"Noto Sans TC",sans-serif}
     <div class="ar" aria-hidden="true">→</div>
     <div class="c r"><p class="tag">本頁新增</p><h3>③ 多合一電驅 e-Axle</h3><p>馬達、變頻器、減速器甚至 BMS 整合在同一殼體：外部高壓線束更少，冷卻與空間利用更好</p></div>
   </div>
-  <div class="grid g2" style="margin-top:18px">
+  <div class="grid g3x" style="margin-top:18px">
     <div class="c"><div class="big">+5~7<small>% 續航</small></div><p>同一顆電池，SiC 變頻器比 Si IGBT 多跑約 5–7%；次世代 SiC 上看 10%。</p></div>
     <div class="c"><h3>實車</h3><p>Tesla Model 3（2018，第一款量產 SiC 變頻器）、Porsche Macan Electric（800V 平台 + SiC 脈衝逆變器）</p></div>
+    <figure class="ph"><img src="img/eaxle-cutaway.jpg" alt="多合一電驅剖面模型：上方變頻器、中間馬達定子線圈與轉子、右側減速齒輪" loading="lazy" style="flex:none;height:150px;object-position:50% 40%"><figcaption>多合一電驅剖面：上變頻器、中馬達、右減速齒輪<small>照片：RudolfSimon／<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption></figure>
   </div>
   <p class="src">來源：<a href="https://zephr.autocar.co.uk/car-news/technology/under-skin-how-new-inverters-give-evs-more-power-and-range" target="_blank" rel="noopener">Autocar，Infineon 訪談（+7%、次世代 10%）</a>、<a href="https://research.unipd.it/handle/11577/3146201" target="_blank" rel="noopener">Padova 大學研究（+5%）</a>、<a href="https://www.electricvehiclesresearch.com/articles/23080/teslas-innovative-power-electronics-the-silicon-carbide-inverter" target="_blank" rel="noopener">IDTechEx，Tesla SiC 變頻器</a>、<a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom</a></p>
 </section>
@@ -535,40 +588,42 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <h2>超過 90 V 就需要預充電路</h2>
   <div class="row">
     <div class="c" style="padding:18px">
-      <svg class="fig" viewBox="0 0 440 250" role="img" aria-label="預充電路：電池 V_B 經 K+ 與並聯的 K_P 串 R_P 到變頻器電容 C，負端經 K−">
+      <svg class="fig" style="max-height:28vh" viewBox="0 0 440 250" role="img" aria-label="預充電路：電池 V_B 經 K+ 與並聯的 K_P 串 R_P 到變頻器電容 C，負端經 K−">
         <g stroke="#5a4d49" stroke-width="2" fill="none">
           <line x1="50" y1="60" x2="50" y2="105"/><line x1="50" y1="145" x2="50" y2="200"/>
           <line x1="32" y1="105" x2="68" y2="105"/><line x1="40" y1="115" x2="60" y2="115" stroke-width="4"/>
           <line x1="32" y1="135" x2="68" y2="135"/><line x1="40" y1="145" x2="60" y2="145" stroke-width="4"/>
           <line x1="50" y1="115" x2="50" y2="135" stroke-dasharray="3 4"/>
           <line x1="50" y1="60" x2="150" y2="60"/><line x1="190" y1="60" x2="330" y2="60"/>
-          <line x1="150" y1="60" x2="185" y2="48"/><circle cx="150" cy="60" r="3" fill="#5a4d49"/><circle cx="190" cy="60" r="3" fill="#5a4d49"/>
+          <line id="kpos" x1="150" y1="60" x2="185" y2="48"/><circle cx="150" cy="60" r="3" fill="#5a4d49"/><circle cx="190" cy="60" r="3" fill="#5a4d49"/>
           <line x1="50" y1="200" x2="150" y2="200"/><line x1="190" y1="200" x2="330" y2="200"/>
-          <line x1="150" y1="200" x2="185" y2="188"/><circle cx="150" cy="200" r="3" fill="#5a4d49"/><circle cx="190" cy="200" r="3" fill="#5a4d49"/>
+          <line id="kneg" x1="150" y1="200" x2="185" y2="188"/><circle cx="150" cy="200" r="3" fill="#5a4d49"/><circle cx="190" cy="200" r="3" fill="#5a4d49"/>
           <line x1="330" y1="60" x2="330" y2="118"/><line x1="330" y1="142" x2="330" y2="200"/>
           <line x1="306" y1="118" x2="354" y2="118"/><line x1="306" y1="142" x2="354" y2="142"/>
           <line x1="330" y1="60" x2="410" y2="60"/><line x1="330" y1="200" x2="410" y2="200"/>
         </g>
-        <g stroke="#a8423f" stroke-width="2.5" fill="none">
+        <g stroke="#a8423f" stroke-width="2.5" fill="none" id="prePath">
           <line x1="100" y1="60" x2="100" y2="20"/><line x1="100" y1="20" x2="120" y2="20"/>
-          <line x1="120" y1="20" x2="148" y2="10"/><circle cx="120" cy="20" r="3" fill="#a8423f"/><circle cx="152" cy="20" r="3" fill="#a8423f"/>
+          <line id="kpre" x1="120" y1="20" x2="148" y2="10"/><circle cx="120" cy="20" r="3" fill="#a8423f"/><circle cx="152" cy="20" r="3" fill="#a8423f"/>
           <line x1="152" y1="20" x2="200" y2="20"/><rect x="200" y="12" width="44" height="16" fill="#ebc9c3"/>
           <line x1="244" y1="20" x2="270" y2="20"/><line x1="270" y1="20" x2="270" y2="60"/>
         </g>
         <g font-size="14" font-weight="700" fill="#5a4d49">
           <text x="8" y="130">V<tspan font-size="10" dy="3">B</tspan></text>
           <text x="158" y="86">K+</text><text x="158" y="226">K−</text><text x="350" y="135">C</text>
-          <text x="370" y="232">變頻器</text>
+          <text x="370" y="232">變頻器</text><text id="vcTxt" x="360" y="104" fill="#a8423f">V<tspan font-size="10" dy="3">C</tspan><tspan dy="-3"> = 0 V</tspan></text>
         </g>
         <g font-size="14" font-weight="700" fill="#a8423f">
           <text x="122" y="44">K<tspan font-size="10" dy="3">P</tspan></text><text x="206" y="46">R<tspan font-size="10" dy="3">P</tspan></text>
         </g>
       </svg>
-      <p style="font-size:13px;color:var(--mute);margin-top:6px">紅色支路是預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與主繼電器 K+ 並聯。Leaf 變頻器前端電容為 1000 μF / 500 V。</p>
+      <svg class="fig" id="pcPlot" viewBox="0 0 440 120" role="img" aria-label="上電時電容電壓與電流的變化曲線" style="margin-top:4px;max-height:20vh"></svg>
+      <div class="ctl"><button id="pcGo">▶ 預充上電</button><button id="pcBad">不預充直接接通</button><span class="st" id="pcSt"></span></div>
+      <p class="cap">紅色支路是預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與主繼電器 K+ 並聯。示意數值：V<sub>B</sub> 360 V、C 1000 μF（Leaf 實際規格 1000 μF / 500 V）、R<sub>P</sub> 100 Ω。</p>
     </div>
     <div class="grid">
       <div class="c r"><h3>為什麼需要</h3><p>大電容 C 冷啟動時約 0 V，直接接通 = 瞬間短路（迴路 ≪ 20 mΩ）。依 i = C·dv/dt 產生湧浪電流，打壞 IGBT 與繼電器。</p></div>
-      <ol class="steps">
+      <ol class="steps" id="pcSteps">
         <li><b>預充</b>　K−、K<sub>P</sub> 閉合，經 R<sub>P</sub> 慢慢充 C</li>
         <li><b>判斷完成</b>　V<sub>C</sub> 接近 V<sub>B</sub>，ΔV 典型 30 V</li>
         <li><b>工作</b>　K<sub>P</sub> 斷開，K+、K− 閉合</li>
@@ -664,20 +719,212 @@ const pages = [...document.querySelectorAll('.pg')];
 const N = pages.length, pad = n => String(n).padStart(2, '0');
 pages.forEach((p, i) => { if (i) p.insertAdjacentHTML('beforeend', `<p class="foot">第五章 電動車馬達驅動控制與電能轉換　·　${pad(i + 1)}</p>`); });
 
-// SPWM 示意圖（單極性）：脈寬 ∝ |sin|
+// 共用：進入畫面才動，離開就停；尊重「減少動態效果」
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const C = {red: '#a8423f', ink: '#3f3532', txt: '#5a4d49', mute: '#7a6c66', line: '#bfb5a9', card: '#e6e0d8', on: '#fbf1ee', pink: '#ebc9c3'};
+function whenVisible(el, on, off) {
+  new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? on() : off && off()), {threshold: .35}).observe(el);
+}
+// 拖完滑桿就放掉焦點，方向鍵回到換頁
+document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('change', () => r.blur()));
+
+// 三相橋式六步換相（p5）
 (() => {
-  const svg = document.getElementById('spwm'), W = 440, x0 = 30, mid = 110, A = 80, K = 24;
-  let s = `<line x1="${x0}" y1="${mid}" x2="${x0 + W}" y2="${mid}" stroke="#bfb5a9" stroke-width="1.5"/>`;
-  for (let k = 0; k < K; k++) {
-    const c = (k + .5) / K, v = Math.sin(2 * Math.PI * c), w = Math.abs(v) * W / K * .92;
-    const x = x0 + c * W - w / 2;
-    s += `<rect x="${x.toFixed(1)}" y="${v > 0 ? mid - A : mid}" width="${w.toFixed(1)}" height="${A}" fill="#a8423f" opacity=".85"/>`;
+  const svg = document.getElementById('inv');
+  // 開關位置：上臂 T1 T3 T5，下臂 T4 T6 T2；腳 A B C
+  const legX = [130, 230, 330], up = ['T1', 'T3', 'T5'], dn = ['T4', 'T6', 'T2'];
+  // 每一步各腳接上臂(+1)或下臂(−1)；依序 561 612 123 234 345 456
+  const S = [[1, -1, 1], [1, -1, -1], [1, 1, -1], [-1, 1, -1], [-1, 1, 1], [-1, -1, 1]];
+  // 相電壓 = Vcc × (2s_a − s_b − s_c)/6，取值 ±⅓、±⅔ Vcc；線電壓 = Vcc × (s_a − s_b)/2
+  let g = `<g stroke="${C.txt}" stroke-width="2" fill="none">
+    <line x1="40" y1="40" x2="350" y2="40"/><line x1="40" y1="250" x2="350" y2="250"/>
+    <line x1="40" y1="40" x2="40" y2="125"/><line x1="40" y1="165" x2="40" y2="250"/>
+    <line x1="22" y1="125" x2="58" y2="125"/><line x1="30" y1="135" x2="50" y2="135" stroke-width="4"/>
+    <line x1="22" y1="155" x2="58" y2="155"/><line x1="30" y1="165" x2="50" y2="165" stroke-width="4"/>
+    <line x1="40" y1="135" x2="40" y2="155" stroke-dasharray="3 4"/>`;
+  legX.forEach(x => g += `<line x1="${x}" y1="40" x2="${x}" y2="68"/><line x1="${x}" y1="116" x2="${x}" y2="174"/><line x1="${x}" y1="222" x2="${x}" y2="250"/><line x1="${x}" y1="145" x2="${x + 34}" y2="145"/>`);
+  g += `</g><text x="8" y="120" fill="${C.red}" font-size="16" font-weight="700">+</text><text x="10" y="186" fill="${C.red}" font-size="16" font-weight="700">−</text><text x="58" y="150" fill="${C.txt}" font-size="13" font-weight="700">V<tspan font-size="9" dy="3">cc</tspan></text>`;
+  legX.forEach((x, i) => {
+    g += `<rect id="iu${i}" x="${x - 22}" y="68" width="44" height="48" rx="6"/><text id="tu${i}" x="${x}" y="97" text-anchor="middle" font-size="14" font-weight="700">${up[i]}</text>`;
+    g += `<rect id="id${i}" x="${x - 22}" y="174" width="44" height="48" rx="6"/><text id="td${i}" x="${x}" y="203" text-anchor="middle" font-size="14" font-weight="700">${dn[i]}</text>`;
+    g += `<text x="${x + 38}" y="141" fill="${C.red}" font-size="15" font-weight="700">${'ABC'[i]}</text><text id="iv${i}" x="${x + 38}" y="163" fill="${C.ink}" font-size="12.5" font-weight="700"></text>`;
+  });
+  // 馬達定子：A 軸 0°、B 軸 120°、C 軸 240°
+  const mx = 470, my = 140, R = 66;
+  g += `<circle cx="${mx}" cy="${my}" r="${R + 10}" fill="${C.card}" stroke="${C.line}" stroke-width="2"/><circle cx="${mx}" cy="${my}" r="${R - 26}" fill="none" stroke="${C.line}" stroke-dasharray="2 4"/>`;
+  for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; g += `<circle cx="${(mx + (R - 26) * Math.cos(a)).toFixed(1)}" cy="${(my - (R - 26) * Math.sin(a)).toFixed(1)}" r="2.5" fill="${C.line}"/>`; }
+  [0, 1, 2].forEach(i => {
+    const a = i * 2 * Math.PI / 3, deg = -i * 120;
+    g += `<g transform="rotate(${deg} ${mx} ${my})"><rect id="co${i}" x="${mx + R - 14}" y="${my - 11}" width="20" height="22" rx="4"/><rect id="cn${i}" x="${mx - R - 6}" y="${my - 11}" width="20" height="22" rx="4"/></g>`;
+    g += `<text x="${(mx + (R + 22) * Math.cos(a)).toFixed(1)}" y="${(my - (R + 22) * Math.sin(a) + 5).toFixed(1)}" text-anchor="middle" fill="${C.red}" font-size="14" font-weight="700">${'ABC'[i]}</text>`;
+  });
+  g += `<g id="vec"><line x1="${mx}" y1="${my}" x2="${mx + R - 30}" y2="${my}" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/><path d="M${mx + R - 22},${my} l-14,-9 v18z" fill="${C.ink}"/></g><circle cx="${mx}" cy="${my}" r="6" fill="${C.ink}"/>`;
+  g += `<text x="${mx}" y="${my + R + 34}" text-anchor="middle" fill="${C.mute}" font-size="12.5">馬達磁場方向</text>`;
+  // 下方波形：A 相相電壓（階梯）與 A-B 線電壓（方波）
+  const wx = 40, ww = 500, wy = 305, wa = 30;
+  g += `<rect id="wcur" y="${wy - wa - 6}" width="${ww / 6}" height="${2 * wa + 12}" fill="${C.pink}" opacity=".6"/>`;
+  g += `<line x1="${wx}" y1="${wy}" x2="${wx + ww}" y2="${wy}" stroke="${C.line}"/>`;
+  let pa = '', pl = '';
+  S.forEach((s, k) => {
+    const va = (2 * s[0] - s[1] - s[2]) / 6, vl = (s[0] - s[1]) / 2;
+    const x1 = wx + k * ww / 6, x2 = x1 + ww / 6;
+    pa += `${k ? 'L' : 'M'}${x1},${wy - va * wa * 1.5} L${x2},${wy - va * wa * 1.5}`;
+    pl += `${k ? 'L' : 'M'}${x1},${wy - vl * wa} L${x2},${wy - vl * wa}`;
+  });
+  g += `<path d="${pl}" fill="none" stroke="${C.mute}" stroke-width="1.6" stroke-dasharray="5 3"/><path d="${pa}" fill="none" stroke="${C.red}" stroke-width="2.6"/>`;
+  g += `<text x="${wx - 6}" y="${wy + 4}" text-anchor="end" font-size="11" fill="${C.mute}">0</text><text x="${wx - 6}" y="${wy - wa - 2}" text-anchor="end" font-size="11" fill="${C.mute}">+V</text>`;
+  g += `<text x="${wx + ww}" y="${wy + wa + 26}" text-anchor="end" font-size="12" fill="${C.txt}"><tspan fill="${C.red}" font-weight="700">━ A 相電壓（階梯波）</tspan>　<tspan fill="${C.mute}">┅ A-B 線電壓（方波）</tspan></text>`;
+  svg.innerHTML = g;
+
+  const $ = id => svg.querySelector('#' + id), st = document.getElementById('invSt');
+  const playBtn = document.getElementById('invPlay');
+  let k = 0, timer = null, playing = !RM;
+  function draw() {
+    const s = S[k];
+    s.forEach((v, i) => {
+      const onU = v > 0;
+      $('iu' + i).setAttribute('fill', onU ? C.red : C.card); $('iu' + i).setAttribute('stroke', onU ? C.red : C.line);
+      $('id' + i).setAttribute('fill', onU ? C.card : C.red); $('id' + i).setAttribute('stroke', onU ? C.line : C.red);
+      $('tu' + i).setAttribute('fill', onU ? C.on : C.mute); $('td' + i).setAttribute('fill', onU ? C.mute : C.on);
+      const va = (2 * v - s[(i + 1) % 3] - s[(i + 2) % 3]) / 6;
+      $('iv' + i).textContent = (va > 0 ? '+' : '−') + (Math.abs(va) > .5 ? '⅔' : '⅓');
+      const col = va > 0 ? C.red : C.ink, op = Math.abs(va) > .5 ? 1 : .45;
+      $('co' + i).setAttribute('fill', col); $('co' + i).setAttribute('opacity', op);
+      $('cn' + i).setAttribute('fill', va > 0 ? C.ink : C.red); $('cn' + i).setAttribute('opacity', op);
+    });
+    // 空間向量角度
+    const va = (2 * s[0] - s[1] - s[2]) / 3, vb = (2 * s[1] - s[2] - s[0]) / 3, vc = (2 * s[2] - s[0] - s[1]) / 3;
+    const re = va - (vb + vc) / 2, im = (vb - vc) * Math.sqrt(3) / 2;
+    const ang = Math.atan2(im, re) * 180 / Math.PI;
+    $('vec').setAttribute('transform', `rotate(${-ang} ${mx} ${my})`);
+    $('vec').style.transition = RM ? '' : 'transform .35s';
+    $('wcur').setAttribute('x', wx + k * ww / 6);
+    const on = s.map((v, i) => v > 0 ? up[i] : dn[i]).sort((a, b) => a[1] - b[1]).join(' ');
+    st.innerHTML = `狀態 <b>${k + 1}／6</b>　導通 ${on}　→ 磁場 <b>${Math.round((ang + 360) % 360)}°</b>`;
   }
-  let d = '';
-  for (let i = 0; i <= 200; i++) { const t = i / 200; d += `${i ? 'L' : 'M'}${(x0 + t * W).toFixed(1)},${(mid - A * Math.sin(2 * Math.PI * t)).toFixed(1)}`; }
-  s += `<path d="${d}" fill="none" stroke="#3f3532" stroke-width="2.2"/>`;
-  s += `<text x="${x0 - 6}" y="${mid - A + 4}" text-anchor="end" font-size="13" fill="#5a4d49">+V</text><text x="${x0 - 6}" y="${mid + A + 4}" text-anchor="end" font-size="13" fill="#5a4d49">−V</text><text x="${x0 - 6}" y="${mid + 4}" text-anchor="end" font-size="13" fill="#5a4d49">0</text>`;
-  svg.innerHTML = s;
+  const next = () => { k = (k + 1) % 6; draw(); };
+  const start = () => { if (playing && !timer) timer = setInterval(next, 1100); };
+  const stop = () => { clearInterval(timer); timer = null; };
+  const label = () => { playBtn.textContent = playing ? '❚❚ 暫停' : '▶ 播放'; playBtn.classList.toggle('on', playing); };
+  playBtn.onclick = () => { playing = !playing; label(); playing ? start() : stop(); };
+  document.getElementById('invStep').onclick = () => { playing = false; label(); stop(); next(); };
+  label(); draw();
+  whenVisible(svg, start, stop);
+})();
+
+// SPWM（p19）：正弦調製波與三角載波比較
+(() => {
+  const svg = document.getElementById('spwm'), x0 = 34, W = 436, K = 18, N = 1400;
+  const top = 62, tA = 46, bot = 196, bA = 52;
+  const A = document.getElementById('spA'), F = document.getElementById('spF');
+  const Ao = document.getElementById('spAo'), Fo = document.getElementById('spFo');
+  const modeBtns = [...svg.parentNode.querySelectorAll('[data-m]')];
+  let mode = 'uni';
+  const tri = t => { const p = (t * K) % 1; return p < .5 ? 2 * p : 2 - 2 * p; }; // 0..1
+  function draw() {
+    const m = +A.value, f = +F.value;
+    Ao.textContent = m.toFixed(2); Fo.textContent = f.toFixed(2);
+    let ref = '', car = '', out = '', avg = '', prev = null;
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, x = (x0 + t * W).toFixed(1), s = m * Math.sin(2 * Math.PI * f * t);
+      let c, o;
+      if (mode === 'bi') { c = 2 * tri(t) - 1; o = s > c ? 1 : -1; }
+      else { c = tri(t) * (s >= 0 ? 1 : -1); o = Math.abs(s) > tri(t) ? Math.sign(s) : 0; }
+      ref += `${i ? 'L' : 'M'}${x},${(top - s * tA).toFixed(1)}`;
+      car += `${i ? 'L' : 'M'}${x},${(top - c * tA).toFixed(1)}`;
+      const y = (bot - o * bA).toFixed(1);
+      out += prev === null ? `M${x},${y}` : (prev !== y ? `L${x},${prev}L${x},${y}` : '');
+      prev = y;
+      avg += `${i ? 'L' : 'M'}${x},${(bot - s * bA).toFixed(1)}`;
+    }
+    out += `L${x0 + W},${prev}`;
+    const lab = (x, y, t, a = 'end') => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="12" fill="${C.txt}">${t}</text>`;
+    svg.innerHTML =
+      `<line x1="${x0}" y1="${top}" x2="${x0 + W}" y2="${top}" stroke="${C.line}"/>` +
+      `<path d="${car}" fill="none" stroke="${C.mute}" stroke-width="1.1"/>` +
+      `<path d="${ref}" fill="none" stroke="${C.red}" stroke-width="2.4"/>` +
+      lab(x0 - 6, top + 4, '比較') +
+      `<text x="${x0 + W}" y="${top + tA + 18}" text-anchor="end" font-size="11.5"><tspan fill="${C.red}" font-weight="700">━ 調製波</tspan><tspan fill="${C.mute}">　╱╲ 三角載波</tspan></text>` +
+      `<line x1="${x0}" y1="${bot}" x2="${x0 + W}" y2="${bot}" stroke="${C.line}"/>` +
+      `<path d="${out}" fill="none" stroke="${C.ink}" stroke-width="1.6"/>` +
+      `<path d="${avg}" fill="none" stroke="${C.red}" stroke-width="2.4" stroke-dasharray="6 4"/>` +
+      lab(x0 - 6, bot - bA + 4, '+V') + lab(x0 - 6, bot + 4, '0') + lab(x0 - 6, bot + bA + 4, '−V') +
+      `<text x="${x0 + W}" y="${bot + bA + 18}" text-anchor="end" font-size="11.5" fill="${C.txt}">輸出脈衝　<tspan fill="${C.red}" font-weight="700">┅ 平均值：幅值 ${m.toFixed(2)}×V、${f.toFixed(2)} 個週期</tspan></text>`;
+  }
+  modeBtns.forEach(b => b.onclick = () => { mode = b.dataset.m; modeBtns.forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  A.oninput = F.oninput = draw;
+  draw();
+})();
+
+// 預充電路（p22）
+(() => {
+  const VB = 360, Cf = 1e-3, RP = 100, tau = RP * Cf, tDone = tau * Math.log(VB / 30), T = .45;
+  const plot = document.getElementById('pcPlot'), st = document.getElementById('pcSt');
+  const li = [...document.querySelectorAll('#pcSteps li')];
+  const blade = {kpos: [150, 60, 190], kneg: [150, 200, 190], kpre: [120, 20, 152]};
+  const setK = (id, closed) => {
+    const [x, y, x2] = blade[id], el = document.getElementById(id);
+    el.setAttribute('x2', closed ? x2 - 3 : x + 35); el.setAttribute('y2', closed ? y : y - 12);
+    el.setAttribute('stroke', closed ? C.red : (id === 'kpre' ? C.red : C.txt));
+  };
+  const vcTxt = document.getElementById('vcTxt').lastElementChild;
+  const pre = document.getElementById('prePath');
+  const px = t => 40 + t / T * 380, pv = v => 100 - v / VB * 80, pi = i => 100 - i / 4 * 80;
+  function axes(extra = '') {
+    return `<line x1="40" y1="100" x2="425" y2="100" stroke="${C.line}"/><line x1="40" y1="16" x2="40" y2="100" stroke="${C.line}"/>` +
+      `<text x="425" y="116" text-anchor="end" font-size="11" fill="${C.mute}">時間 → ${T * 1000} ms</text>` +
+      `<text x="36" y="24" text-anchor="end" font-size="11" fill="${C.red}">${VB}V</text><text x="36" y="104" text-anchor="end" font-size="11" fill="${C.mute}">0</text>` + extra;
+  }
+  function reset() {
+    setK('kpos', false); setK('kneg', false); setK('kpre', false);
+    pre.setAttribute('stroke-dasharray', ''); vcTxt.textContent = ' = 0 V';
+    li.forEach(l => l.classList.remove('on'));
+    plot.innerHTML = axes(`<text x="232" y="62" text-anchor="middle" font-size="13" fill="${C.mute}">按下方按鈕看上電過程</text>`);
+    st.textContent = '';
+  }
+  let raf = 0;
+  function runPre() {
+    cancelAnimationFrame(raf); reset();
+    setK('kneg', true); setK('kpre', true); li[0].classList.add('on');
+    pre.setAttribute('stroke-dasharray', '6 5');
+    const t0 = performance.now(), dur = RM ? 1 : 2600;
+    const frame = now => {
+      const t = Math.min(1, (now - t0) / dur) * T;
+      let v = '', c = '';
+      for (let i = 0; i <= 120; i++) {
+        const tt = i / 120 * t, vc = tt < tDone ? VB * (1 - Math.exp(-tt / tau)) : VB, ic = tt < tDone ? (VB - vc) / RP : 0;
+        v += `${i ? 'L' : 'M'}${px(tt).toFixed(1)},${pv(vc).toFixed(1)}`; c += `${i ? 'L' : 'M'}${px(tt).toFixed(1)},${pi(ic).toFixed(1)}`;
+      }
+      const vc = t < tDone ? VB * (1 - Math.exp(-t / tau)) : VB, ic = t < tDone ? (VB - vc) / RP : 0;
+      pre.style.strokeDashoffset = -now / 30;
+      plot.innerHTML = axes(`<line x1="${px(tDone)}" y1="16" x2="${px(tDone)}" y2="100" stroke="${C.line}" stroke-dasharray="3 3"/>` +
+        `<text x="${px(tDone) + 4}" y="94" font-size="10.5" fill="${C.mute}">ΔV = 30 V</text>` +
+        `<path d="${c}" fill="none" stroke="${C.ink}" stroke-width="1.8"/><path d="${v}" fill="none" stroke="${C.red}" stroke-width="2.6"/>` +
+        `<text x="420" y="72" text-anchor="end" font-size="11.5"><tspan fill="${C.red}" font-weight="700">━ 電容電壓 V<tspan font-size="9" dy="2">C</tspan></tspan><tspan dy="-2" fill="${C.ink}">　━ 電流（峰值 ${VB / RP} A）</tspan></text>`);
+      vcTxt.textContent = ` = ${Math.round(vc)} V`;
+      // 依時間標出目前在第幾步：預充 → 判斷完成 → 工作
+      const phase = t < tDone ? 0 : t < tDone + .04 ? 1 : 2;
+      li.forEach((l, i) => l.classList.toggle('on', i === phase));
+      if (phase === 2) { setK('kpre', false); setK('kpos', true); pre.setAttribute('stroke-dasharray', ''); }
+      st.innerHTML = t < tDone ? `預充中…　電流最大只有 <b>${VB / RP} A</b>` : `完成，約 <b>${Math.round(tDone * 1000)} ms</b>；主繼電器在電壓差剩 30 V 時才閉合`;
+      if (t < T) raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+  }
+  function runBad() {
+    cancelAnimationFrame(raf); reset();
+    setK('kneg', true); setK('kpos', true);
+    vcTxt.textContent = ` = ${VB} V`;
+    const peak = Math.round(VB / .02);
+    plot.innerHTML = axes(`<path d="M40,${pv(0)} L41,${pv(VB)} L425,${pv(VB)}" fill="none" stroke="${C.red}" stroke-width="2.6"/>` +
+      `<path d="M40,100 L40.5,4 L42,100" fill="${C.ink}" stroke="${C.ink}" stroke-width="2"/>` +
+      `<text x="52" y="40" font-size="13" font-weight="700" fill="${C.ink}">湧浪電流 ≈ ${peak.toLocaleString()} A（迴路約 20 mΩ）</text>` +
+      `<text x="52" y="58" font-size="12" fill="${C.red}">比預充高約 ${Math.round(peak / (VB / RP)).toLocaleString()} 倍，IGBT 與繼電器接點會被打壞</text>`);
+    st.innerHTML = '電容等於瞬間短路：i = C·dv/dt，dt 趨近 0 時電流極大';
+  }
+  document.getElementById('pcGo').onclick = runPre;
+  document.getElementById('pcBad').onclick = runBad;
+  reset();
 })();
 
 // 換頁：→ ↓ PageDown 空白 下一頁；← ↑ PageUp 上一頁；Home／End 首末頁
@@ -708,7 +955,8 @@ function sync() {
 addEventListener('scroll', () => requestAnimationFrame(sync), {passive: true});
 addEventListener('resize', sync);
 addEventListener('keydown', e => {
-  if (e.altKey || e.ctrlKey || e.metaKey || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if (e.altKey || e.ctrlKey || e.metaKey || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.target.tagName === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return;
   const k = e.key;
   if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); step(e.shiftKey && k === ' ' ? -1 : 1); }
   else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); step(-1); }
@@ -718,6 +966,181 @@ addEventListener('keydown', e => {
 document.getElementById('prev').onclick = () => step(-1);
 document.getElementById('next').onclick = () => step(1);
 sync();
+</script>
+<script type="module">
+// 功率模組 3D 分解圖（p16）：單面冷卻 vs 雙面冷卻，橘點表示熱流
+const box = document.getElementById('mod3d');
+const ui = box.parentNode;
+let started = false;
+new IntersectionObserver(es => { if (!started && es[0].isIntersecting) { started = true; init().catch(e => { box.querySelector('.msg').textContent = '這台裝置無法顯示 3D（需要 WebGL）'; console.error(e); }); } }, {rootMargin: '100% 0px'}).observe(box);
+
+async function init() {
+  const THREE = await import('three');
+  const {OrbitControls} = await import('three/addons/controls/OrbitControls.js');
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  box.querySelector('.msg').remove();
+  box.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(32, 1, .1, 100);
+  cam.position.set(8.2, 6.2, 9.6);
+  const ctl = new OrbitControls(cam, renderer.domElement);
+  ctl.enableZoom = false; ctl.enablePan = false; ctl.enableDamping = true;
+  ctl.minPolarAngle = .5; ctl.maxPolarAngle = 1.45;
+  ctl.autoRotate = !RM; ctl.autoRotateSpeed = .8;
+  ctl.target.set(.9, .6, 0);
+  renderer.domElement.style.touchAction = 'pan-y';
+  ctl.addEventListener('start', () => ctl.autoRotate = false);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xb8aea3, 1.6));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.8); sun.position.set(5, 10, 6); scene.add(sun);
+
+  const M = (color, metal = 0, rough = .6) => new THREE.MeshStandardMaterial({color, metalness: metal, roughness: rough});
+  const mat = {
+    cool: M(0x9aa3ab, .55, .45), cu: M(0xc27a4a, .7, .35), solder: M(0xbfc3c6, .6, .4),
+    cer: M(0xf1ece4, 0, .8), die: M(0x3b4048, .3, .4), diode: M(0x56606b, .3, .45), wire: M(0xd8dadc, .8, .3),
+  };
+  const W = 6, D = 4;
+  const slab = (h, m, w = W, d = D) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+  // 散熱器：底板 + 鰭片
+  function coldPlate(flip) {
+    const g = new THREE.Group(), base = slab(.35, mat.cool, W + .6, D + .6);
+    g.add(base);
+    for (let i = 0; i < 9; i++) {
+      const fin = slab(.55, mat.cool, .16, D + .6);
+      fin.position.set(-W / 2 + .1 + i * (W - .2) / 8, flip ? .45 : -.45, 0); g.add(fin);
+    }
+    return g;
+  }
+  function dbc() {
+    const g = new THREE.Group();
+    const a = slab(.07, mat.cu, W - .4, D - .4), b = slab(.22, mat.cer), c = slab(.07, mat.cu, W - .4, D - .4);
+    a.position.y = -.145; c.position.y = .145; g.add(a, b, c); return g;
+  }
+  // 晶片：2 顆 IGBT + 2 顆二極體
+  const chipPos = [[-1.6, -.8, 1.3, mat.die], [-1.6, .9, 1.3, mat.die], [1.2, -.8, .9, mat.diode], [1.2, .9, .9, mat.diode]];
+  function chips() {
+    const g = new THREE.Group();
+    chipPos.forEach(([x, z, s, m]) => { const c = slab(.14, m, s, s); c.position.set(x, 0, z); g.add(c); });
+    return g;
+  }
+  function spacers() {
+    const g = new THREE.Group();
+    chipPos.forEach(([x, z, s]) => { const c = slab(.32, mat.cu, s * .8, s * .8); c.position.set(x, 0, z); g.add(c); });
+    return g;
+  }
+  function wires() {
+    const g = new THREE.Group();
+    chipPos.forEach(([x, z, s]) => {
+      for (let k = 0; k < 4; k++) {
+        const zz = z - s / 3 + k * s / 4.5;
+        const p0 = new THREE.Vector3(x - s / 4, 0, zz), p2 = new THREE.Vector3(x + s / 2 + .55, -.2, zz);
+        const p1 = new THREE.Vector3((p0.x + p2.x) / 2, .55, zz);
+        g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(p0, p1, p2), 16, .025, 6), mat.wire));
+      }
+    });
+    return g;
+  }
+  const solder = () => slab(.05, mat.solder, W - .5, D - .5);
+
+  // 每層：物件、組合時的 y、分解時多出的 y、標籤
+  const layers = {
+    1: [
+      [coldPlate(false), -.2, -1.6, '散熱器（冷卻水道）'],
+      [slab(.3, mat.cu), .1, -.9, '銅底板'],
+      [solder(), .28, -.55],
+      [dbc(), .5, -.2, 'DBC 覆銅陶瓷基板'],
+      [solder(), .72, .15],
+      [chips(), .82, .5, '晶片：IGBT＋二極體', true],
+      [wires(), .89, 1.1, '鋁打線（容易熱疲勞斷裂）'],
+    ],
+    2: [
+      [coldPlate(false), -0.5, -1.12, '下散熱器'],
+      [dbc(), -0.1, -0.56, '下 DBC 基板'],
+      [solder(), 0.11, -0.28],
+      [chips(), 0.2, 0, '晶片：IGBT＋二極體', true],
+      [solder(), 0.3, 0.24],
+      [spacers(), 0.49, 0.52, '銅墊片（取代打線）'],
+      [solder(), 0.68, 0.77],
+      [dbc(), 0.88, 1.05, '上 DBC 基板'],
+      [coldPlate(true), 1.28, 1.61, '上散熱器'],
+    ],
+  };
+  const groups = {};
+  for (const k of [1, 2]) {
+    const g = new THREE.Group();
+    layers[k].forEach(L => { L[0].position.y = L[1]; g.add(L[0]); });
+    groups[k] = g; scene.add(g);
+  }
+
+  // HTML 標籤
+  const labels = {};
+  for (const k of [1, 2]) labels[k] = layers[k].filter(L => L[3]).map(L => {
+    const el = document.createElement('span'); el.className = 'lb' + (L[4] ? ' hot' : ''); el.textContent = L[3];
+    box.appendChild(el); return [el, L];
+  });
+
+  // 熱流粒子：從晶片出發，單面只往下，雙面上下都走
+  const N = 140, pg = new THREE.BufferGeometry(), pos = new Float32Array(N * 3);
+  pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pts = new THREE.Points(pg, new THREE.PointsMaterial({color: 0xe8792b, size: .22, transparent: true, opacity: .95, depthWrite: false, depthTest: false}));
+  pts.renderOrder = 9; scene.add(pts);
+  const P = Array.from({length: N}, () => ({age: Math.random(), dir: 1, x: 0, z: 0}));
+
+  let mode = 1, ex = 1, exT = 1;
+  const btns = [...ui.querySelectorAll('[data-c]')], exBtn = document.getElementById('m3Ex');
+  function setMode(m) { mode = m; btns.forEach(b => b.classList.toggle('on', +b.dataset.c === m)); }
+  btns.forEach(b => b.onclick = () => setMode(+b.dataset.c));
+  exBtn.onclick = () => { exT = exT ? 0 : 1; exBtn.textContent = exT ? '組合' : '分解'; exBtn.classList.toggle('on', !!exT); };
+
+  function chipY() { const L = layers[mode].find(L => L[4]); return L[1] + L[2] * ex; }
+  function spawn(p) {
+    const c = chipPos[Math.floor(Math.random() * 4)];
+    p.x = c[0] + (Math.random() - .5) * c[2] * .8; p.z = c[1] + (Math.random() - .5) * c[2] * .8;
+    p.dir = mode === 2 && Math.random() < .5 ? 1 : -1; p.age = 0;
+  }
+  P.forEach(spawn);
+
+  function resize() {
+    const w = box.clientWidth, h = box.clientHeight;
+    renderer.setSize(w, h); cam.aspect = w / h; cam.zoom = Math.min(1, cam.aspect / 1.35); cam.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(box); resize();
+
+  let visible = true;
+  new IntersectionObserver(es => visible = es[0].isIntersecting).observe(box);
+  const v = new THREE.Vector3();
+  let last = performance.now();
+  renderer.setAnimationLoop(now => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (!visible) return;
+    ex += (exT - ex) * Math.min(1, dt * 6);
+    for (const k of [1, 2]) {
+      groups[k].visible = k === mode;
+      layers[k].forEach(L => L[0].position.y = L[1] + L[2] * ex);
+    }
+    // 熱：往下走到散熱器底，雙面時另一半往上
+    const y0 = chipY(), span = mode === 2 ? 1.2 + 1.1 * ex : 1.4 + 1.2 * ex;
+    P.forEach((p, i) => {
+      p.age += dt * (RM ? 0 : .55);
+      if (p.age > 1) spawn(p);
+      pos[i * 3] = p.x; pos[i * 3 + 1] = y0 + p.dir * p.age * span; pos[i * 3 + 2] = p.z;
+    });
+    pg.attributes.position.needsUpdate = true;
+    ctl.update();
+    renderer.render(scene, cam);
+    // 標籤貼在每層右側
+    const w = box.clientWidth, h = box.clientHeight;
+    for (const k of [1, 2]) labels[k].forEach(([el, L]) => {
+      if (k !== mode) { el.style.opacity = 0; return; }
+      v.set(W / 2 + .3, L[0].position.y, 0).project(cam);
+      el.style.opacity = ex > .6 ? 1 : 0;
+      const x = Math.min((v.x * .5 + .5) * w + 6, w - el.offsetWidth - 4);
+      el.style.transform = `translate(${x}px,${(-v.y * .5 + .5) * h - 10}px)`;
+    });
+  });
+}
 </script>
 </body>
 </html>
