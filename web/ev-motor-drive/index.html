@@ -212,6 +212,19 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .zoomable .side{transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .5s}
 .zbtn{all:unset;position:absolute;z-index:3;right:max(24px,calc((100vw - 1180px)/2));top:22px;cursor:pointer;font-size:13px;color:var(--ink);padding:4px 12px;border-radius:999px;opacity:.75;transition:opacity .3s}
 .zbtn:hover{opacity:1} .zbtn:focus-visible{outline:2px solid var(--ink)}
+/* 一般圖文頁的放大模式：圖那一欄變寬，文字欄整體縮小，標題變小、引言收起 */
+.zoomable>h2{transition:font-size .6s,margin .6s}
+.zoomable.zoom>h2{font-size:26px;margin-bottom:12px}
+.zoomable.zoom>.lede{display:none}
+.zrow{transition:grid-template-columns .7s cubic-bezier(.2,.7,.2,1)}
+.zoomable.zoom .zrow{grid-template-columns:.44fr 1fr!important}
+.zoomable.zoom .zrow.fl{grid-template-columns:1fr .44fr!important}
+.zoomable.zoom .txtc{zoom:.76}
+.zoomable.zoom .figc .fig{max-height:calc(100vh - 300px)}
+.zoomable.zoom .figc .cap{display:none}
+#p5.zoom .figc .fig{max-height:calc(100vh - 315px)}
+#p18.zoom #mot3d{height:calc(100vh - 290px)!important}
+#p22.zoom .figc svg:first-child{max-height:37vh!important} #p22.zoom #pcPlot{max-height:20vh!important}
 /* p16：模組 3D 全頁，比較表是右側玻璃卡 */
 #p16{justify-content:flex-start} #p16 .copy{max-width:640px}
 #p16 .side{position:absolute;z-index:2;right:max(24px,calc((100vw - 1180px)/2));top:50%;transform:translateY(-38%);width:min(520px,40vw);padding:16px 20px 14px;border-radius:16px;transform-origin:100% 100%}
@@ -368,17 +381,17 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 05 變頻器三型式 -->
-<section class="pg" id="p5">
+<section class="pg zoomable" id="p5">
   <div class="wm">5-1</div>
   <p class="eye">5-1 · DC → AC · 圖5-3、5-4</p>
   <h2>變頻器的三種型式</h2>
-  <div class="row">
-    <div class="grid">
+  <div class="row zrow">
+    <div class="grid txtc">
       <div class="c"><h3>單相半橋</h3><p>2 顆開關 + 2 顆分壓電容，輸出 ±Vcc/2。</p></div>
       <div class="c"><h3>單相全橋</h3><p>4 顆開關 T1–T4。T1、T4 導通 → 正電壓；T2、T3 導通 → 負電壓。交替切換即得交流。</p></div>
       <div class="c r"><h3>三相橋式（右圖）</h3><p>6 顆開關 = 3 組半橋。線電壓 ±Vcc 方波；相電壓 ±Vcc/3、±2Vcc/3 階梯波；中性點 ±Vcc/6。</p></div>
     </div>
-    <div class="c" style="padding:18px">
+    <div class="c figc" style="padding:18px">
       <svg class="fig" id="inv" viewBox="0 0 560 372" role="img" aria-label="三相橋式變頻器六步換相動畫：每一步有三顆開關導通，馬達磁場跟著轉 60 度"></svg>
       <div class="ctl"><button id="invPlay" class="on">❚❚ 暫停</button><button id="invStep">下一步 ›</button><span class="st" id="invSt"></span></div>
       <p class="cap">六步換相：每 60° 換一組開關，每相上臂或下臂輪流導通 180°。紅色 = 導通。磁場一次跳 60°，所以實際改用 SPWM（第 19 頁）讓它平順地轉。每顆開關另並聯續流二極體（圖中省略）。</p>
@@ -387,16 +400,16 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 06 整流器 -->
-<section class="pg" id="p6">
+<section class="pg zoomable" id="p6">
   <div class="wm">5-1</div>
   <p class="eye">5-1 · AC → DC · 圖5-5</p>
   <h2>整流器：讓煞車變成充電</h2>
-  <div class="row" style="grid-template-columns:1.4fr 1fr">
-    <div class="c" style="padding:18px">
+  <div class="row zrow fl" style="grid-template-columns:1.4fr 1fr">
+    <div class="c figc" style="padding:18px">
       <svg class="fig" id="rect" viewBox="0 0 520 280" role="img" aria-label="三相橋式全波整流電路：馬達發出的三相電經 D1 到 D6 六個二極體整流，再經電容濾波回充電池；每一刻只有電壓最高那相的上臂與最低那相的下臂兩顆二極體導通"></svg>
       <div class="ctl"><button id="rectStep">下一步 ›</button><span class="st" id="rectSt"></span></div>
     </div>
-    <div class="grid">
+    <div class="grid txtc">
       <div class="c r"><div class="big" style="font-size:64px;margin:0">6<small>個二極體 D1–D6</small></div><h3>三相橋式全波整流</h3><p>電動車常用的整流電路；原理是二極體單向導通。</p></div>
       <div class="c"><h3>減速時馬達 = 三相發電機</h3><p>轉速愈快，三相電壓愈高</p></div>
       <div class="c"><h3>整流 → 濾波 → 穩壓 → 回充</h3><p>這就是再生制動的電能路徑</p></div>
@@ -531,18 +544,18 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 13 IGBT 開關 -->
-<section class="pg" id="p13">
+<section class="pg zoomable" id="p13">
   <div class="wm">5-2</div>
   <p class="eye">5-2 · 2.3 · 圖5-8～5-10</p>
   <h2>IGBT 怎麼開、怎麼關</h2>
   <p class="lede">閘極 G 控制 MOSFET，MOSFET 再驅動 BJT；三腳 G 閘極、C 集極、E 射極。</p>
-  <div class="row" style="grid-template-columns:1fr 1.45fr;align-items:stretch">
-    <div class="grid" style="gap:12px;align-content:center">
+  <div class="row zrow" style="grid-template-columns:1fr 1.45fr;align-items:stretch">
+    <div class="grid txtc" style="gap:12px;align-content:center">
       <div class="c r"><h3>導通</h3><p>V<sub>GE</sub> 為正且 &gt; V<sub>GE(th)</sub> → 形成溝道 → I<sub>C</sub> 隨 V<sub>GE</sub> 上升</p></div>
       <div class="c"><h3>截止</h3><p>閘射極加反向電壓或不加訊號 → 溝道消失</p></div>
       <div class="c"><h3>四大特性</h3><p>高輸入阻抗 · 快速切換 · 耐高壓大電流 · 電壓驅動</p></div>
     </div>
-    <div class="c" style="padding:18px">
+    <div class="c figc" style="padding:18px">
       <svg class="fig" id="igbtSw" viewBox="0 -8 520 248" role="img" aria-label="IGBT 切換波形：閘極電壓 VGE 與集極電流 IC 的時序，標出開通延遲、上升時間、關斷延遲、下降時間與拖尾電流"></svg>
       <div class="ctl"><span class="st" id="swSt"></span></div>
       <p class="cap">T<sub>ON</sub> = t<sub>d(on)</sub> + t<sub>r</sub>；T<sub>OFF</sub> = t<sub>d(off)</sub> + t<sub>fi1</sub> + t<sub>fi2</sub>。波形為示意，時間不按比例。</p>
@@ -626,16 +639,16 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 18 三相橋式與轉速 -->
-<section class="pg" id="p18">
+<section class="pg zoomable" id="p18">
   <div class="wm">5-3</div>
   <p class="eye">5-3 · 圖5-14</p>
   <h2>三相橋式變頻器與轉速控制</h2>
-  <div class="row" style="grid-template-columns:1.2fr 1fr;align-items:stretch">
-    <div class="c" style="padding:14px">
+  <div class="row zrow fl" style="grid-template-columns:1.2fr 1fr;align-items:stretch">
+    <div class="c figc" style="padding:14px">
       <div class="three" id="mot3d" style="height:clamp(280px,50vh,480px)"><div class="msg">3D 模型載入中…</div><div class="hud" id="motHud"></div></div>
       <div class="ctl"></div>
     </div>
-    <div class="grid" style="gap:12px;align-content:center">
+    <div class="grid txtc" style="gap:12px;align-content:center">
     <div class="c r">
       <p class="tag">感應馬達轉速</p>
       <div class="eq" style="color:var(--on)">n = 60f / P × (1 − s)</div>
@@ -652,12 +665,12 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 19 SPWM -->
-<section class="pg" id="p19">
+<section class="pg zoomable" id="p19">
   <div class="wm">5-3</div>
   <p class="eye">5-3 · 3.4 · 圖5-15、5-16</p>
   <h2>SPWM：用脈衝拼出正弦波</h2>
-  <div class="row">
-    <div class="c" style="padding:18px">
+  <div class="row zrow fl">
+    <div class="c figc" style="padding:18px">
       <svg class="fig" id="spwm" viewBox="0 0 480 270" role="img" aria-label="SPWM：上半為正弦調製波與三角載波比較，下半為輸出脈衝與其平均值"></svg>
       <div class="ctl">
         <span class="seg"><button data-m="uni" class="on">單極性</button><button data-m="bi">雙極性</button></span>
@@ -666,7 +679,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       </div>
       <p class="cap">上：調製波（正弦）與三角載波比較；下：輸出脈衝，虛線是它的平均值（馬達實際感受到的電壓）。拉滑桿看輸出幅值與頻率怎麼跟著變。</p>
     </div>
-    <div class="grid">
+    <div class="grid txtc">
       <div class="c r"><p>每段脈衝面積 = 對應區間正弦波面積。改變調製波的頻率與幅值 → 調整輸出電壓的頻率、相位、幅值。</p></div>
       <div class="c"><h3>單極性調製</h3><p>正半週只有 0 / +V，負半週只有 0 / −V</p></div>
       <div class="c"><h3>雙極性調製</h3><p>正弦波與三角載波比較，輸出在 +V<sub>d</sub> 與 −V<sub>d</sub> 間切換</p></div>
@@ -716,12 +729,12 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 22 5-4 預充 -->
-<section class="pg" id="p22">
+<section class="pg zoomable" id="p22">
   <div class="wm">5-4</div>
   <p class="eye">5-4 預充電路 · 圖5-20、5-22</p>
   <h2>超過 90 V 就需要預充電路</h2>
-  <div class="row">
-    <div class="c" style="padding:18px">
+  <div class="row zrow fl">
+    <div class="c figc" style="padding:18px">
       <svg class="fig" style="max-height:28vh" viewBox="0 0 440 250" role="img" aria-label="預充電路：電池 V_B 經 K+ 與並聯的 K_P 串 R_P 到變頻器電容 C，負端經 K−">
         <g stroke="#5a4d49" stroke-width="2" fill="none">
           <line x1="50" y1="60" x2="50" y2="105"/><line x1="50" y1="145" x2="50" y2="200"/>
@@ -755,7 +768,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <div class="ctl"><button id="pcGo">▶ 預充上電</button><button id="pcBad">不預充直接接通</button><span class="st" id="pcSt"></span></div>
       <p class="cap">紅色支路 = 預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與 K+ 並聯。示意值：V<sub>B</sub> 360 V、C 1000 μF（同 Leaf）、R<sub>P</sub> 100 Ω。</p>
     </div>
-    <div class="grid">
+    <div class="grid txtc">
       <div class="c r"><h3>為什麼需要</h3><p>大電容 C 冷啟動時約 0 V，直接接通 = 瞬間短路（迴路 ≪ 20 mΩ）。依 i = C·dv/dt 產生湧浪電流，打壞 IGBT 與繼電器。</p></div>
       <ol class="steps" id="pcSteps">
         <li><b>預充</b>　K−、K<sub>P</sub> 閉合，經 R<sub>P</sub> 慢慢充 C</li>
@@ -767,12 +780,12 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 23 兩實車 -->
-<section class="pg" id="p23">
+<section class="pg zoomable" id="p23">
   <div class="wm">5-4</div>
   <p class="eye">5-4 · 實例 · 圖5-21、5-23～5-25</p>
   <h2>兩個實車的上電順序</h2>
-  <div class="grid g2">
-    <div class="c">
+  <div class="grid g2 zrow">
+    <div class="c txtc">
       <p class="tag">NISSAN LEAF</p>
       <p>三顆繼電器：主電源 1（K+）、主電源 2（K−）、預充（K<sub>P</sub>），全由 VCM 控制；預充電路在電池組的電池連接盒。</p>
       <p style="margin-top:10px">電容充滿 → 變頻器送「高壓準備完成」給 VCM → 閉合主繼電器 1、斷開預充繼電器。</p>
@@ -783,7 +796,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
         <li>K<sub>P</sub>（預充）＝ <b>SMRP</b>（預充）</li>
       </ul>
     </div>
-    <div class="c" style="padding:18px 22px">
+    <div class="c figc" style="padding:18px 22px">
       <p class="tag">TOYOTA ALTIS 油電 · 繼電器時序</p>
       <svg class="fig" id="smr" viewBox="0 0 520 226" role="img" aria-label="Altis 系統主繼電器時序：上電時 SMRB、SMRP 先閉合預充約 500 毫秒，再閉合 SMRG、斷開 SMRP 進入 READY；下電時先斷 SMRG 再斷 SMRB，最後 SMRP 動作一次檢查接點"></svg>
       <div class="ctl"><span class="st" id="smrSt"></span></div>
@@ -1279,6 +1292,8 @@ function dots(id) {
 Object.keys(frags).forEach(id => { document.querySelector(`#${id} .ctl`).insertAdjacentHTML('beforeend', '<span class="dots" aria-hidden="true"></span>'); dots(id); });
 function zoom(p, on) {
   p.classList.toggle('zoom', on);
+  // 文字欄縮放是瞬間的，淡入一下比較順
+  if (!RM) p.querySelectorAll('.txtc').forEach(el => el.animate([{opacity: 0}, {opacity: 1}], {duration: 550, easing: 'ease-out'}));
   const b = p.querySelector('.zbtn'); if (b) b.textContent = on ? '縮回文字 ↙' : '放大圖 ↗';
 }
 document.querySelectorAll('.zoomable').forEach(p => {
