@@ -467,7 +467,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="row" style="grid-template-columns:1.05fr 1fr;align-items:stretch">
   <div class="c" style="padding:14px">
     <div class="three" id="mod3d"><div class="msg">3D 模型載入中…</div></div>
-    <div class="ctl"><span class="seg"><button data-c="1" class="on">單面冷卻</button><button data-c="2">雙面冷卻</button></span><button id="m3Ex" class="on">組合</button><span class="st">拖曳可旋轉；橘點 = 熱流</span></div>
+    <div class="ctl"><span class="seg"><button data-c="1" class="on">單面冷卻</button><button data-c="2">雙面冷卻</button></span><button id="m3Ex">分解</button></div>
   </div>
   <div class="tbl-wrap" style="align-self:center"><table style="font-size:14.5px" class="nw1">
     <thead><tr><th></th><th>傳統單面冷卻</th><th>雙面冷卻</th></tr></thead>
@@ -936,15 +936,34 @@ function current() {
   pages.forEach((p, i) => { if (p.getBoundingClientRect().top <= y) n = i; });
   return n;
 }
+// 頁內分步：在這些頁按 → ／← 先切換頁內狀態，到頭了才換頁
+const frags = {
+  // 單面組合 → 單面分解 → 雙面分解 → 雙面組合：先看外觀，拆開看層次，換雙面比較，再組回去
+  p16: dir => {
+    const seq = [[1, 0], [1, 1], [2, 1], [2, 0]];
+    const ex = document.getElementById('m3Ex'), c = +document.querySelector('#p16 [data-c].on').dataset.c;
+    const t = seq.findIndex(([m, e]) => m === c && e === +ex.classList.contains('on')) + dir;
+    if (t < 0 || t >= seq.length) return false;
+    const [m, e] = seq[t];
+    if (m !== c) document.querySelector(`#p16 [data-c="${m}"]`).click();
+    if (e !== +ex.classList.contains('on')) ex.click();
+    return true;
+  },
+};
+// 平滑捲動途中再按鍵，以剛剛要去的那頁為準，不會跳過或重複
+let target = -1, targetAt = 0;
 function go(i) {
-  pages[Math.max(0, Math.min(N - 1, i))].scrollIntoView({block: 'start'});
+  target = Math.max(0, Math.min(N - 1, i)); targetAt = performance.now();
+  pages[target].scrollIntoView({block: 'start'});
 }
-// 比一個畫面高的頁（手機），先捲完該頁再換下一頁
 function step(dir) {
-  const p = pages[cur], r = p.getBoundingClientRect();
+  const i = target >= 0 && performance.now() - targetAt < 800 ? target : current();
+  const p = pages[i], r = p.getBoundingClientRect();
+  if (frags[p.id] && frags[p.id](dir)) return;
+  if (i === target && performance.now() - targetAt < 800) { go(i + dir); return; }
   if (dir > 0 && r.bottom > innerHeight + 4) { scrollBy({top: Math.min(innerHeight * .85, r.bottom - innerHeight)}); return; }
   if (dir < 0 && r.top < -4) { scrollBy({top: Math.max(-innerHeight * .85, r.top)}); return; }
-  go(cur + dir);
+  go(i + dir);
 }
 function sync() {
   cur = current();
@@ -1088,7 +1107,7 @@ async function init() {
   pts.renderOrder = 9; scene.add(pts);
   const P = Array.from({length: N}, () => ({age: Math.random(), dir: 1, x: 0, z: 0}));
 
-  let mode = 1, ex = 1, exT = 1;
+  let mode = 1, ex = 0, exT = 0;
   const btns = [...ui.querySelectorAll('[data-c]')], exBtn = document.getElementById('m3Ex');
   function setMode(m) { mode = m; btns.forEach(b => b.classList.toggle('on', +b.dataset.c === m)); }
   btns.forEach(b => b.onclick = () => setMode(+b.dataset.c));
