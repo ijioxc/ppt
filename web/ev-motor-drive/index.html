@@ -46,6 +46,12 @@ h2{font-size:clamp(28px,4vw,42px);line-height:1.3;font-weight:900;color:var(--re
 .g4 .big{font-size:clamp(28px,2.7vw,38px);white-space:nowrap}
 .note{margin-top:22px;font-size:15px}
 .note b{margin-right:4px}
+.src{margin-top:16px;font-size:12.5px;line-height:1.6;color:var(--mute)}
+.src a{color:var(--mute);text-underline-offset:2px}
+.src a:hover{color:var(--red)}
+.chain{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:stretch}
+.chain .ar{align-self:center;font:900 30px/1 Arial;color:var(--red)}
+.sub{font-size:14px;font-weight:700;letter-spacing:.15em;color:var(--mute);margin:22px 0 10px}
 .row{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:center}
 .flex{display:flex;gap:18px;flex-wrap:wrap}
 ul.dot{list-style:none}
@@ -122,7 +128,8 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   .pg{padding:64px 16px 90px;justify-content:flex-start}
   .g3,.g4,.toc{grid-template-columns:1fr 1fr}
   .row,.split,.g2{grid-template-columns:1fr}
-  .vs{grid-template-columns:1fr}
+  .vs,.chain{grid-template-columns:1fr}
+  .chain .ar{transform:rotate(90deg);justify-self:center}
   .vs .op{font-size:30px}
   .stats{grid-template-columns:repeat(2,1fr)}
   .mix{grid-template-columns:1fr}
@@ -151,7 +158,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
     <a href="#p17"><span>03</span><em>變頻器控制馬達</em></a>
     <a href="#p22"><span>04</span><em>預充電路</em></a>
   </nav>
-  <p class="by">重點報告　Mr.張　2026.10.20</p>
+  <p class="by">每節最後補充業界新技術：800V 高壓、SiC 碳化矽、雙面冷卻、高壓安全<br>重點報告　Mr.張　2026.10.20</p>
   <p class="hint" id="hint">按 <kbd>→</kbd> <kbd>←</kbd> 或 <kbd>空白鍵</kbd> 換頁，也可以直接往下捲</p>
 </section>
 
@@ -187,7 +194,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <h3>開關切換</h3><p>調控送至馬達的功率，降低損失、提升效率</p>
     </div>
   </div>
-  <p class="note">本章架構：轉換器有哪幾種（5-1）→ 用什麼元件做（5-2）→ 變頻器怎麼控制馬達（5-3）→ 高壓上電時如何保護它（5-4）。</p>
+  <p class="note">本章架構：轉換器有哪幾種（5-1）→ 用什麼元件做（5-2）→ 變頻器怎麼控制馬達（5-3）→ 高壓上電時如何保護它（5-4）。每節最後一頁（標 NEW）補充課本之後的業界新技術。</p>
 </section>
 
 <!-- 04 四種方向 -->
@@ -292,6 +299,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-1</div>
   <p class="eye">5-1 · 新趨勢<span class="new">NEW</span></p>
   <h2>800V 高壓架構：電壓加倍，電流減半</h2>
+  <p class="lede">斬波器把高壓降下來給 12 V 系統用；反過來，主電路這幾年正從 400V 往上升到 800V。四種轉換器都還在，只是全部要承受加倍的電壓。</p>
   <div class="row" style="grid-template-columns:1.7fr 1fr;align-items:stretch">
     <div class="c">
       <h3>為什麼要升到 800V</h3>
@@ -300,15 +308,16 @@ svg text{font-family:"Noto Sans TC",sans-serif}
         <li><b>線材更細、更輕</b>　高壓線束截面積縮小，整車減重</li>
         <li><b>銅損降低</b>　I²R 損失隨電流平方下降</li>
         <li><b>變頻器效率提升</b>　導通損失與發熱同步減少</li>
-        <li><b>超高速充電</b>　支援可達 350 kW 等級的快充</li>
+        <li><b>超高速充電</b>　350 kW 快充：Ioniq 5 從 10% 充到 80% 約 18 分鐘</li>
       </ul>
     </div>
     <div class="c r">
       <h3>已導入的車款</h3>
-      <ul class="dot"><li>Hyundai E-GMP 平台</li><li>Kia EV6</li><li>Porsche Taycan</li><li>Lotus Eletre</li><li>Lucid Air</li></ul>
+      <ul class="dot"><li>Hyundai E-GMP 平台（Ioniq 5、Kia EV6）</li><li>Porsche Taycan、Macan Electric</li><li>Lotus Eletre</li><li>Lucid Air（900V 級）</li></ul>
     </div>
   </div>
-  <p class="note"><b>搭配：</b>800V 系統通常搭配 SiC（碳化矽）功率元件，進一步提升效率與功率密度 → 見 5-2。</p>
+  <p class="note"><b>下一步：</b>電壓加倍，開關元件也要耐得住 → 800V 系統多半搭配 SiC（碳化矽）元件，見 5-2 最後兩頁。</p>
+  <p class="src">來源：<a href="https://chargedevs.com/newswire/hyundai-unveils-e-gmp-ev-platform/" target="_blank" rel="noopener">Charged EVs，Hyundai E-GMP 發表</a>、<a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom，Macan Electric</a>、<a href="https://lucidmotors.com/media-room/lucid-air-fastest-charging-ev" target="_blank" rel="noopener">Lucid Motors</a></p>
 </section>
 
 <!-- 09 分節 5-2 -->
@@ -351,7 +360,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <tr><td>工作頻率</td><td>—</td><td>可達 20 kHz 以上</td><td class="hi">20 kHz 以下</td></tr>
     </tbody>
   </table></div>
-  <p class="note">μs 開關時間為課本數值；實際元件多為數十到數百 ns 級，考試照課本作答即可。</p>
+  <p class="note">μs 開關時間為課本數值；實際元件多為數十到數百 ns 級，考試照課本作答即可。表中 MOSFET 指矽（Si）MOSFET，碳化矽 MOSFET 不受 100 V 限制，見第 15 頁。</p>
 </section>
 
 <!-- 12 IGBT 一句話 -->
@@ -403,13 +412,15 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-2</div>
   <p class="eye">5-2 · 新元件<span class="new">NEW</span></p>
   <h2>SiC MOSFET：取代 Si IGBT 的下一代開關</h2>
+  <p class="lede">前面說 MOSFET 只到 100 V、10 kW 以下，那是<b>矽（Si）</b>做的 MOSFET。改用<b>碳化矽（SiC）</b>材料後，MOSFET 也能耐上千伏、做大功率，開始取代 IGBT。</p>
   <div class="grid g4">
-    <div class="c"><div class="big">800–1200<small>V</small></div><h3>耐高電壓</h3><p>直接對應 800V 高壓平台</p></div>
-    <div class="c"><div class="big">3<small>倍</small></div><h3>耐高溫、導熱快</h3><p>熱導率為 Si 的 3 倍；結溫從 150°C 提升至 175–200°C</p></div>
-    <div class="c"><div class="big">−50<small>%</small></div><h3>開關速度更快</h3><p>被動元件體積縮小 50% 以上，逆變器更輕更小、車內空間變大</p></div>
-    <div class="c r"><div class="big">−70~80<small>%</small></div><h3>損耗更低</h3><p>開關損耗比 Si IGBT 低 70–80%，更多電能送往馬達</p></div>
+    <div class="c"><div class="big">1200<small>V</small></div><h3>耐高電壓</h3><p>車用常見 650–1200 V 等級，直接對應 800V 平台</p></div>
+    <div class="c"><div class="big">3<small>倍</small></div><h3>耐高溫、導熱快</h3><p>熱導率約為 Si 的 3 倍；最高結溫從 150°C 提升到 175–200°C</p></div>
+    <div class="c"><div class="big">高頻</div><h3>開關速度更快</h3><p>可用更高切換頻率，電容、電感等被動元件跟著縮小，逆變器更輕更小</p></div>
+    <div class="c r"><div class="big">1/6<small>開關能量</small></div><h3>損耗更低</h3><p>沒有 IGBT 的拖尾電流（第 13 頁），單顆元件開關能量約為 IGBT 的 1/6；整台逆變器總損耗約少 30–40%</p></div>
   </div>
-  <p class="note"><b>瓶頸在封裝：</b>SiC 晶片 300–400°C 仍不壞，但銲錫、封裝塑料、打線（Wire bonding）在 200°C 以上就會熔化或老化斷裂。</p>
+  <p class="note"><b>瓶頸在封裝：</b>SiC 晶片本身耐得住 300°C 以上，但銲錫、封裝塑料、打線（Wire bonding）在 200°C 以上就會熔化或老化斷裂 → 所以下一頁從散熱下手。</p>
+  <p class="src">來源：<a href="https://emedia.digikey.com/view/212747791/22" target="_blank" rel="noopener">DigiKey eMag（熱導率、結溫）</a>、<a href="https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2436201" target="_blank" rel="noopener">Tiwari，SiC MOSFETs for future motor drive applications（NTNU）</a>、<a href="https://www.st.com/content/dam/technology-tour-2018/chicago/post/T2_S7_SiC_TT_Schaumburg.pdf" target="_blank" rel="noopener">STMicroelectronics SiC 技術簡報</a></p>
 </section>
 
 <!-- 16 新：雙面冷卻 -->
@@ -417,16 +428,17 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-2</div>
   <p class="eye">5-2 · 新散熱<span class="new">NEW</span></p>
   <h2>IGBT 雙面冷卻：熱從兩面一起散</h2>
-  <p class="lede">晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；適合空間受限、發熱量極高的逆變器。</p>
+  <p class="lede">封裝怕熱，就要把熱更快帶走。不論 IGBT 或 SiC 模組都適用：晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；適合空間受限、發熱量極高的逆變器。</p>
   <div class="tbl-wrap"><table>
     <thead><tr><th></th><th>傳統單面冷卻</th><th>雙面冷卻</th></tr></thead>
     <tbody>
       <tr><td>散熱路徑</td><td>僅晶片背面向下傳導</td><td class="hi">正面與背面同時傳導</td></tr>
       <tr><td>內部連接</td><td>晶片正面用鋁打線（Wire Bonding）</td><td class="hi">兩面以金屬墊片與導熱基板焊接</td></tr>
-      <tr><td>熱阻 R<sub>thjc</sub></td><td>基準 100%</td><td class="hi"><strong style="color:var(--on);border:0">約降低 50%</strong></td></tr>
+      <tr><td>熱阻 R<sub>thjc</sub></td><td>基準 100%</td><td class="hi"><strong style="color:var(--on);border:0">約降低 23–40%</strong></td></tr>
       <tr><td>功率密度</td><td>較低，受限單面散熱</td><td class="hi">較高，逆變器體積與重量大幅縮小</td></tr>
     </tbody>
   </table></div>
+  <p class="src">熱阻降幅依各研究實測：<a href="https://saemobilus.sae.org/content/2017-01-2456" target="_blank" rel="noopener">SAE 2017-01-2456（−23%）</a>、<a href="https://ieeexplore.ieee.org/document/8046403" target="_blank" rel="noopener">IEEE 平面封裝模組（−26.7%）</a>、<a href="https://publica.fraunhofer.de/entities/publication/5cfc393b-4545-4efe-ba92-040b51d673ea" target="_blank" rel="noopener">Fraunhofer IZM（−40%）</a></p>
 </section>
 
 <!-- 17 5-3 三樣可調 -->
@@ -500,13 +512,20 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 <section class="pg" id="p21">
   <div class="wm">5-3</div>
   <p class="eye">5-3 · 新趨勢<span class="new">NEW</span></p>
-  <h2>變頻器的三個新方向</h2>
-  <div class="grid g3">
-    <div class="c r"><div class="big">+5~10<small>% 續航</small></div><h3>SiC 功率模組全面導入</h3><p>逐步取代 Si IGBT，承受極高頻切換、熱損耗低。相同電池容量續航約多 5–10%（Tesla Model 3、Porsche Macan EV）。</p></div>
-    <div class="c"><div class="big">400→800<small>V</small></div><h3>搭配 800V 高壓架構</h3><p>為縮短充電時間升壓，變頻器需耐更高電壓；搭配 SiC，高壓低電流讓線束變細、整車減重。</p></div>
-    <div class="c"><div class="big">X-in-1</div><h3>多合一電驅 e-Axle</h3><p>馬達、變頻器、減速器甚至 BMS 整合於同一殼體，減少外部高壓線束，冷卻效率與空間利用更好。</p></div>
+  <h2>新一代變頻器：三項技術串成一套</h2>
+  <p class="lede">前面的三相橋式、SPWM 控制原理都不變；改變的是開關元件、電壓和整合方式。</p>
+  <div class="chain">
+    <div class="c"><p class="tag">見第 15 頁</p><h3>① SiC 開關元件</h3><p>6 顆 IGBT 換成 SiC MOSFET：耐高壓、損耗低、可高頻切換</p></div>
+    <div class="ar" aria-hidden="true">→</div>
+    <div class="c"><p class="tag">見第 8 頁</p><h3>② 800V 架構</h3><p>元件耐得住，主電壓才能加倍：電流減半、線束變細、快充更快</p></div>
+    <div class="ar" aria-hidden="true">→</div>
+    <div class="c r"><p class="tag">本頁新增</p><h3>③ 多合一電驅 e-Axle</h3><p>馬達、變頻器、減速器甚至 BMS 整合在同一殼體：外部高壓線束更少，冷卻與空間利用更好</p></div>
   </div>
-  <p class="note">三者互相搭配：SiC 讓 800V 可行，800V 讓線束變細，e-Axle 再把整套縮進一個殼體。</p>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="c"><div class="big">+5~7<small>% 續航</small></div><p>同一顆電池，SiC 變頻器比 Si IGBT 多跑約 5–7%；次世代 SiC 上看 10%。</p></div>
+    <div class="c"><h3>實車</h3><p>Tesla Model 3（2018，第一款量產 SiC 變頻器）、Porsche Macan Electric（800V 平台 + SiC 脈衝逆變器）</p></div>
+  </div>
+  <p class="src">來源：<a href="https://zephr.autocar.co.uk/car-news/technology/under-skin-how-new-inverters-give-evs-more-power-and-range" target="_blank" rel="noopener">Autocar，Infineon 訪談（+7%、次世代 10%）</a>、<a href="https://research.unipd.it/handle/11577/3146201" target="_blank" rel="noopener">Padova 大學研究（+5%）</a>、<a href="https://www.electricvehiclesresearch.com/articles/23080/teslas-innovative-power-electronics-the-silicon-carbide-inverter" target="_blank" rel="noopener">IDTechEx，Tesla SiC 變頻器</a>、<a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom</a></p>
 </section>
 
 <!-- 22 5-4 預充 -->
@@ -585,12 +604,14 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-4</div>
   <p class="eye">5-4 · 新趨勢<span class="new">NEW</span></p>
   <h2>高壓安全與預充的新技術</h2>
+  <p class="lede">上一頁 Altis 下電時要讓 SMRP 動作一次，就是為了偵測機械接點黏死。新技術從三個地方改善這條上電／斷電路徑。</p>
   <div class="grid g3">
-    <div class="c"><div class="big">百萬次</div><h3>固態繼電器 SSC</h3><p>機械繼電器長期大電流易「電弧燒蝕」或接點黏死。改用半導體開關取代金屬接點，可百萬次無損開關，反應達微秒級。</p></div>
-    <div class="c r"><div class="big">1<small>ms</small></div><h3>引爆型保險絲 Pyro-fuse</h3><p>與安全氣囊連動：嚴重碰撞時引爆微型炸藥，1 毫秒內徹底切斷高壓電池，解決傳統熔斷保險絲熔斷不夠快的風險。</p></div>
+    <div class="c"><div class="big">無接點</div><h3>固態繼電器 SSC</h3><p>機械繼電器長期大電流易「電弧燒蝕」或接點黏死。改用半導體開關取代金屬接點，沒有機械磨耗，反應達微秒級。</p></div>
+    <div class="c r"><div class="big">&lt; 1<small>ms</small></div><h3>引爆型保險絲 Pyro-fuse</h3><p>由安全氣囊控制器或 BMS 觸發：嚴重碰撞或短路時引爆微型火藥，不到 1 毫秒切斷高壓電池，比傳統熔斷保險絲快得多。</p></div>
     <div class="c"><div class="big">DC-DC</div><h3>主動式預充</h3><p>不再只靠會發熱的預充電阻，改用小型 DC-DC 轉換器主動把電容電壓拉到目標值：速度更快，連續啟動也不會讓電阻過熱燒毀。</p></div>
   </div>
-  <p class="note">對照前兩頁：SSC 取代 K+／K−、SMR 這類機械繼電器；主動式預充取代 R<sub>P</sub> 預充電阻。</p>
+  <p class="note">對照前兩頁：SSC 取代 K+／K−、SMR 這類機械繼電器；主動式預充取代 R<sub>P</sub> 預充電阻；Pyro-fuse 是額外加上的最後一道保護。</p>
+  <p class="src">來源：<a href="https://www.autoliv.com/sites/autoliv/files/2025-05/PSSfolder_202503.pdf" target="_blank" rel="noopener">Autoliv Pyro Safety Switch 型錄（&lt; 1 ms）</a>、<a href="https://www.automotiveworld.com/news/autoliv-and-mersen-announce-joint-collaboration-to-deliver-high-voltage-disconnect-devices-for-electric-vehicles/" target="_blank" rel="noopener">Automotive World，Autoliv × Mersen</a></p>
 </section>
 
 <!-- 25 考點 -->
@@ -598,6 +619,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">05</div>
   <p class="eye">考點速記</p>
   <h2>必背數字與易混淆處</h2>
+  <p class="sub" style="margin-top:0">必背（課本）</p>
   <div class="stats">
     <div><span>IGBT 問世</span><b>1991</b></div>
     <div><span>IGBT</span><b>600 A／20 kHz</b></div>
@@ -611,12 +633,6 @@ svg text{font-family:"Noto Sans TC",sans-serif}
     <div><span>Altis 預充</span><b>500 ms</b></div>
     <div><span>IGBT C-E</span><b>0.004 Ω</b></div>
     <div><span>未預充迴路</span><b>≪ 20 mΩ</b></div>
-    <div class="n"><span>高壓快充</span><b>800V／350 kW</b></div>
-    <div class="n"><span>SiC 開關損耗</span><b>−70~80%</b></div>
-    <div class="n"><span>SiC 結溫</span><b>175–200°C</b></div>
-    <div class="n"><span>雙面冷卻熱阻</span><b>−50%</b></div>
-    <div class="n"><span>SiC 續航</span><b>+5~10%</b></div>
-    <div class="n"><span>Pyro-fuse</span><b>1 ms</b></div>
   </div>
   <div class="mix">
     <p>· 變頻器 = 逆變器（DC→AC）；整流器反向</p>
@@ -624,7 +640,15 @@ svg text{font-family:"Noto Sans TC",sans-serif}
     <p>· 驅動電流：BJT 大，其餘小</p>
     <p>· Altis 下電：先 B− 後 B+</p>
     <p>· 勘誤：第 53 頁應為 i = C·dv/dt</p>
-    <p>· 紅底為新技術補充</p>
+  </div>
+  <p class="sub">延伸（業界新技術，非課本考點）</p>
+  <div class="stats">
+    <div class="n"><span>高壓快充</span><b>800V／350 kW</b></div>
+    <div class="n"><span>SiC 結溫</span><b>175–200°C</b></div>
+    <div class="n"><span>SiC 開關能量</span><b>IGBT 的 1/6</b></div>
+    <div class="n"><span>雙面冷卻熱阻</span><b>−23~40%</b></div>
+    <div class="n"><span>SiC 續航</span><b>+5~7%</b></div>
+    <div class="n"><span>Pyro-fuse</span><b>&lt; 1 ms</b></div>
   </div>
 </section>
 
