@@ -148,14 +148,19 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 
 /* 互動圖的控制列 */
 .ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:10px;font-size:14px}
-.ctl button{all:unset;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--red);border:1.5px solid var(--red);border-radius:999px;padding:3px 12px;line-height:1.5}
-.ctl button:hover{background:var(--card2)}
-.ctl button.on,.ctl button:active{background:var(--red);color:var(--on)}
+.ctl button{all:unset;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--red);border-radius:999px;padding:4px 14px;line-height:1.5;
+  background:rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 1px 3px rgba(63,53,50,.08);transition:background .25s,color .25s}
+.ctl button:hover{background:rgba(255,255,255,.8)}
+.ctl button.on,.ctl button:active{background:var(--glass-red);color:var(--on);box-shadow:0 2px 8px rgba(168,66,63,.25)}
 .ctl button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.ctl .seg{display:inline-flex}
-.ctl .seg button{border-radius:0}
-.ctl .seg button:first-child{border-radius:999px 0 0 999px}
-.ctl .seg button+button{border-left:0;border-radius:0 999px 999px 0}
+/* 分段切換：一條淡底，選中的那段變紅 */
+.ctl .seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.35)}
+.ctl .seg button{background:none;box-shadow:none}
+.ctl .seg button.on{background:var(--glass-red);box-shadow:0 2px 8px rgba(168,66,63,.25)}
+/* 已經在玻璃卡裡的按鈕不再另外加底 */
+.glass .ctl button,.ctl.glass button,.ctl.glass .seg{background:none;box-shadow:none}
+.ctl.glass button:hover{background:rgba(255,255,255,.45)}
+.ctl.glass button.on{background:var(--glass-red);box-shadow:0 2px 8px rgba(168,66,63,.25)}
 .ctl label{display:inline-flex;align-items:center;gap:6px;color:var(--txt);white-space:nowrap}
 .ctl input[type=range]{accent-color:var(--red);width:110px}
 .ctl output{font-variant-numeric:tabular-nums;font-weight:700;color:var(--red);min-width:2.4em}
@@ -231,7 +236,12 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 #p16{justify-content:flex-start} #p16 .copy{max-width:640px}
 #p16 .side{position:absolute;z-index:2;right:max(24px,calc((100vw - 1180px)/2));top:50%;transform:translateY(-38%);width:min(520px,40vw);padding:16px 20px 14px;border-radius:16px;transform-origin:100% 100%}
 #p16.zoom .side{transform:translateY(-14%) scale(.66);opacity:.94}
-#p16 .side td{background:rgba(255,255,255,.38)} #p16 .side td:first-child{background:transparent} #p16 .side td.hi{background:var(--red)}
+/* 玻璃卡裡的表格：不再有一格一格的底色，只用細線分列，雙面冷卻那欄用紅字 */
+#p16 .side table{border-spacing:0}
+#p16 .side th{padding:0 12px 8px}
+#p16 .side td{background:none;border:0;border-top:1px solid rgba(63,53,50,.12);border-radius:0;padding:10px 12px;line-height:1.5}
+#p16 .side td:first-child{padding-left:0}
+#p16 .side td.hi{background:none;color:var(--red);font-weight:700}
 #p16 .side .src{margin-top:6px}
 #p16 .tools{position:absolute;z-index:2;left:max(24px,calc((100vw - 1180px)/2));bottom:62px;padding:6px 10px;border-radius:999px;margin:0}
 /* p21：實物照片出血到頁緣，文字在左 */
@@ -305,6 +315,13 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
   background:linear-gradient(to top,rgba(24,18,16,.86) 0%,rgba(24,18,16,.55) 55%,rgba(24,18,16,0) 100%)}
 .ph figcaption b{color:#ffd8d1}
 .ph figcaption small,.ph figcaption small a{color:rgba(255,255,255,.72)}
+
+/* 資料來源：不用框，簡單排列，上方一條細線分隔 */
+.refs{column-gap:36px;row-gap:22px}
+.refs .c,.refs .c.r{background:none;border:0;border-top:1px solid rgba(63,53,50,.2);border-radius:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:12px 0 0;color:var(--txt)}
+.refs .c.r .tag{color:var(--mute)} .refs .c.r b{color:var(--red)}
+.refs .c.r a{color:inherit;text-decoration-color:var(--line)}
+.refs .c.r ul.dot li::before{background:var(--red)}
 
 @media (max-width:860px){
   .pg{padding:64px 16px 90px;justify-content:flex-start}
@@ -636,7 +653,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     <tbody>
       <tr><td>散熱路徑</td><td>僅晶片背面向下傳導</td><td class="hi">正面與背面同時傳導</td></tr>
       <tr><td>內部連接</td><td>晶片正面用鋁打線（Wire Bonding）</td><td class="hi">兩面以金屬墊片與導熱基板焊接</td></tr>
-      <tr><td>熱阻 R<sub>thjc</sub></td><td>基準 100%</td><td class="hi"><strong style="color:var(--on);border:0">約降低 23–40%</strong></td></tr>
+      <tr><td>熱阻 R<sub>thjc</sub></td><td>基準 100%</td><td class="hi">約降低 23–40%</td></tr>
       <tr><td>功率密度</td><td>較低，受限單面散熱</td><td class="hi">較高，逆變器體積與重量大幅縮小</td></tr>
     </tbody>
   </table>
