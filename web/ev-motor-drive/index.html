@@ -99,10 +99,10 @@ td.hi{background:var(--red);color:var(--on);font-weight:500}
 .nw1 td:first-child{white-space:nowrap;padding-right:12px}
 
 /* 封面：大標題壓在左下，目錄貼底；組員縱向排在右上角；背景是三條相差 120° 的正弦波 */
-.cover{background:var(--red);color:var(--on2);justify-content:flex-end;padding-bottom:92px}
-.cover .eye{position:absolute;top:64px;left:max(24px,calc((100vw - 1180px)/2));color:var(--on2)}
+.cover{background:var(--red);color:var(--on2);justify-content:flex-end;padding:72px max(24px,4.5vw) 92px}
+.cover .eye{position:absolute;top:64px;left:max(24px,4.5vw);color:var(--on2)}
 .cover .waves{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.cover h1{font-size:clamp(40px,7vw,88px);line-height:1.12;font-weight:900;color:var(--on);margin:0 0 20px;letter-spacing:-.01em}
+.cover h1{font-size:clamp(40px,8.6vw,132px);line-height:1.12;font-weight:900;color:var(--on);margin:0 0 20px;letter-spacing:-.01em}
 .cover h1 span{color:var(--on2)}
 .cover .flow{font-size:clamp(16px,1.8vw,20px);color:var(--on);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .cover .flow i{font-style:normal;font-size:.72em;color:var(--on2);border:1px solid rgba(251,241,238,.4);border-radius:999px;padding:1px 9px;margin-left:-4px}
@@ -112,7 +112,7 @@ td.hi{background:var(--red);color:var(--on);font-weight:500}
 .toc span{display:block;font:900 24px/1 Arial,sans-serif;color:var(--on);margin-bottom:4px}
 .toc em{font-style:normal;font-size:15px}
 .cover .by{margin-top:22px;font-size:12.5px;color:var(--on2);opacity:.85}
-.team{position:absolute;z-index:1;top:60px;right:max(24px,calc((100vw - 1180px)/2));text-align:right;padding-right:16px;border-right:1px solid rgba(251,241,238,.4)}
+.team{position:absolute;z-index:1;top:60px;right:max(24px,4.5vw);text-align:right;padding-right:16px;border-right:1px solid rgba(251,241,238,.4)}
 .team .t{font-size:12px;letter-spacing:.3em;color:var(--on2);margin-bottom:8px}
 .team ol{list-style:none}
 .team li{display:flex;justify-content:flex-end;align-items:baseline;gap:10px;line-height:1.75}
@@ -164,6 +164,8 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .ctl button:hover{background:rgba(255,255,255,.8)}
 .ctl button.on,.ctl button:active{background:var(--glass-red);color:var(--on);box-shadow:0 2px 8px rgba(168,66,63,.25)}
 .ctl button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* 只有圖示的按鈕：圓形，文字放在 aria-label 和滑過提示 */
+.ctl button.ic{width:32px;height:32px;padding:0;display:inline-grid;place-items:center}
 /* 分段切換：一條淡底，選中的那段變紅 */
 .ctl .seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.35)}
 .ctl .seg button{background:none;box-shadow:none}
@@ -228,7 +230,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .zoomable .copy .lede{transition:opacity .4s}
 .zoomable.zoom .copy .lede{opacity:0}
 .zoomable .side{transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .5s}
-.zbtn{all:unset;position:absolute;z-index:3;right:max(24px,calc((100vw - 1180px)/2));top:22px;cursor:pointer;font-size:13px;color:var(--ink);padding:4px 12px;border-radius:999px;opacity:.75;transition:opacity .3s}
+.zbtn{all:unset;position:absolute;z-index:3;right:max(24px,calc((100vw - 1180px)/2));top:22px;cursor:pointer;color:var(--ink);width:36px;height:36px;display:grid;place-items:center;border-radius:50%;opacity:.75;transition:opacity .3s}
 .zbtn:hover{opacity:1} .zbtn:focus-visible{outline:2px solid var(--ink)}
 /* 一般圖文頁的放大模式：圖那一欄變寬，文字欄整體縮小，標題變小、引言收起 */
 .zoomable>h2{transition:font-size .6s,margin .6s}
@@ -462,7 +464,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     </div>
     <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="inv" viewBox="0 0 560 372" role="img" aria-label="三相橋式變頻器六步換相動畫：每一步有三顆開關導通，馬達磁場跟著轉 60 度"></svg>
-      <div class="ctl"><button id="invPlay" class="on">❚❚ 暫停</button><button id="invStep">下一步 ›</button><span class="st" id="invSt"></span></div>
+      <div class="ctl"><button id="invPlay" class="on ic" aria-label="暫停" title="暫停"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg></button><button id="invStep" class="ic" aria-label="下一步" title="下一步"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button><span class="st" id="invSt"></span></div>
       <p class="cap">六步換相：每 60° 換一組開關，每相上臂或下臂輪流導通 180°。紅色 = 導通。磁場一次跳 60°，所以實際改用 SPWM（第 19 頁）讓它平順地轉。每顆開關另並聯續流二極體（圖中省略）。</p>
     </div>
   </div>
@@ -476,7 +478,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
   <div class="row zrow fl" style="grid-template-columns:1.4fr 1fr">
     <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="rect" viewBox="0 0 520 280" role="img" aria-label="三相橋式全波整流電路：馬達發出的三相電經 D1 到 D6 六個二極體整流，再經電容濾波回充電池；每一刻只有電壓最高那相的上臂與最低那相的下臂兩顆二極體導通"></svg>
-      <div class="ctl"><button id="rectStep">下一步 ›</button><span class="st" id="rectSt"></span></div>
+      <div class="ctl"><button id="rectStep" class="ic" aria-label="下一步" title="下一步"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button><span class="st" id="rectSt"></span></div>
     </div>
     <div class="grid txtc">
       <div class="c r"><div class="big" style="font-size:64px;margin:0">6<small>個二極體 D1–D6</small></div><h3>三相橋式全波整流</h3><p>電動車常用的整流電路；原理是二極體單向導通。</p></div>
@@ -917,6 +919,13 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 </div>
 
 <script>
+// 按鈕圖示（線條風格，跟換頁箭頭一致）
+const ICON = {
+  play: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>',
+  pause: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>',
+  grow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>',
+  shrink: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>',
+};
 // 頁尾頁碼
 const pages = [...document.querySelectorAll('.pg')];
 const N = pages.length, pad = n => String(n).padStart(2, '0');
@@ -1025,7 +1034,7 @@ document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('
   const next = () => { k = (k + 1) % 6; draw(); };
   const start = () => { if (playing && !timer) timer = setInterval(next, 1100); };
   const stop = () => { clearInterval(timer); timer = null; };
-  const label = () => { playBtn.textContent = playing ? '❚❚ 暫停' : '▶ 播放'; playBtn.classList.toggle('on', playing); };
+  const label = () => { const t = playing ? '暫停' : '播放'; playBtn.innerHTML = playing ? ICON.pause : ICON.play; playBtn.ariaLabel = playBtn.title = t; playBtn.classList.toggle('on', playing); };
   playBtn.onclick = () => { playing = !playing; label(); playing ? start() : stop(); };
   document.getElementById('invStep').onclick = () => { playing = false; label(); stop(); next(); };
   label(); draw();
@@ -1377,10 +1386,10 @@ function zoom(p, on) {
   p.classList.toggle('zoom', on);
   // 文字欄縮放是瞬間的，淡入一下比較順
   if (!RM) p.querySelectorAll('.txtc').forEach(el => el.animate([{opacity: 0}, {opacity: 1}], {duration: 550, easing: 'ease-out'}));
-  const b = p.querySelector('.zbtn'); if (b) b.textContent = on ? '縮回文字 ↙' : '放大圖 ↗';
+  const b = p.querySelector('.zbtn'); if (b) { b.innerHTML = on ? ICON.shrink : ICON.grow; b.ariaLabel = b.title = on ? '縮回' : '放大圖'; }
 }
 document.querySelectorAll('.zoomable').forEach(p => {
-  p.insertAdjacentHTML('beforeend', '<button class="zbtn glass">放大圖 ↗</button>');
+  p.insertAdjacentHTML('beforeend', `<button class="zbtn glass" aria-label="放大圖" title="放大圖">${ICON.grow}</button>`);
   p.querySelector('.zbtn').onclick = () => zoom(p, !p.classList.contains('zoom'));
 });
 // 平滑捲動途中再按鍵，以剛剛要去的那頁為準，不會跳過或重複
