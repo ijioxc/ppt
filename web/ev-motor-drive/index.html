@@ -199,7 +199,9 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .three .hud b{color:var(--red);font-variant-numeric:tabular-nums}
 .three .hud small{display:block;font-size:11.5px;color:var(--mute)}
 /* p2：整台車是全頁背景，文字與四張玻璃卡浮在前面 */
-#p2{justify-content:flex-start}
+#p2,#p18{justify-content:flex-start}
+#p18 .glass-col{width:420px}
+#motHud{left:max(24px,calc((100vw - 1180px)/2));top:auto;bottom:66px;padding:8px 14px;border-radius:12px}
 /* 全頁 3D／照片當背景，文字與玻璃卡在前景 */
 .three.full{position:absolute;inset:0;z-index:0;height:auto;border-radius:0;background:transparent}
 .copy{max-width:560px;z-index:2}
@@ -233,9 +235,9 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 #p16 .side .src{margin-top:6px}
 #p16 .tools{position:absolute;z-index:2;left:max(24px,calc((100vw - 1180px)/2));bottom:62px;padding:6px 10px;border-radius:999px;margin:0}
 /* p21：實物照片出血到頁緣，文字在左 */
-#p21 .bleed{position:absolute;z-index:0;top:0;right:0;height:100%;aspect-ratio:1100/1028;margin:0;transform-origin:100% 50%;transform:scale(.9);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+#p21 .bleed{position:absolute;z-index:0;top:0;right:0;height:100%;aspect-ratio:1100/1028;margin:0;}
 #p21 .bleed img{display:block;width:100%;height:100%;object-fit:cover}
-#p21 .bleed::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,var(--bg) 0%,rgba(214,207,197,.6) 22%,rgba(214,207,197,0) 42%);transition:opacity .7s;pointer-events:none}
+#p21 .bleed::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,var(--bg) 0%,rgba(214,207,197,.85) 24%,rgba(214,207,197,0) 50%);transition:opacity .7s;pointer-events:none}
 #p21.zoom .bleed{transform:translateX(-11%) scale(1)}
 #p21.zoom .bleed::after{opacity:.9}
 #p21 .bleed .pin{position:absolute;z-index:1;transform:translate(-50%,-50%) scale(.9);opacity:0;transition:opacity .4s,transform .4s;font-size:14px;font-weight:700;color:var(--ink);padding:3px 12px;border-radius:999px;white-space:nowrap}
@@ -243,19 +245,18 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 #p21.zoom .bleed .pin{opacity:1;transform:translate(-50%,-50%)}
 #p21 .bleed .pin.glass{background:rgba(251,246,240,.93);box-shadow:0 6px 18px rgba(63,53,50,.25)}
 #p21.zoom .bleed .pin:nth-of-type(2){transition-delay:.12s} #p21.zoom .bleed .pin:nth-of-type(3){transition-delay:.24s}
-#p21 .bleed figcaption{position:absolute;z-index:1;right:24px;bottom:76px;max-width:360px;font-size:12.5px;line-height:1.5;padding:8px 14px;border-radius:12px}
-#p21 .bleed figcaption small{display:block;font-size:11px;color:var(--mute)}
-#p21 .bleed figcaption a{color:var(--mute)}
+#p21 .bleed figcaption{position:absolute;z-index:1;left:0;right:0;bottom:0;padding:90px 30px 76px 34%;text-align:right;color:#fff;font-size:13.5px;line-height:1.55;background:linear-gradient(to top,rgba(24,18,16,.85),rgba(24,18,16,.5) 55%,rgba(24,18,16,0))}
+#p21 .bleed figcaption b{color:#ffd8d1}
+#p21 .bleed figcaption small{display:block;font-size:11.5px;color:rgba(255,255,255,.72)}
+#p21 .bleed figcaption a{color:rgba(255,255,255,.72)}
 #p21 .copy{max-width:700px} #p21 .side{max-width:600px} #p21 h2{margin-bottom:20px}
 #p21 .steps{gap:10px} #p21 .steps li{padding:10px 16px 10px 58px;font-size:15.5px;line-height:1.6} #p21 .steps li::before{top:10px}
 #p21 .side{display:grid;gap:12px;transform-origin:0 100%}
 #p21.zoom .side{transform:scale(.72)}
-#p21 .steps li{background:rgba(255,255,255,.42);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.55)}
-#p21 .steps li.on{background:var(--red);border-color:var(--red)}
 #p21 .src{max-width:600px}
 #p2 .copy h2{margin-bottom:22px}
-#p2 .glass-col{position:absolute;z-index:2;right:max(24px,calc((100vw - 1180px)/2));top:50%;transform:translateY(-44%);width:340px;display:grid;gap:12px}
-#p2 .glass-col .ctl{margin:2px 4px 0}
+.glass-col{position:absolute;z-index:2;right:max(24px,calc((100vw - 1180px)/2));top:50%;transform:translateY(-44%);width:340px;display:grid;gap:12px}
+.glass-col .ctl{margin:2px 4px 0}
 #p2 .c.k{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:baseline}
 #p2 .c.k h3{margin:0}
 #p2 .c.k p:last-child{grid-column:1/-1}
@@ -281,6 +282,30 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10;font-size:13px;color:var(--on2);transition:opacity .4s}
 .hint kbd{font:600 12px Arial;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin:0 2px}
 
+/* ===== 統一視覺：所有框都是玻璃卡，重點是紅色玻璃；圖不加框 ===== */
+:root{
+  --glass:linear-gradient(135deg,rgba(255,255,255,.52),rgba(255,255,255,.16));
+  --glass-hi:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.32));
+  --glass-red:linear-gradient(135deg,rgba(190,86,82,.93),rgba(158,58,55,.86));
+  --glass-edge:rgba(255,255,255,.62);
+  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.78),inset 0 -1px 0 rgba(255,255,255,.16),0 10px 28px rgba(63,53,50,.1);
+}
+.c,.glass,.steps li,.pick div{background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)}
+.c.r,.pick div.r,.steps li.on,.c.k.on,.split .slab,td.hi,#measRows tr.cur td:not(:first-child){background:var(--glass-red);border-color:rgba(255,225,218,.5)}
+.c.k:hover:not(.on){background:var(--glass-hi)}
+td{background:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.55)}
+td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top:0}
+.cmp td.win{background:rgba(255,255,255,.72)}
+/* 圖：拿掉外框，直接放在頁面上 */
+.c.bare{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0}
+.wm{display:none}
+/* 照片：圓角，底部黑色漸層，白字說明疊在照片上 */
+.ph{position:relative;background:none;border:0;border-radius:16px;box-shadow:0 14px 34px rgba(63,53,50,.18)}
+.ph figcaption{position:absolute;left:0;right:0;bottom:0;padding:48px 18px 14px;color:#fff;font-size:14px;line-height:1.55;
+  background:linear-gradient(to top,rgba(24,18,16,.86) 0%,rgba(24,18,16,.55) 55%,rgba(24,18,16,0) 100%)}
+.ph figcaption b{color:#ffd8d1}
+.ph figcaption small,.ph figcaption small a{color:rgba(255,255,255,.72)}
+
 @media (max-width:860px){
   .pg{padding:64px 16px 90px;justify-content:flex-start}
   .g3,.g4,.toc{grid-template-columns:1fr 1fr}
@@ -303,7 +328,8 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   #p21.zoom .side,.zoomable.zoom .copy{transform:none}
   .zbtn{display:none}
   .copy{order:-1}
-  #p2 .glass-col{position:static;transform:none;width:auto}
+  .glass-col{position:static;transform:none;width:auto!important}
+  #motHud{left:10px;bottom:8px}
 }
 @media (max-width:520px){ .g3,.g4{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
@@ -391,7 +417,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <div class="c"><h3>單相全橋</h3><p>4 顆開關 T1–T4。T1、T4 導通 → 正電壓；T2、T3 導通 → 負電壓。交替切換即得交流。</p></div>
       <div class="c r"><h3>三相橋式（右圖）</h3><p>6 顆開關 = 3 組半橋。線電壓 ±Vcc 方波；相電壓 ±Vcc/3、±2Vcc/3 階梯波；中性點 ±Vcc/6。</p></div>
     </div>
-    <div class="c figc" style="padding:18px">
+    <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="inv" viewBox="0 0 560 372" role="img" aria-label="三相橋式變頻器六步換相動畫：每一步有三顆開關導通，馬達磁場跟著轉 60 度"></svg>
       <div class="ctl"><button id="invPlay" class="on">❚❚ 暫停</button><button id="invStep">下一步 ›</button><span class="st" id="invSt"></span></div>
       <p class="cap">六步換相：每 60° 換一組開關，每相上臂或下臂輪流導通 180°。紅色 = 導通。磁場一次跳 60°，所以實際改用 SPWM（第 19 頁）讓它平順地轉。每顆開關另並聯續流二極體（圖中省略）。</p>
@@ -400,12 +426,12 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 06 整流器 -->
-<section class="pg zoomable" id="p6">
+<section class="pg" id="p6">
   <div class="wm">5-1</div>
   <p class="eye">5-1 · AC → DC · 圖5-5</p>
   <h2>整流器：讓煞車變成充電</h2>
   <div class="row zrow fl" style="grid-template-columns:1.4fr 1fr">
-    <div class="c figc" style="padding:18px">
+    <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="rect" viewBox="0 0 520 280" role="img" aria-label="三相橋式全波整流電路：馬達發出的三相電經 D1 到 D6 六個二極體整流，再經電容濾波回充電池；每一刻只有電壓最高那相的上臂與最低那相的下臂兩顆二極體導通"></svg>
       <div class="ctl"><button id="rectStep">下一步 ›</button><span class="st" id="rectSt"></span></div>
     </div>
@@ -538,13 +564,13 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   </div>
   <p class="note">代價是切換較慢，但對馬達控制已綽綽有餘。MOSFET 功耗較小；兩者驅動電路相同、可互換。</p>
   <div class="grid g2" style="margin-top:22px">
-    <figure class="ph"><img src="img/igbt-module.jpg" alt="Mitsubishi CM1400DU-24NF IGBT 模組外觀，黑色塑膠外殼與上方螺絲端子" loading="lazy" style="flex:none;height:min(220px,26vh)"><figcaption>實物：車用等級的 IGBT 模組（1200 V／1400 A），上方螺絲是大電流端子<small>照片：Sthdhk／<a href="https://commons.wikimedia.org/wiki/File:MITSUBISHI_IGBT_module.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 4.0</small></figcaption></figure>
-    <figure class="ph"><img src="img/igbt-open.jpg" alt="拆開外殼的 CM600DU-24NFH IGBT 模組，可見多顆晶片與大量鋁打線" loading="lazy" style="flex:none;height:min(220px,26vh)"><figcaption>拆開後（600 A 等級）：多顆 IGBT 晶片與續流二極體並聯，靠密密麻麻的鋁打線連接，第 16 頁會再看到它<small>照片：Pslawinski／<a href="https://commons.wikimedia.org/wiki/File:CM600DU-24NFH.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption></figure>
+    <figure class="ph"><img src="img/igbt-module.jpg" alt="Mitsubishi CM1400DU-24NF IGBT 模組外觀，黑色塑膠外殼與上方螺絲端子" loading="lazy" style="flex:none;height:min(300px,36vh)"><figcaption>實物：車用等級的 IGBT 模組（1200 V／1400 A），上方螺絲是大電流端子<small>照片：Sthdhk／<a href="https://commons.wikimedia.org/wiki/File:MITSUBISHI_IGBT_module.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 4.0</small></figcaption></figure>
+    <figure class="ph"><img src="img/igbt-open.jpg" alt="拆開外殼的 CM600DU-24NFH IGBT 模組，可見多顆晶片與大量鋁打線" loading="lazy" style="flex:none;height:min(300px,36vh)"><figcaption>拆開後（600 A 等級）：多顆 IGBT 晶片與續流二極體並聯，靠密密麻麻的鋁打線連接，第 16 頁會再看到它<small>照片：Pslawinski／<a href="https://commons.wikimedia.org/wiki/File:CM600DU-24NFH.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption></figure>
   </div>
 </section>
 
 <!-- 13 IGBT 開關 -->
-<section class="pg zoomable" id="p13">
+<section class="pg" id="p13">
   <div class="wm">5-2</div>
   <p class="eye">5-2 · 2.3 · 圖5-8～5-10</p>
   <h2>IGBT 怎麼開、怎麼關</h2>
@@ -555,7 +581,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <div class="c"><h3>截止</h3><p>閘射極加反向電壓或不加訊號 → 溝道消失</p></div>
       <div class="c"><h3>四大特性</h3><p>高輸入阻抗 · 快速切換 · 耐高壓大電流 · 電壓驅動</p></div>
     </div>
-    <div class="c figc" style="padding:18px">
+    <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="igbtSw" viewBox="0 -8 520 248" role="img" aria-label="IGBT 切換波形：閘極電壓 VGE 與集極電流 IC 的時序，標出開通延遲、上升時間、關斷延遲、下降時間與拖尾電流"></svg>
       <div class="ctl"><span class="st" id="swSt"></span></div>
       <p class="cap">T<sub>ON</sub> = t<sub>d(on)</sub> + t<sub>r</sub>；T<sub>OFF</sub> = t<sub>d(off)</sub> + t<sub>fi1</sub> + t<sub>fi2</sub>。波形為示意，時間不按比例。</p>
@@ -639,16 +665,13 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 18 三相橋式與轉速 -->
-<section class="pg zoomable" id="p18">
-  <div class="wm">5-3</div>
-  <p class="eye">5-3 · 圖5-14</p>
-  <h2>三相橋式變頻器與轉速控制</h2>
-  <div class="row zrow fl" style="grid-template-columns:1.2fr 1fr;align-items:stretch">
-    <div class="c figc" style="padding:14px">
-      <div class="three" id="mot3d" style="height:clamp(280px,50vh,480px)"><div class="msg">3D 模型載入中…</div><div class="hud" id="motHud"></div></div>
-      <div class="ctl"></div>
-    </div>
-    <div class="grid txtc" style="gap:12px;align-content:center">
+<section class="pg" id="p18">
+  <div class="three full" id="mot3d"><div class="msg">3D 模型載入中…</div><div class="hud glass" id="motHud"></div></div>
+  <div class="copy">
+    <p class="eye">5-3 · 圖5-14</p>
+    <h2>三相橋式變頻器與轉速控制</h2>
+  </div>
+  <div class="glass-col">
     <div class="c r">
       <p class="tag">感應馬達轉速</p>
       <div class="eq" style="color:var(--on)">n = 60f / P × (1 − s)</div>
@@ -660,7 +683,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <li>輸出三相：<b>幅值相等、頻率相等、相位差 120°</b>，對繞組作正弦激磁</li>
       <li>控制輸入：電池、煞車／加速踏板、溫度、速度、電流、轉子位置</li>
     </ul></div>
-    </div>
+    <div class="ctl"></div>
   </div>
 </section>
 
@@ -670,7 +693,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <p class="eye">5-3 · 3.4 · 圖5-15、5-16</p>
   <h2>SPWM：用脈衝拼出正弦波</h2>
   <div class="row zrow fl">
-    <div class="c figc" style="padding:18px">
+    <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="spwm" viewBox="0 0 480 270" role="img" aria-label="SPWM：上半為正弦調製波與三角載波比較，下半為輸出脈衝與其平均值"></svg>
       <div class="ctl">
         <span class="seg"><button data-m="uni" class="on">單極性</button><button data-m="bi">雙極性</button></span>
@@ -692,7 +715,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   <div class="wm">5-3</div>
   <p class="eye">5-3 · 實例 · 圖5-17～5-19</p>
   <h2>Nissan Leaf 的變頻器與再生制動</h2>
-  <div class="row" style="grid-template-columns:.8fr 1.6fr;align-items:stretch">
+  <div class="row" style="grid-template-columns:1.05fr 1.45fr;align-items:stretch">
   <figure class="ph"><img src="img/leaf-powertrain.jpg" alt="Nissan Leaf ZE1 動力總成：上方黑色外殼為變頻器，下方為 EM57 馬達，橘色為高壓線" loading="lazy"><figcaption>Leaf 動力總成：上方黑殼是<b>變頻器</b>，下方是 EM57 馬達，橘色線為高壓線<small>照片：TTTNIS／<a href="https://commons.wikimedia.org/wiki/File:Nissan_Leaf_ZE1_powertrain_02.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC0</small></figcaption></figure>
   <div class="grid g2">
     <div class="c"><h3>組成</h3><p>馬達控制器、驅動器、平流電容器、2 個電流感知器、冷卻液溫度感知器、電源模組（6 顆 IGBT）</p></div>
@@ -704,13 +727,13 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 21 新：變頻器新方向 -->
-<section class="pg zoomable" id="p21">
+<section class="pg" id="p21">
   <figure class="bleed">
     <img src="img/eaxle-cutaway.jpg" alt="多合一電驅剖面模型：上方變頻器、中間馬達定子線圈與轉子、右側減速齒輪" loading="lazy" style="object-position:50% 45%">
     <span class="pin glass" style="left:36%;top:20%">變頻器</span>
     <span class="pin glass" style="left:44%;top:57%">馬達（定子＋轉子）</span>
     <span class="pin glass" style="left:82%;top:44%">減速齒輪</span>
-    <figcaption class="glass"><b>③ 的實物</b>：多合一電驅剖面。實車：Tesla Model 3（2018，首款量產 SiC 變頻器）、Porsche Macan Electric（800V + SiC）<small>照片：RudolfSimon／<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption>
+    <figcaption><b>③ 的實物</b>：多合一電驅剖面。實車：Tesla Model 3（2018，首款量產 SiC 變頻器）、Porsche Macan Electric（800V + SiC）<small>照片：RudolfSimon／<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption>
   </figure>
   <div class="copy">
     <p class="eye">5-3 · 新趨勢<span class="new">NEW</span></p>
@@ -729,13 +752,13 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 22 5-4 預充 -->
-<section class="pg zoomable" id="p22">
+<section class="pg" id="p22">
   <div class="wm">5-4</div>
   <p class="eye">5-4 預充電路 · 圖5-20、5-22</p>
   <h2>超過 90 V 就需要預充電路</h2>
   <div class="row zrow fl">
-    <div class="c figc" style="padding:18px">
-      <svg class="fig" style="max-height:28vh" viewBox="0 0 440 250" role="img" aria-label="預充電路：電池 V_B 經 K+ 與並聯的 K_P 串 R_P 到變頻器電容 C，負端經 K−">
+    <div class="c bare figc" style="padding:18px">
+      <svg class="fig" style="max-height:30vh" viewBox="0 0 440 250" role="img" aria-label="預充電路：電池 V_B 經 K+ 與並聯的 K_P 串 R_P 到變頻器電容 C，負端經 K−">
         <g stroke="#5a4d49" stroke-width="2" fill="none">
           <line x1="50" y1="60" x2="50" y2="105"/><line x1="50" y1="145" x2="50" y2="200"/>
           <line x1="32" y1="105" x2="68" y2="105"/><line x1="40" y1="115" x2="60" y2="115" stroke-width="4"/>
@@ -764,7 +787,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
           <text x="122" y="44">K<tspan font-size="10" dy="3">P</tspan></text><text x="206" y="46">R<tspan font-size="10" dy="3">P</tspan></text>
         </g>
       </svg>
-      <svg class="fig" id="pcPlot" viewBox="0 0 440 120" role="img" aria-label="上電時電容電壓與電流的變化曲線" style="margin-top:4px;max-height:20vh"></svg>
+      <svg class="fig" id="pcPlot" viewBox="0 0 440 120" role="img" aria-label="上電時電容電壓與電流的變化曲線" style="margin-top:4px;max-height:17vh"></svg>
       <div class="ctl"><button id="pcGo">▶ 預充上電</button><button id="pcBad">不預充直接接通</button><span class="st" id="pcSt"></span></div>
       <p class="cap">紅色支路 = 預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與 K+ 並聯。示意值：V<sub>B</sub> 360 V、C 1000 μF（同 Leaf）、R<sub>P</sub> 100 Ω。</p>
     </div>
@@ -780,7 +803,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 23 兩實車 -->
-<section class="pg zoomable" id="p23">
+<section class="pg" id="p23">
   <div class="wm">5-4</div>
   <p class="eye">5-4 · 實例 · 圖5-21、5-23～5-25</p>
   <h2>兩個實車的上電順序</h2>
@@ -796,7 +819,7 @@ svg text{font-family:"Noto Sans TC",sans-serif}
         <li>K<sub>P</sub>（預充）＝ <b>SMRP</b>（預充）</li>
       </ul>
     </div>
-    <div class="c figc" style="padding:18px 22px">
+    <div class="c bare figc" style="padding:18px 22px">
       <p class="tag">TOYOTA ALTIS 油電 · 繼電器時序</p>
       <svg class="fig" id="smr" viewBox="0 0 520 226" role="img" aria-label="Altis 系統主繼電器時序：上電時 SMRB、SMRP 先閉合預充約 500 毫秒，再閉合 SMRG、斷開 SMRP 進入 READY；下電時先斷 SMRG 再斷 SMRB，最後 SMRP 動作一次檢查接點"></svg>
       <div class="ctl"><span class="st" id="smrSt"></span></div>
@@ -1728,7 +1751,7 @@ lazy(document.getElementById('car3d'), async box => {
 
 // ---------- p18：三相電流 → 旋轉磁場 → 轉子跟著轉 ----------
 lazy(document.getElementById('mot3d'), async box => {
-  const {THREE, scene, label, loop, M} = await mount(box, [2.8, 2.2, 11.5], [0, -.2, 0]);
+  const {THREE, scene, label, loop, M} = await mount(box, [4, 3.2, 17], [0, -.2, 0], [.17, -.08]);
   scene.add(new THREE.Mesh(new THREE.TorusGeometry(2.75, .32, 16, 72), M(0x9aa3ab, .5, .45)));
   // 2 極三相：A 在 0°、B 在 120°、C 在 240°，對面是同相的回線（−A、−B、−C）
   const coils = [];
