@@ -23,6 +23,10 @@
 html{background:var(--bg);scroll-snap-type:y proximity;scroll-behavior:smooth}
 body{background:var(--bg);color:var(--txt);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
 a{color:inherit}
+/* 材質：整頁一層很淡的紙感顆粒＋左上柔光，畫面不會死板 */
+body::after{content:"";position:fixed;inset:0;z-index:9;pointer-events:none;opacity:.09;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .18 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.pg:not(.cover){background:radial-gradient(1100px 620px at 12% 0%,rgba(255,252,247,.38),transparent 62%),radial-gradient(900px 600px at 100% 100%,rgba(168,66,63,.05),transparent 60%)}
 b,strong{color:var(--red);font-weight:700}
 sub{font-size:.7em}
 
@@ -194,9 +198,58 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .three .hud{position:absolute;left:10px;top:8px;z-index:1;font-size:13.5px;color:var(--ink);background:rgba(237,232,225,.88);padding:5px 11px;border-radius:7px;pointer-events:none;line-height:1.5}
 .three .hud b{color:var(--red);font-variant-numeric:tabular-nums}
 .three .hud small{display:block;font-size:11.5px;color:var(--mute)}
+/* p2：整台車是全頁背景，文字與四張玻璃卡浮在前面 */
+#p2{justify-content:flex-start}
+/* 全頁 3D／照片當背景，文字與玻璃卡在前景 */
+.three.full{position:absolute;inset:0;z-index:0;height:auto;border-radius:0;background:transparent}
+.copy{max-width:560px;z-index:2}
+#p2 .copy{pointer-events:none}
+/* 放大模式：按一下 → 文字縮小、圖放大；再按一下才換頁 */
+.zoomable .copy{transition:transform .7s cubic-bezier(.2,.7,.2,1);transform-origin:0 0}
+.zoomable.zoom .copy{transform:scale(.66)}
+.zoomable .copy .lede{transition:opacity .4s}
+.zoomable.zoom .copy .lede{opacity:0}
+.zoomable .side{transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .5s}
+.zbtn{all:unset;position:absolute;z-index:3;right:max(24px,calc((100vw - 1180px)/2));top:22px;cursor:pointer;font-size:13px;color:var(--ink);padding:4px 12px;border-radius:999px;opacity:.75;transition:opacity .3s}
+.zbtn:hover{opacity:1} .zbtn:focus-visible{outline:2px solid var(--ink)}
+/* p16：模組 3D 全頁，比較表是右側玻璃卡 */
+#p16{justify-content:flex-start} #p16 .copy{max-width:640px}
+#p16 .side{position:absolute;z-index:2;right:max(24px,calc((100vw - 1180px)/2));top:50%;transform:translateY(-38%);width:min(520px,40vw);padding:16px 20px 14px;border-radius:16px;transform-origin:100% 100%}
+#p16.zoom .side{transform:translateY(-14%) scale(.66);opacity:.94}
+#p16 .side td{background:rgba(255,255,255,.38)} #p16 .side td:first-child{background:transparent} #p16 .side td.hi{background:var(--red)}
+#p16 .side .src{margin-top:6px}
+#p16 .tools{position:absolute;z-index:2;left:max(24px,calc((100vw - 1180px)/2));bottom:62px;padding:6px 10px;border-radius:999px;margin:0}
+/* p21：實物照片出血到頁緣，文字在左 */
+#p21 .bleed{position:absolute;z-index:0;top:0;right:0;height:100%;aspect-ratio:1100/1028;margin:0;transform-origin:100% 50%;transform:scale(.9);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+#p21 .bleed img{display:block;width:100%;height:100%;object-fit:cover}
+#p21 .bleed::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,var(--bg) 0%,rgba(214,207,197,.6) 22%,rgba(214,207,197,0) 42%);transition:opacity .7s;pointer-events:none}
+#p21.zoom .bleed{transform:translateX(-11%) scale(1)}
+#p21.zoom .bleed::after{opacity:.9}
+#p21 .bleed .pin{position:absolute;z-index:1;transform:translate(-50%,-50%) scale(.9);opacity:0;transition:opacity .4s,transform .4s;font-size:14px;font-weight:700;color:var(--ink);padding:3px 12px;border-radius:999px;white-space:nowrap}
+#p21 .bleed .pin::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:7px;vertical-align:1px}
+#p21.zoom .bleed .pin{opacity:1;transform:translate(-50%,-50%)}
+#p21 .bleed .pin.glass{background:rgba(251,246,240,.93);box-shadow:0 6px 18px rgba(63,53,50,.25)}
+#p21.zoom .bleed .pin:nth-of-type(2){transition-delay:.12s} #p21.zoom .bleed .pin:nth-of-type(3){transition-delay:.24s}
+#p21 .bleed figcaption{position:absolute;z-index:1;right:24px;bottom:76px;max-width:360px;font-size:12.5px;line-height:1.5;padding:8px 14px;border-radius:12px}
+#p21 .bleed figcaption small{display:block;font-size:11px;color:var(--mute)}
+#p21 .bleed figcaption a{color:var(--mute)}
+#p21 .copy{max-width:700px} #p21 .side{max-width:600px} #p21 h2{margin-bottom:20px}
+#p21 .steps{gap:10px} #p21 .steps li{padding:10px 16px 10px 58px;font-size:15.5px;line-height:1.6} #p21 .steps li::before{top:10px}
+#p21 .side{display:grid;gap:12px;transform-origin:0 100%}
+#p21.zoom .side{transform:scale(.72)}
+#p21 .steps li{background:rgba(255,255,255,.42);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.55)}
+#p21 .steps li.on{background:var(--red);border-color:var(--red)}
+#p21 .src{max-width:600px}
+#p2 .copy h2{margin-bottom:22px}
+#p2 .glass-col{position:absolute;z-index:2;right:max(24px,calc((100vw - 1180px)/2));top:50%;transform:translateY(-44%);width:340px;display:grid;gap:12px}
+#p2 .glass-col .ctl{margin:2px 4px 0}
 #p2 .c.k{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:baseline}
 #p2 .c.k h3{margin:0}
 #p2 .c.k p:last-child{grid-column:1/-1}
+.glass{background:linear-gradient(135deg,rgba(255,255,255,.52),rgba(255,255,255,.16));-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%);
+  border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(255,255,255,.18),0 12px 32px rgba(63,53,50,.13)}
+#p2 .c.k.glass.on{background:linear-gradient(135deg,rgba(190,86,82,.9),rgba(160,60,57,.8));border-color:rgba(255,225,218,.55)}
+#p2 .c.k.glass:hover:not(.on){background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.3))}
 #p22 h2{margin-bottom:14px} #p22 .row{grid-template-columns:1.4fr 1fr}
 #p8 h2{margin-bottom:24px} #p8 .note{margin-top:14px} #p8 ul.dot li{margin:4px 0}
 .three .msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font-size:14px}
@@ -208,8 +261,10 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .nav button:focus-visible{outline:2px solid #fff}
 .nav .cnt{font:600 13px/1 Arial;min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
 .bar{position:fixed;left:0;top:0;height:3px;background:var(--red);z-index:10;width:0;transition:width .25s}
-.home{position:fixed;left:18px;top:14px;z-index:10;font-size:13px;text-decoration:none;color:var(--mute);background:rgba(214,207,197,.85);padding:4px 10px;border-radius:999px}
-.home:hover{color:var(--red)}
+.home{position:fixed;left:18px;top:14px;z-index:10;font-size:13px;text-decoration:none;color:var(--mute);background:rgba(214,207,197,.85);padding:4px 10px;border-radius:999px;opacity:0;transition:opacity .3s}
+/* 平常隱藏，滑鼠移到左上角才出現；觸控裝置沒有滑鼠，淡淡顯示 */
+.home:hover,.home:focus-visible{opacity:1;color:var(--red)}
+@media (hover:none){.home{opacity:.5}}
 .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10;font-size:13px;color:var(--on2);transition:opacity .4s}
 .hint kbd{font:600 12px Arial;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin:0 2px}
 
@@ -227,6 +282,15 @@ svg text{font-family:"Noto Sans TC",sans-serif}
   .foot{display:none}
   .ph img{max-height:300px}
   .row,.g3x{grid-template-columns:1fr!important}
+  /* 手機：車放回文字下方，卡片接在後面 */
+  .three.full{position:relative;inset:auto;height:44vh;border-radius:10px;margin-bottom:12px}
+  #p16 .side,#p16 .tools{position:static;transform:none!important;width:auto;margin-top:12px}
+  #p21 .bleed{position:relative;height:auto;width:100%;transform:none!important;order:5;margin-top:12px;border-radius:12px;overflow:hidden}
+  #p21 .bleed::after{display:none} #p21 .bleed figcaption{position:static;max-width:none}
+  #p21.zoom .side,.zoomable.zoom .copy{transform:none}
+  .zbtn{display:none}
+  .copy{order:-1}
+  #p2 .glass-col{position:static;transform:none;width:auto}
 }
 @media (max-width:520px){ .g3,.g4{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
@@ -254,21 +318,18 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 
 <!-- 02 四條能量路徑 -->
 <section class="pg" id="p2">
-  <div class="wm">EV</div>
-  <p class="eye">總覽 · 圖5-1、5-13</p>
-  <h2>三電之間的四條能量路徑</h2>
-  <p class="lede">電動車效能取決於電池、電控、電機「三電」之間的能量轉換與調配。第二條驅動路徑是本章主線。</p>
-  <div class="row" style="grid-template-columns:1.45fr 1fr;align-items:stretch">
-    <div class="c" style="padding:14px">
-      <div class="three" id="car3d" style="height:clamp(260px,44vh,480px)"><div class="msg">3D 模型載入中…</div></div>
-      <div class="ctl"></div>
-    </div>
-    <div class="grid" style="gap:12px">
-      <div class="c k" data-k="1"><p class="tag">01</p><h3>充電</h3><p>公用電網 → AC-DC 充電器 → 動力電池（儲存高壓 DC）</p></div>
-      <div class="c k" data-k="2"><p class="tag">02 · 本章主線</p><h3>驅動</h3><p>動力電池 →（DC/DC）→ DC/AC 變頻器 → 驅動馬達 → 減速器 → 車輪</p></div>
-      <div class="c k" data-k="3"><p class="tag">03</p><h3>低壓供電</h3><p>動力電池 → DC/DC 轉換器 → 48V／12V 車用負載</p></div>
-      <div class="c k" data-k="4"><p class="tag">04 · 反向</p><h3>再生制動</h3><p>煞車時馬達變發電機 → 變頻器整流 → 回充電池</p></div>
-    </div>
+  <div class="three full" id="car3d"><div class="msg">3D 模型載入中…</div></div>
+  <div class="copy">
+    <p class="eye">總覽 · 圖5-1、5-13</p>
+    <h2>三電之間的四條能量路徑</h2>
+    <p class="lede">電動車效能取決於電池、電控、電機「三電」之間的能量轉換與調配。第二條驅動路徑是本章主線。</p>
+  </div>
+  <div class="glass-col">
+    <div class="c k glass" data-k="1"><p class="tag">01</p><h3>充電</h3><p>公用電網 → AC-DC 充電器 → 動力電池（儲存高壓 DC）</p></div>
+    <div class="c k glass" data-k="2"><p class="tag">02 · 本章主線</p><h3>驅動</h3><p>動力電池 →（DC/DC）→ DC/AC 變頻器 → 驅動馬達 → 減速器 → 車輪</p></div>
+    <div class="c k glass" data-k="3"><p class="tag">03</p><h3>低壓供電</h3><p>動力電池 → DC/DC 轉換器 → 48V／12V 車用負載</p></div>
+    <div class="c k glass" data-k="4"><p class="tag">04 · 反向</p><h3>再生制動</h3><p>煞車時馬達變發電機 → 變頻器整流 → 回充電池</p></div>
+    <div class="ctl"></div>
   </div>
 </section>
 
@@ -523,17 +584,15 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 16 新：雙面冷卻 -->
-<section class="pg" id="p16">
-  <div class="wm">5-2</div>
-  <p class="eye">5-2 · 新散熱<span class="new">NEW</span></p>
-  <h2>IGBT 雙面冷卻：熱從兩面一起散</h2>
-  <p class="lede">封裝怕熱，就要把熱更快帶走。晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；IGBT 與 SiC 模組都適用。</p>
-  <div class="row" style="grid-template-columns:1.05fr 1fr;align-items:stretch">
-  <div class="c" style="padding:14px">
-    <div class="three" id="mod3d"><div class="msg">3D 模型載入中…</div></div>
-    <div class="ctl"><span class="seg"><button data-c="1" class="on">單面冷卻</button><button data-c="2">雙面冷卻</button></span><button id="m3Ex">分解</button></div>
+<section class="pg zoomable" id="p16">
+  <div class="three full" id="mod3d"><div class="msg">3D 模型載入中…</div></div>
+  <div class="copy">
+    <p class="eye">5-2 · 新散熱<span class="new">NEW</span></p>
+    <h2>IGBT 雙面冷卻：熱從兩面一起散</h2>
+    <p class="lede">封裝怕熱，就要把熱更快帶走。晶片（IGBT 與二極體）正反兩側同時焊上絕緣導熱基板（覆銅陶瓷基板 DBC／AMB）與散熱器，熱量雙向傳導；IGBT 與 SiC 模組都適用。</p>
   </div>
-  <div class="tbl-wrap" style="align-self:center"><table style="font-size:14.5px" class="nw1">
+  <div class="side glass">
+    <table style="font-size:14.5px" class="nw1">
     <thead><tr><th></th><th>傳統單面冷卻</th><th>雙面冷卻</th></tr></thead>
     <tbody>
       <tr><td>散熱路徑</td><td>僅晶片背面向下傳導</td><td class="hi">正面與背面同時傳導</td></tr>
@@ -541,9 +600,10 @@ svg text{font-family:"Noto Sans TC",sans-serif}
       <tr><td>熱阻 R<sub>thjc</sub></td><td>基準 100%</td><td class="hi"><strong style="color:var(--on);border:0">約降低 23–40%</strong></td></tr>
       <tr><td>功率密度</td><td>較低，受限單面散熱</td><td class="hi">較高，逆變器體積與重量大幅縮小</td></tr>
     </tbody>
-  </table></div>
+  </table>
+    <p class="src">熱阻降幅依各研究實測：<a href="https://saemobilus.sae.org/content/2017-01-2456" target="_blank" rel="noopener">SAE 2017-01-2456（−23%）</a>、<a href="https://ieeexplore.ieee.org/document/8046403" target="_blank" rel="noopener">IEEE 平面封裝模組（−26.7%）</a>、<a href="https://publica.fraunhofer.de/entities/publication/5cfc393b-4545-4efe-ba92-040b51d673ea" target="_blank" rel="noopener">Fraunhofer IZM（−40%）</a></p>
   </div>
-  <p class="src">熱阻降幅依各研究實測：<a href="https://saemobilus.sae.org/content/2017-01-2456" target="_blank" rel="noopener">SAE 2017-01-2456（−23%）</a>、<a href="https://ieeexplore.ieee.org/document/8046403" target="_blank" rel="noopener">IEEE 平面封裝模組（−26.7%）</a>、<a href="https://publica.fraunhofer.de/entities/publication/5cfc393b-4545-4efe-ba92-040b51d673ea" target="_blank" rel="noopener">Fraunhofer IZM（−40%）</a></p>
+  <div class="ctl tools glass"><span class="seg"><button data-c="1" class="on">單面冷卻</button><button data-c="2">雙面冷卻</button></span><button id="m3Ex">分解</button></div>
 </section>
 
 <!-- 17 5-3 三樣可調 -->
@@ -631,21 +691,26 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 </section>
 
 <!-- 21 新：變頻器新方向 -->
-<section class="pg" id="p21">
-  <div class="wm">5-3</div>
-  <p class="eye">5-3 · 新趨勢<span class="new">NEW</span></p>
-  <h2>新一代變頻器：三項技術串成一套</h2>
-  <p class="lede">前面的三相橋式、SPWM 控制原理都不變；改變的是開關元件、電壓和整合方式。</p>
-  <div class="row" style="grid-template-columns:1.25fr 1fr;align-items:stretch">
-    <div class="grid" style="gap:14px;align-content:center">
-      <ol class="steps">
+<section class="pg zoomable" id="p21">
+  <figure class="bleed">
+    <img src="img/eaxle-cutaway.jpg" alt="多合一電驅剖面模型：上方變頻器、中間馬達定子線圈與轉子、右側減速齒輪" loading="lazy" style="object-position:50% 45%">
+    <span class="pin glass" style="left:36%;top:20%">變頻器</span>
+    <span class="pin glass" style="left:44%;top:57%">馬達（定子＋轉子）</span>
+    <span class="pin glass" style="left:82%;top:44%">減速齒輪</span>
+    <figcaption class="glass"><b>③ 的實物</b>：多合一電驅剖面。實車：Tesla Model 3（2018，首款量產 SiC 變頻器）、Porsche Macan Electric（800V + SiC）<small>照片：RudolfSimon／<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption>
+  </figure>
+  <div class="copy">
+    <p class="eye">5-3 · 新趨勢<span class="new">NEW</span></p>
+    <h2>新一代變頻器：三項技術串成一套</h2>
+    <p class="lede">前面的三相橋式、SPWM 控制原理都不變；改變的是開關元件、電壓和整合方式。</p>
+  </div>
+  <div class="side">
+    <ol class="steps">
         <li><b>SiC 開關元件</b>　6 顆 IGBT 換成 SiC MOSFET：耐高壓、損耗低、可高頻切換<span class="ref">第 15 頁</span></li>
         <li><b>800V 架構</b>　元件耐得住，主電壓才能加倍：電流減半、線束變細、快充更快<span class="ref">第 8 頁</span></li>
         <li class="on"><b>多合一電驅 e-Axle</b>　馬達、變頻器、減速器甚至 BMS 整合在同一殼體：高壓線束更少，冷卻與空間利用更好</li>
       </ol>
-      <div class="c" style="display:flex;gap:20px;align-items:center;padding:18px 22px"><div class="big" style="margin:0;white-space:nowrap">+5~7<small>% 續航</small></div><p>換成 SiC 變頻器後，同一顆電池比 Si IGBT 多跑約 5–7%；次世代 SiC 上看 10%。</p></div>
-    </div>
-    <figure class="ph"><div class="fill"><img src="img/eaxle-cutaway.jpg" alt="多合一電驅剖面模型：上方變頻器、中間馬達定子線圈與轉子、右側減速齒輪" loading="lazy" style="object-position:50% 45%"></div><figcaption><b>③ 的實物</b>：多合一電驅剖面，上變頻器、中馬達、右減速齒輪<br>實車：Tesla Model 3（2018，首款量產 SiC 變頻器）、Porsche Macan Electric（800V + SiC）<small>照片：RudolfSimon／<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption></figure>
+    <div class="c glass" style="display:flex;gap:20px;align-items:center;padding:18px 22px"><div class="big" style="margin:0;white-space:nowrap">+5~7<small>% 續航</small></div><p>換成 SiC 變頻器後，同一顆電池比 Si IGBT 多跑約 5–7%；次世代 SiC 上看 10%。</p></div>
   </div>
   <p class="src">來源：<a href="https://zephr.autocar.co.uk/car-news/technology/under-skin-how-new-inverters-give-evs-more-power-and-range" target="_blank" rel="noopener">Autocar，Infineon 訪談（+7%、次世代 10%）</a>、<a href="https://research.unipd.it/handle/11577/3146201" target="_blank" rel="noopener">Padova 大學研究（+5%）</a>、<a href="https://www.electricvehiclesresearch.com/articles/23080/teslas-innovative-power-electronics-the-silicon-carbide-inverter" target="_blank" rel="noopener">IDTechEx，Tesla SiC 變頻器</a>、<a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom</a></p>
 </section>
@@ -1212,6 +1277,14 @@ function dots(id) {
   if (el) el.innerHTML = Array.from({length: f.n}, (_, k) => `<i${k === (f.get ? f.get() : f.i) ? ' class="on"' : ''}></i>`).join('');
 }
 Object.keys(frags).forEach(id => { document.querySelector(`#${id} .ctl`).insertAdjacentHTML('beforeend', '<span class="dots" aria-hidden="true"></span>'); dots(id); });
+function zoom(p, on) {
+  p.classList.toggle('zoom', on);
+  const b = p.querySelector('.zbtn'); if (b) b.textContent = on ? '縮回文字 ↙' : '放大圖 ↗';
+}
+document.querySelectorAll('.zoomable').forEach(p => {
+  p.insertAdjacentHTML('beforeend', '<button class="zbtn glass">放大圖 ↗</button>');
+  p.querySelector('.zbtn').onclick = () => zoom(p, !p.classList.contains('zoom'));
+});
 // 平滑捲動途中再按鍵，以剛剛要去的那頁為準，不會跳過或重複
 let target = -1, targetAt = 0;
 function go(i) {
@@ -1222,6 +1295,12 @@ function step(dir) {
   const i = target >= 0 && performance.now() - targetAt < 800 ? target : current();
   const p = pages[i], r = p.getBoundingClientRect();
   const f = frags[p.id];
+  // 放大模式：先放大圖，頁內步驟走完、回到開頭再按 ← 才縮回
+  if (p.classList.contains('zoomable') && innerWidth > 860) {
+    const z = p.classList.contains('zoom'), fi = f ? (f.get ? f.get() : f.i) : 0;
+    if (dir > 0 && !z) { zoom(p, true); return; }
+    if (dir < 0 && z && fi <= 0) { zoom(p, false); return; }
+  }
   if (f) {
     const t = (f.get ? f.get() : f.i) + dir;
     if (t >= 0 && t < f.n) {
@@ -1392,9 +1471,19 @@ async function init() {
   }
   P.forEach(spawn);
 
+  // 寬螢幕時畫面中心往左移，讓出右邊的比較表；放大模式時置中並拉近
+  const sec = box.closest('.pg');
+  let base = 1, offX = .16, zk = .58;
   function resize() {
     const w = box.clientWidth, h = box.clientHeight;
-    renderer.setSize(w, h); cam.aspect = w / h; cam.zoom = Math.min(1, cam.aspect / 1.35); cam.updateProjectionMatrix();
+    renderer.setSize(w, h); cam.aspect = w / h; base = Math.min(1, cam.aspect / 1.35);
+  }
+  function frame(dt) {
+    const w = box.clientWidth, h = box.clientHeight, z = sec.classList.contains('zoom'), k = RM ? 1 : Math.min(1, dt * 3);
+    offX += ((w > 860 ? (z ? .05 : .16) : 0) - offX) * k; zk += ((z ? .8 : .58) - zk) * k;
+    cam.zoom = base * zk;
+    if (w > 860) cam.setViewOffset(w, h, offX * w, (z ? -.04 : -.12) * h, w, h); else cam.clearViewOffset();
+    cam.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(box); resize();
 
@@ -1405,6 +1494,7 @@ async function init() {
   renderer.setAnimationLoop(now => {
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     if (!visible) return;
+    frame(dt);
     ex += (exT - ex) * Math.min(1, dt * 6);
     for (const k of [1, 2]) {
       groups[k].visible = k === mode;
@@ -1443,7 +1533,8 @@ function lazy(box, init) {
     init(box).catch(e => { box.querySelector('.msg').textContent = '這台裝置無法顯示 3D（需要 WebGL）'; console.error(e); });
   }, {rootMargin: '100% 0px'}).observe(box);
 }
-async function mount(box, pos, target) {
+// shift：寬螢幕時把畫面中心往左下移（[x, y] 佔寬高的比例），讓出右邊卡片與上方標題
+async function mount(box, pos, target, shift) {
   const THREE = await import('three');
   const {OrbitControls} = await import('three/addons/controls/OrbitControls.js');
   const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
@@ -1466,7 +1557,9 @@ async function mount(box, pos, target) {
   };
   const resize = () => {
     const w = box.clientWidth, h = box.clientHeight;
-    renderer.setSize(w, h); cam.aspect = w / h; cam.zoom = Math.min(1, cam.aspect / 1.35); cam.updateProjectionMatrix();
+    renderer.setSize(w, h); cam.aspect = w / h; cam.zoom = Math.min(1, cam.aspect / 1.35);
+    if (shift && w > 860) cam.setViewOffset(w, h, shift[0] * w, shift[1] * h, w, h); else cam.clearViewOffset();
+    cam.updateProjectionMatrix();
   };
   new ResizeObserver(resize).observe(box); resize();
   let visible = true;
@@ -1489,7 +1582,7 @@ async function mount(box, pos, target) {
     });
   };
   const M = (color, metal = .2, rough = .6) => new THREE.MeshStandardMaterial({color, metalness: metal, roughness: rough});
-  return {THREE, scene, label, loop, M};
+  return {THREE, scene, label, loop, M, cam, ctl};
 }
 // 熱流／能量點：沿曲線前進，depthTest 關掉才看得到穿過車身與零件
 function flow(THREE, scene, N, size) {
@@ -1513,7 +1606,7 @@ function flow(THREE, scene, N, size) {
 
 // ---------- p2：整車四條能量路徑 ----------
 lazy(document.getElementById('car3d'), async box => {
-  const {THREE, scene, label, loop, M} = await mount(box, [2.5, 11.5, 13.5], [-1, .4, 0]);
+  const {THREE, scene, label, loop, M, cam, ctl} = await mount(box, [3, 10.5, 17.5], [-.3, .4, 0], [.15, -.1]);
   const V = (x, y, z) => new THREE.Vector3(x, y, z);
   const add = (geo, mat, x, y, z) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); scene.add(o); return o; };
   const box3 = (w, h, d, mat, x, y, z) => add(new THREE.BoxGeometry(w, h, d), mat, x, y, z);
@@ -1525,8 +1618,19 @@ lazy(document.getElementById('car3d'), async box => {
   const bodyG = new THREE.ExtrudeGeometry(sh, {depth: 3.7, bevelEnabled: false}); bodyG.translate(0, 0, -1.85);
   scene.add(new THREE.Mesh(bodyG, new THREE.MeshStandardMaterial({color: 0xffffff, transparent: true, opacity: .12, depthWrite: false})));
   scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(bodyG), new THREE.LineBasicMaterial({color: 0xa89d92})));
-  const ground = add(new THREE.CircleGeometry(9, 48), new THREE.MeshStandardMaterial({color: 0xe3ddd4}), 0, 0, 0);
-  ground.rotation.x = -Math.PI / 2;
+  // 地面：中間亮、邊緣淡出到頁面底色；車底一圈柔和陰影
+  const radial = stops => {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const x = c.getContext('2d'), g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+    stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  };
+  const flat = (r, map, y, sx = 1, sz = 1) => {
+    const m = add(new THREE.CircleGeometry(r, 64), new THREE.MeshBasicMaterial({map, transparent: true, depthWrite: false}), 0, y, 0);
+    m.rotation.x = -Math.PI / 2; m.scale.set(sx, sz, 1); return m;
+  };
+  flat(16, radial([[0, 'rgba(236,231,223,1)'], [.55, 'rgba(228,222,213,.7)'], [1, 'rgba(214,207,197,0)']]), 0);
+  flat(6, radial([[0, 'rgba(63,53,50,.32)'], [1, 'rgba(63,53,50,0)']]), .01, 1, .42);
 
   // 車輪：放在群組裡，繞車軸（z）轉
   const wheels = [];
@@ -1568,9 +1672,28 @@ lazy(document.getElementById('car3d'), async box => {
   L.gear = {show: false};
   const energy = flow(THREE, scene, 150, .26);
   const muted = new THREE.Color(0xd2cbc2);
+  // 鏡頭：每條路徑一個視角 [位置, 看向]，換步時平滑飛過去；總覽時繞車慢慢轉
+  const poses = {
+    0: [V(3, 10.5, 17.5), V(-.3, .4, 0)],
+    1: [V(-17, 6, -10), V(-4.2, 1.3, -1.6)],   // 從車後側看，公用電網在前景
+    2: [V(-1.5, 5.8, 10), V(-2.8, .9, 0)],
+    3: [V(9.5, 5.5, 8.5), V(3.2, 1.1, 0)],
+    4: [V(-10, 4.5, 7.5), V(-2.8, .9, 0)],
+  };
+  const want = V(0, 0, 0), look = V(0, 0, 0);
+  let orbit = 0, user = false, shown = ev.state;
+  ctl.addEventListener('start', () => user = true);
   let spin = 0;
   loop(dt => {
     const s = ev.state, on = active[s];
+    if (s !== shown) { shown = s; user = false; }
+    if (!user) {
+      const [p, t] = poses[s];
+      if (s === 0 && !RM) orbit += dt * .12;
+      want.copy(p).sub(t).applyAxisAngle(V(0, 1, 0), s === 0 ? Math.sin(orbit) * .55 : 0).add(t);
+      const k = RM ? 1 : 1 - Math.exp(-dt * 2.2);
+      cam.position.lerp(want, k); look.copy(ctl.target).lerp(t, k); ctl.target.copy(look);
+    }
     Object.entries(parts).forEach(([k, p]) => {
       const want = on.includes(k) ? p.color : muted;
       p.mesh.material.color.lerp(want, Math.min(1, dt * 6));
