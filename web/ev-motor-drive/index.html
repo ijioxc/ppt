@@ -98,24 +98,28 @@ td.hi{background:var(--red);color:var(--on);font-weight:500}
 #measRows tr{cursor:pointer}
 .nw1 td:first-child{white-space:nowrap;padding-right:12px}
 
-/* 封面 */
-.cover{background:var(--red);color:var(--on2)}
-.cover .wm{color:#b5524e}
-.cover .eye{color:var(--on2)}
-.cover h1{font-size:clamp(40px,7vw,84px);line-height:1.15;font-weight:900;color:var(--on);margin:8px 0 24px}
-.cover .flow{font-size:clamp(16px,2vw,21px);color:var(--on);margin-bottom:46px}
-.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1000px}
-.toc a{display:block;text-decoration:none;border-top:2px solid var(--on2);padding-top:10px}
-.toc span{display:block;font:900 26px/1 Arial,sans-serif;color:var(--on)}
+/* 封面：大標題壓在左下，目錄貼底；組員縱向排在右上角；背景是三條相差 120° 的正弦波 */
+.cover{background:var(--red);color:var(--on2);justify-content:flex-end;padding-bottom:92px}
+.cover .eye{position:absolute;top:64px;left:max(24px,calc((100vw - 1180px)/2));color:var(--on2)}
+.cover .waves{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.cover h1{font-size:clamp(40px,7vw,88px);line-height:1.12;font-weight:900;color:var(--on);margin:0 0 20px;letter-spacing:-.01em}
+.cover h1 span{color:var(--on2)}
+.cover .flow{font-size:clamp(16px,1.8vw,20px);color:var(--on);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.cover .flow i{font-style:normal;font-size:.72em;color:var(--on2);border:1px solid rgba(251,241,238,.4);border-radius:999px;padding:1px 9px;margin-left:-4px}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:52px}
+.toc a{display:block;text-decoration:none;border-top:1px solid rgba(251,241,238,.45);padding-top:12px;transition:border-color .3s}
+.toc a:hover{border-color:var(--on)}
+.toc span{display:block;font:900 24px/1 Arial,sans-serif;color:var(--on);margin-bottom:4px}
 .toc em{font-style:normal;font-size:15px}
-.cover .by{margin-top:44px;font-size:14px;color:var(--on2)}
-/* 封面組員：跟目錄同一套四欄，名字白、學號淡 */
-.team{margin-top:38px;max-width:1000px}
-.team .t{font-size:13px;letter-spacing:.2em;color:var(--on2);margin-bottom:10px}
-.team ul{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.team li b{display:block;font-size:19px;font-weight:700;color:var(--on);line-height:1.4}
-.team li span{font-size:13.5px;color:var(--on2);letter-spacing:.04em;font-variant-numeric:tabular-nums}
-.cover .team+.by{margin-top:26px}
+.cover .by{margin-top:22px;font-size:12.5px;color:var(--on2);opacity:.85}
+.team{position:absolute;z-index:1;top:60px;right:max(24px,calc((100vw - 1180px)/2));text-align:right;padding-right:16px;border-right:1px solid rgba(251,241,238,.4)}
+.team .t{font-size:12px;letter-spacing:.3em;color:var(--on2);margin-bottom:8px}
+.team ol{list-style:none}
+.team li{display:flex;justify-content:flex-end;align-items:baseline;gap:10px;line-height:1.75}
+.team li b{font-size:15px;font-weight:700;color:var(--on)}
+.team li span{font-size:11.5px;color:var(--on2);letter-spacing:.05em;font-variant-numeric:tabular-nums;min-width:7.4em;text-align:left}
+.team .prof{margin-top:10px;font-size:12.5px;color:var(--on2)}
+.team .prof b{color:var(--on);font-weight:700;margin-left:6px}
 
 /* 分節頁 */
 .split{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center}
@@ -333,7 +337,11 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 
 @media (max-width:860px){
   .pg{padding:64px 16px 90px;justify-content:flex-start}
-  .g3,.g4,.toc,.team ul{grid-template-columns:1fr 1fr}
+  .g3,.g4,.toc{grid-template-columns:1fr 1fr}
+  .cover{justify-content:flex-start;padding-top:110px}
+  .cover .eye{top:64px;left:16px}
+  .team{position:static;order:5;text-align:left;border-right:0;border-left:1px solid rgba(251,241,238,.4);padding:0 0 0 14px;margin-top:28px}
+  .team li{justify-content:flex-start}
   .row,.split,.g2{grid-template-columns:1fr}
   .vs{grid-template-columns:1fr}
   .vs .op{font-size:30px}
@@ -366,25 +374,26 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 
 <!-- 01 封面 -->
 <section class="pg cover" id="p1">
-  <div class="wm">EV</div>
+  <svg class="waves" id="coverWaves" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true"></svg>
   <p class="eye">CHAPTER 05</p>
-  <h1>電動車馬達驅動控制<br>與電能轉換</h1>
-  <p class="flow">電池（高壓 DC）→ 轉換器 → 馬達（三相 AC）</p>
+  <aside class="team" aria-label="組員">
+    <p class="t">第三組</p>
+    <ol>
+      <li><b>楊政穎</b><span>c113183206</span></li>
+      <li><b>張天翰</b><span>c112142235</span></li>
+      <li><b>張翊詮</b><span>c113142234</span></li>
+      <li><b>蔡博彥</b><span>c113142225</span></li>
+    </ol>
+    <p class="prof">授課教授<b>龐大成</b></p>
+  </aside>
+  <h1>電動車馬達驅動控制<br><span>與電能轉換</span></h1>
+  <p class="flow">電池 <i>高壓 DC</i> → 轉換器 → 馬達 <i>三相 AC</i></p>
   <nav class="toc" aria-label="目錄">
     <a href="#p4"><span>01</span><em>四種電能轉換器</em></a>
     <a href="#p9"><span>02</span><em>功率半導體元件</em></a>
     <a href="#p17"><span>03</span><em>變頻器控制馬達</em></a>
     <a href="#p22"><span>04</span><em>預充電路</em></a>
   </nav>
-  <div class="team">
-    <p class="t">第三組 · 授課教授 龐大成</p>
-    <ul>
-      <li><b>楊政穎</b><span>c113183206</span></li>
-      <li><b>張天翰</b><span>c112142235</span></li>
-      <li><b>張翊詮</b><span>c113142234</span></li>
-      <li><b>蔡博彥</b><span>c113142225</span></li>
-    </ul>
-  </div>
   <p class="by">每節最後補充業界新技術：800V 高壓、SiC 碳化矽、雙面冷卻、高壓安全　·　重點報告 2026.10.20</p>
   <p class="hint" id="hint">按 <kbd>→</kbd> <kbd>←</kbd> 或 <kbd>空白鍵</kbd> 換頁，<kbd>F</kbd> 全螢幕</p>
 </section>
@@ -921,6 +930,23 @@ function whenVisible(el, on, off) {
 }
 // 拖完滑桿就放掉焦點，方向鍵回到換頁
 document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('change', () => r.blur()));
+
+// 封面背景：三相正弦波（相差 120°），慢慢流動
+(() => {
+  const svg = document.getElementById('coverWaves');
+  const cols = ['rgba(251,241,238,.32)', 'rgba(251,241,238,.2)', 'rgba(251,241,238,.12)'];
+  svg.innerHTML = cols.map(c => `<path fill="none" stroke="${c}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`).join('');
+  const P = [...svg.children];
+  let ph = 0, raf = 0, last = 0;
+  const draw = () => P.forEach((p, k) => {
+    let d = '';
+    for (let x = 0; x <= 1000; x += 10) d += `${x ? 'L' : 'M'}${x},${(270 + 95 * Math.sin(x / 1000 * 3.2 * Math.PI + ph - k * 2 * Math.PI / 3)).toFixed(1)}`;
+    p.setAttribute('d', d);
+  });
+  const tick = now => { ph += Math.min(.05, (now - last) / 1000) * .35; last = now; draw(); raf = requestAnimationFrame(tick); };
+  draw();
+  if (!RM) whenVisible(svg, () => { last = performance.now(); if (!raf) raf = requestAnimationFrame(tick); }, () => { cancelAnimationFrame(raf); raf = 0; });
+})();
 
 // 三相橋式六步換相（p5）
 (() => {
