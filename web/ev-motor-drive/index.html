@@ -156,6 +156,8 @@ svg text{font-family:"Noto Sans TC",sans-serif}
 .ctl input[type=range]{accent-color:var(--red);width:110px}
 .ctl output{font-variant-numeric:tabular-nums;font-weight:700;color:var(--red);min-width:2.4em}
 .dots{display:inline-flex;gap:5px;margin-left:auto;align-self:center}
+/* 分步說明有長有短：先留兩行高度，換步時圖框不會忽大忽小 */
+#swSt,#smrSt,#rectSt{flex:1;min-height:3.6em}
 .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
 .dots i.on{background:var(--red)}
 .st{font-size:14px;color:var(--ink);min-height:1.7em}
