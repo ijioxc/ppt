@@ -355,6 +355,17 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 /* 互動按鈕、滑桿、步驟點全部藏起來：用 ← → 鍵分步就好；只留說明目前狀態的那行字 */
 .ctl button,.ctl .seg,.ctl label,.ctl .dots{display:none}
 .ctl:not(:has(.st)){display:none}
+/* 開場問題頁 */
+.ask .q{font-size:clamp(30px,4.8vw,62px);line-height:1.4;font-weight:900;color:var(--ink)}
+.ask .qs{margin-top:28px;font-size:19px;color:var(--mute)}
+/* 第 6 頁：一張大圖＋一句話 */
+#p6 .solo{width:100%;max-width:880px;margin:0 auto}
+#p6 .solo .fig{max-height:46vh}
+#p6 .one{max-width:880px;margin:20px auto 0;width:100%;font-size:20px;line-height:1.7;color:var(--ink)}
+/* 第 21 頁：大數字 */
+#p21 .hero .big{font-size:clamp(84px,10vw,140px);margin:0}
+#p21 .hero .big small{font-size:.45em}
+#p21 .hero p{font-size:17px;line-height:1.75;max-width:520px}
 </style>
 </head>
 <body>
@@ -376,6 +387,12 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     <p class="r">授課教授 <b>龐大成</b>　·　2026.10.20</p>
   </div>
   <p class="hint" id="hint">按 <kbd>→</kbd> <kbd>←</kbd> 或 <kbd>空白鍵</kbd> 換頁，<kbd>F</kbd> 全螢幕</p>
+</section>
+
+<!-- 開場問題 -->
+<section class="pg ask" id="pq">
+  <p class="q">為什麼換了 SiC 變頻器，<br>同一顆電池可以多跑 7%？</p>
+  <p class="qs">先從電怎麼從電池跑到馬達講起。</p>
 </section>
 
 <!-- 02 四條能量路徑 -->
@@ -417,7 +434,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     <div class="c bare figc" style="padding:18px">
       <svg class="fig" id="inv" viewBox="0 0 560 372" role="img" aria-label="三相橋式變頻器六步換相動畫：每一步有三顆開關導通，馬達磁場跟著轉 60 度"></svg>
       <div class="ctl"><button id="invPlay" class="on ic" aria-label="暫停" title="暫停"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg></button><button id="invStep" class="ic" aria-label="下一步" title="下一步"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button><span class="st" id="invSt"></span></div>
-      <p class="cap">六步換相：每 60° 換一組開關，每相上臂或下臂輪流導通 180°。紅色 = 導通。磁場一次跳 60°，所以實際改用 SPWM（第 13 頁）讓它平順地轉。每顆開關另並聯續流二極體（圖中省略）。</p>
+      <p class="cap">六步換相：每 60° 換一組開關，每相上臂或下臂輪流導通 180°。紅色 = 導通。磁場一次跳 60°，所以實際改用 SPWM 讓它平順地轉。</p>
     </div>
   </div>
 </section>
@@ -425,17 +442,11 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 <!-- 06 整流器 -->
 <section class="pg" id="p6">
   <h2>整流器讓煞車變成充電</h2>
-  <div class="row zrow fl" style="grid-template-columns:1.4fr 1fr">
-    <div class="c bare figc" style="padding:18px">
-      <svg class="fig" id="rect" viewBox="0 0 520 280" role="img" aria-label="三相橋式全波整流電路：馬達發出的三相電經 D1 到 D6 六個二極體整流，再經電容濾波回充電池；每一刻只有電壓最高那相的上臂與最低那相的下臂兩顆二極體導通"></svg>
-      <div class="ctl"><button id="rectStep" class="ic" aria-label="下一步" title="下一步"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button><span class="st" id="rectSt"></span></div>
-    </div>
-    <div class="grid txtc">
-      <div class="c r"><h3>三相橋式全波整流</h3><p>用 D1–D6 六個二極體，靠二極體單向導通，是電動車常用的整流電路。</p></div>
-      <div class="c"><h3>減速時馬達變成發電機</h3><p>轉速愈快，發出的三相電壓愈高。</p></div>
-      <div class="c"><h3>再生制動的路徑</h3><p>整流 → 濾波 → 穩壓 → 回充電池。</p></div>
-    </div>
+  <div class="c bare figc solo">
+    <svg class="fig" id="rect" viewBox="0 0 520 280" role="img" aria-label="三相橋式全波整流電路：馬達發出的三相電經 D1 到 D6 六個二極體整流，再經電容濾波回充電池；每一刻只有電壓最高那相的上臂與最低那相的下臂兩顆二極體導通"></svg>
+    <div class="ctl"><button id="rectStep" class="ic" aria-label="下一步" title="下一步"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button><span class="st" id="rectSt"></span></div>
   </div>
+  <p class="one">減速時馬達變成發電機，轉得愈快電壓愈高。D1–D6 六個二極體只讓電單向通過，把三相 AC 整流成 DC，再濾波、穩壓，回充電池。</p>
 </section>
 
 <!-- 08 新：800V -->
@@ -470,8 +481,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
       <ul class="dot"><li>Hyundai E-GMP 平台（Ioniq 5、Kia EV6）</li><li>Porsche Taycan、Macan Electric</li><li>Lotus Eletre</li><li>Lucid Air（900V 級）</li></ul>
     </div>
   </div>
-  <p class="note">電壓加倍，開關元件也要耐得住，所以 800V 系統多半搭配 SiC（碳化矽）元件，5-2 最後會講。</p>
-  <p class="src">來源：<a href="https://chargedevs.com/newswire/hyundai-unveils-e-gmp-ev-platform/" target="_blank" rel="noopener">Charged EVs，Hyundai E-GMP 發表</a>、<a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom，Macan Electric</a>、<a href="https://lucidmotors.com/media-room/lucid-air-fastest-charging-ev" target="_blank" rel="noopener">Lucid Motors</a></p>
+  <p class="note">電壓加倍，開關元件也要耐得住，所以 800V 系統多半搭配 SiC（碳化矽）元件。</p>
 </section>
 
 <!-- 11 比較表 -->
@@ -495,7 +505,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     <div><b>要快、高頻、小功率</b> → MOSFET</div>
     <div class="r"><b>要高壓、大電流（驅動馬達）</b> → IGBT</div>
   </div>
-  <p class="cap" style="margin-top:12px"><b style="color:var(--red)">✓</b> = 這一項比較有利；— = 課本未列。μs 開關時間為課本數值；實際元件多為數十到數百 ns 級，本頁沿用課本數值。表中 MOSFET 指矽（Si）MOSFET，碳化矽 MOSFET 不受 100 V 限制，見第 10 頁。</p>
+  <p class="cap" style="margin-top:12px"><b style="color:var(--red)">✓</b> = 這一項比較有利；— = 課本未列。開關時間沿用課本數值，實際元件多為 ns 級。</p>
 </section>
 
 <!-- 12 IGBT 一句話 -->
@@ -509,8 +519,8 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
   </div>
   <p class="note">代價是切換較慢，但對馬達控制已綽綽有餘。MOSFET 功耗較小；兩者驅動電路相同、可互換。</p>
   <div class="grid g2" style="margin-top:22px">
-    <figure class="ph"><img src="img/igbt-module.jpg" alt="Mitsubishi CM1400DU-24NF IGBT 模組外觀，黑色塑膠外殼與上方螺絲端子" loading="lazy" style="flex:none;height:min(300px,36vh)"><figcaption>實物：車用等級的 IGBT 模組（1200 V／1400 A），上方螺絲是大電流端子<small>照片：Sthdhk／<a href="https://commons.wikimedia.org/wiki/File:MITSUBISHI_IGBT_module.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 4.0</small></figcaption></figure>
-    <figure class="ph"><img src="img/igbt-open.jpg" alt="拆開外殼的 CM600DU-24NFH IGBT 模組，可見多顆晶片與大量鋁打線" loading="lazy" style="flex:none;height:min(300px,36vh)"><figcaption>拆開後（600 A 等級）：多顆 IGBT 晶片與續流二極體並聯，靠密密麻麻的鋁打線連接，第 11 頁會再看到它<small>照片：Pslawinski／<a href="https://commons.wikimedia.org/wiki/File:CM600DU-24NFH.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption></figure>
+    <figure class="ph"><img src="img/igbt-module.jpg" alt="Mitsubishi CM1400DU-24NF IGBT 模組外觀，黑色塑膠外殼與上方螺絲端子" loading="lazy" style="flex:none;height:min(300px,36vh)"><figcaption>實物：車用等級的 IGBT 模組（1200 V／1400 A），上方螺絲是大電流端子</figcaption></figure>
+    <figure class="ph"><img src="img/igbt-open.jpg" alt="拆開外殼的 CM600DU-24NFH IGBT 模組，可見多顆晶片與大量鋁打線" loading="lazy" style="flex:none;height:min(300px,36vh)"><figcaption>拆開後（600 A 等級）：多顆 IGBT 晶片與續流二極體並聯，靠密密麻麻的鋁打線連接</figcaption></figure>
   </div>
 </section>
 
@@ -540,10 +550,10 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     <div class="c"><h3>耐高電壓</h3><p>車用常見 650–1200 V 等級，直接對應 800V 平台</p></div>
     <div class="c"><h3>耐高溫、導熱快</h3><p>熱導率約為 Si 的 3 倍；最高結溫從 150°C 提升到 175–200°C</p></div>
     <div class="c"><h3>開關速度更快</h3><p>可用更高切換頻率，電容、電感等被動元件跟著縮小，逆變器更輕更小</p></div>
-    <div class="c r"><h3>損耗更低</h3><p>沒有 IGBT 的拖尾電流（第 9 頁），單顆元件開關能量約為 IGBT 的 1/6；整台逆變器總損耗約少 30–40%</p></div>
+    <div class="c r"><h3>損耗更低</h3><p>沒有 IGBT 的拖尾電流（第 10 頁），單顆元件開關能量約為 IGBT 的 1/6；整台逆變器總損耗約少 30–40%</p></div>
   </div>
-  <p class="note">問題在封裝：SiC 晶片本身耐得住 300°C 以上，但銲錫、封裝塑料、打線（Wire bonding）在 200°C 以上就會熔化或老化斷裂，所以下一頁從散熱下手。</p>
-  <p class="src">來源：<a href="https://emedia.digikey.com/view/212747791/22" target="_blank" rel="noopener">DigiKey eMag（熱導率、結溫）</a>、<a href="https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2436201" target="_blank" rel="noopener">Tiwari，SiC MOSFETs for future motor drive applications（NTNU）</a>、<a href="https://www.st.com/content/dam/technology-tour-2018/chicago/post/T2_S7_SiC_TT_Schaumburg.pdf" target="_blank" rel="noopener">STMicroelectronics SiC 技術簡報</a></p>
+  <p class="note">問題在封裝：SiC 晶片本身耐得住 300°C 以上，但銲錫、封裝塑料、打線（Wire bonding）在 200°C 以上就會熔化或老化斷裂，所以要從散熱下手。</p>
+  <p class="src">熱導率、結溫：DigiKey；開關能量 1/6：Tiwari（NTNU）</p>
 </section>
 
 <!-- 16 新：雙面冷卻 -->
@@ -563,7 +573,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
       <tr><td>功率密度</td><td>較低，受限單面散熱</td><td class="hi">較高，逆變器體積與重量大幅縮小</td></tr>
     </tbody>
   </table>
-    <p class="src">熱阻降幅依各研究實測：<a href="https://saemobilus.sae.org/content/2017-01-2456" target="_blank" rel="noopener">SAE 2017-01-2456（−23%）</a>、<a href="https://ieeexplore.ieee.org/document/8046403" target="_blank" rel="noopener">IEEE 平面封裝模組（−26.7%）</a>、<a href="https://publica.fraunhofer.de/entities/publication/5cfc393b-4545-4efe-ba92-040b51d673ea" target="_blank" rel="noopener">Fraunhofer IZM（−40%）</a></p>
+    <p class="src">熱阻降幅：SAE、IEEE、Fraunhofer IZM 實測</p>
   </div>
   <div class="ctl tools glass"><span class="seg"><button data-c="1" class="on">單面冷卻</button><button data-c="2">雙面冷卻</button></span><button id="m3Ex">分解</button></div>
 </section>
@@ -615,7 +625,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 <section class="pg" id="p20">
   <h2>Nissan Leaf 的變頻器與再生制動</h2>
   <div class="row" style="grid-template-columns:1.05fr 1.45fr;align-items:stretch">
-  <figure class="ph"><img src="img/leaf-powertrain.jpg" alt="Nissan Leaf ZE1 動力總成：上方黑色外殼為變頻器，下方為 EM57 馬達，橘色為高壓線" loading="lazy"><figcaption>Leaf 動力總成：上方黑殼是<b>變頻器</b>，下方是 EM57 馬達，橘色線為高壓線<small>照片：TTTNIS／<a href="https://commons.wikimedia.org/wiki/File:Nissan_Leaf_ZE1_powertrain_02.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC0</small></figcaption></figure>
+  <figure class="ph"><img src="img/leaf-powertrain.jpg" alt="Nissan Leaf ZE1 動力總成：上方黑色外殼為變頻器，下方為 EM57 馬達，橘色為高壓線" loading="lazy"><figcaption>Leaf 動力總成：上方黑殼是<b>變頻器</b>，下方是 EM57 馬達，橘色線為高壓線</figcaption></figure>
   <div class="grid g2">
     <div class="c"><h3>組成</h3><p>馬達控制器、驅動器、平流電容器、2 個電流感知器、冷卻液溫度感知器、電源模組（6 顆 IGBT）</p></div>
     <div class="c"><h3>訊號鏈</h3><p>解析器（轉子位置）+ 電流感知器 → 馬達控制器 → 驅動器 → IGBT</p></div>
@@ -632,21 +642,17 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
     <span class="pin glass" style="left:36%;top:20%">變頻器</span>
     <span class="pin glass" style="left:44%;top:57%">馬達（定子＋轉子）</span>
     <span class="pin glass" style="left:82%;top:44%">減速齒輪</span>
-    <figcaption><b>③ 的實物</b>：多合一電驅剖面。實車：Tesla Model 3（2018，首款量產 SiC 變頻器）、Porsche Macan Electric（800V + SiC）<small>照片：RudolfSimon／<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>，CC BY-SA 3.0</small></figcaption>
+    <figcaption><b>多合一電驅 e-Axle 剖面</b>。實車：Tesla Model 3（2018，首款量產 SiC 變頻器）、Porsche Macan Electric（800V + SiC）</figcaption>
   </figure>
   <div class="copy">
-    <h2>新一代變頻器改了什麼</h2>
+    <h2>多跑 7% 是怎麼來的</h2>
     <p class="lede">前面的三相橋式、SPWM 控制原理都不變；改變的是開關元件、電壓和整合方式。</p>
   </div>
-  <div class="side">
-    <ol class="steps">
-        <li><b>SiC 開關元件：</b>6 顆 IGBT 換成 SiC MOSFET：耐高壓、損耗低、可高頻切換<span class="ref">第 10 頁</span></li>
-        <li><b>800V 架構：</b>元件耐得住，主電壓才能加倍：電流減半、線束變細、快充更快<span class="ref">第 6 頁</span></li>
-        <li class="on"><b>多合一電驅 e-Axle：</b>馬達、變頻器、減速器甚至 BMS 整合在同一殼體：高壓線束更少，冷卻與空間利用更好</li>
-      </ol>
-    <div class="c glass" style="display:flex;gap:20px;align-items:center;padding:18px 22px"><div class="big" style="margin:0;white-space:nowrap">+5~7<small>% 續航</small></div><p>換成 SiC 變頻器後，同一顆電池比 Si IGBT 多跑約 5–7%；次世代 SiC 上看 10%。</p></div>
+  <div class="side hero">
+    <div class="big">+5~7<small>%</small></div>
+    <p>6 顆 IGBT 換成 SiC MOSFET，開關損耗變低，同一顆電池就能多跑 5–7%。再加上 800V，還有把馬達、變頻器、減速器裝進同一個殼的 e-Axle，線變短、散熱更好。次世代 SiC 上看 10%。</p>
   </div>
-  <p class="src">來源：<a href="https://zephr.autocar.co.uk/car-news/technology/under-skin-how-new-inverters-give-evs-more-power-and-range" target="_blank" rel="noopener">Autocar，Infineon 訪談（+7%、次世代 10%）</a>、<a href="https://research.unipd.it/handle/11577/3146201" target="_blank" rel="noopener">Padova 大學研究（+5%）</a>、<a href="https://www.electricvehiclesresearch.com/articles/23080/teslas-innovative-power-electronics-the-silicon-carbide-inverter" target="_blank" rel="noopener">IDTechEx，Tesla SiC 變頻器</a>、<a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom</a></p>
+  <p class="src">+7%、10%：Infineon 訪談；+5%：Padova 大學研究</p>
 </section>
 
 <!-- 22 5-4 預充 -->
@@ -685,7 +691,7 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
       </svg>
       <svg class="fig" id="pcPlot" viewBox="0 0 440 120" role="img" aria-label="上電時電容電壓與電流的變化曲線" style="margin-top:4px;max-height:17vh"></svg>
       <div class="ctl"><button id="pcGo">▶ 預充上電</button><button id="pcBad">不預充直接接通</button><span class="st" id="pcSt"></span></div>
-      <p class="cap">紅色支路 = 預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與 K+ 並聯。示意值：V<sub>B</sub> 360 V、C 1000 μF（同 Leaf）、R<sub>P</sub> 100 Ω。</p>
+      <p class="cap">紅色支路 = 預充路徑（K<sub>P</sub> 串 R<sub>P</sub>），與 K+ 並聯。V<sub>B</sub> 360 V、C 1000 μF（同 Leaf）、R<sub>P</sub> 100 Ω。</p>
     </div>
     <div class="grid txtc">
       <div class="c r"><h3>為什麼需要</h3><p>大電容 C 冷啟動時約 0 V，直接接通 = 瞬間短路（迴路 ≪ 20 mΩ）。依 i = C·dv/dt 產生湧浪電流，打壞 IGBT 與繼電器。</p></div>
@@ -727,11 +733,9 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
   <p class="lede">上一頁 Altis 下電時要讓 SMRP 動作一次，就是為了偵測機械接點黏死。新技術從三個地方改善這條上電／斷電路徑。</p>
   <div class="grid g3">
     <div class="c"><h3>固態繼電器 SSC</h3><p>機械繼電器長期大電流易「電弧燒蝕」或接點黏死。改用半導體開關取代金屬接點，沒有機械磨耗，反應達微秒級。</p></div>
-    <div class="c r"><h3>引爆型保險絲 Pyro-fuse</h3><p>由安全氣囊控制器或 BMS 觸發：嚴重碰撞或短路時引爆微型火藥，不到 1 毫秒切斷高壓電池，比傳統熔斷保險絲快得多。</p></div>
+    <div class="c r"><h3>引爆型保險絲 Pyro-fuse</h3><p>由安全氣囊控制器或 BMS 觸發：嚴重碰撞或短路時引爆微型火藥，不到 1 毫秒（Autoliv 型錄）切斷高壓電池，比傳統熔斷保險絲快得多。</p></div>
     <div class="c"><h3>主動式預充</h3><p>不再只靠會發熱的預充電阻，改用小型 DC-DC 轉換器主動把電容電壓拉到目標值：速度更快，連續啟動也不會讓電阻過熱燒毀。</p></div>
   </div>
-  <p class="note">對照前兩頁：SSC 取代 K+／K−、SMR 這類機械繼電器；主動式預充取代 R<sub>P</sub> 預充電阻；Pyro-fuse 是額外加上的最後一道保護。</p>
-  <p class="src">來源：<a href="https://www.autoliv.com/sites/autoliv/files/2025-05/PSSfolder_202503.pdf" target="_blank" rel="noopener">Autoliv Pyro Safety Switch 型錄（&lt; 1 ms）</a>、<a href="https://www.automotiveworld.com/news/autoliv-and-mersen-announce-joint-collaboration-to-deliver-high-voltage-disconnect-devices-for-electric-vehicles/" target="_blank" rel="noopener">Automotive World，Autoliv × Mersen</a></p>
 </section>
 
 <!-- 19 最新案例：Tesla Roadster -->
@@ -740,18 +744,17 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
   <div class="row" style="grid-template-columns:1.6fr 1fr">
     <div class="c bare">
       <svg class="fig" id="roadster" viewBox="0 0 720 300" role="img" aria-label="Tesla Roadster 能量路徑：超充站 500 kW 以上充進 800 V 以上電池，經兩套變頻器驅動兩顆後輪馬達，總功率超過 1 MW；另一條獨立的氮氣瓶供應推進器，與電驅無關"></svg>
-      <p class="cap">預計 2028 量產。數字來自發表會與工程副總 Lars Moravy 的訪談，官方規格尚未完整公布；0–60 mph 0.81 秒未經獨立量測。</p>
+      <p class="cap">預計 2028 量產，數字來自發表會。</p>
     </div>
     <div class="c">
       <ul class="dot" style="font-size:15.5px">
-        <li>跟第 2 頁同一條路：充電 → 電池 → 變頻器 → 馬達，只是功率推到 <b>1 MW 以上</b>。</li>
+        <li>跟第 3 頁同一條路：充電 → 電池 → 變頻器 → 馬達，只是功率推到 <b>1 MW 以上</b>。</li>
         <li>後輪兩顆馬達各配一套變頻器，左右輪扭力分開控制。</li>
         <li>電壓拉到 800 V 以上，電流才壓得住；用 400 V 的話，1 MW 要 2,500 A。</li>
         <li>會「飛」是靠壓縮氮氣噴出去，幾秒就用完，跟電驅無關，也還沒有航空認證。</li>
       </ul>
     </div>
   </div>
-  <p class="src">來源：<a href="https://techcrunch.com/2026/10/15/tesla-reveals-spacex-powered-roadster-that-flies-and-falls-with-style/" target="_blank" rel="noopener">TechCrunch，發表會報導（2026/10/15）</a>、<a href="https://en.wikipedia.org/wiki/Tesla_Roadster_(second_generation)" target="_blank" rel="noopener">Wikipedia，Tesla Roadster（第二代）</a>、<a href="https://driveteslacanada.ca/news/tesla-roadster-specifications-new-details-2026/" target="_blank" rel="noopener">Drive Tesla Canada，發表後規格整理</a></p>
 </section>
 
 <!-- 25 資料來源 -->
@@ -760,22 +763,22 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
   <div class="refs">
     <div class="c"><p class="tag">課本</p><h3>第五章 電動車馬達驅動控制與電能轉換</h3>
       <ul class="dot"><li>5-1～5-4 正文、圖 5-1～5-25、表 5-1～5-3</li><li>Nissan Leaf、Toyota Altis 實例與數據</li><li>勘誤：第 53 頁湧浪電流應為 i = C·dv/dt</li></ul></div>
-    <div class="c"><p class="tag">5-1 · 800V 高壓架構（第 6 頁）</p>
+    <div class="c"><p class="tag">5-1 · 800V 高壓架構</p>
       <ul class="dot"><li><a href="https://chargedevs.com/newswire/hyundai-unveils-e-gmp-ev-platform/" target="_blank" rel="noopener">Charged EVs：Hyundai E-GMP 平台發表</a></li><li><a href="https://newsroom.porsche.com/en/2024/products/porsche-macan-electric-and-macan-4s-electric-36836.html" target="_blank" rel="noopener">Porsche Newsroom：Macan Electric</a></li><li><a href="https://lucidmotors.com/media-room/lucid-air-fastest-charging-ev" target="_blank" rel="noopener">Lucid Motors：Lucid Air 快充</a></li></ul></div>
-    <div class="c"><p class="tag">5-2 · SiC 元件（第 10 頁）</p>
+    <div class="c"><p class="tag">5-2 · SiC 元件</p>
       <ul class="dot"><li><a href="https://emedia.digikey.com/view/212747791/22" target="_blank" rel="noopener">DigiKey eMag：SiC 熱導率與結溫</a></li><li><a href="https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2436201" target="_blank" rel="noopener">Tiwari（NTNU）：SiC MOSFETs for future motor drive applications</a></li><li><a href="https://www.st.com/content/dam/technology-tour-2018/chicago/post/T2_S7_SiC_TT_Schaumburg.pdf" target="_blank" rel="noopener">STMicroelectronics：SiC 技術簡報</a></li></ul></div>
-    <div class="c"><p class="tag">5-2 · 雙面冷卻（第 11 頁）</p>
+    <div class="c"><p class="tag">5-2 · 雙面冷卻</p>
       <ul class="dot"><li><a href="https://saemobilus.sae.org/content/2017-01-2456" target="_blank" rel="noopener">SAE 2017-01-2456：熱阻 −23%</a></li><li><a href="https://ieeexplore.ieee.org/document/8046403" target="_blank" rel="noopener">IEEE：平面封裝模組，熱阻 −26.7%</a></li><li><a href="https://publica.fraunhofer.de/entities/publication/5cfc393b-4545-4efe-ba92-040b51d673ea" target="_blank" rel="noopener">Fraunhofer IZM：熱阻 −40%</a></li></ul></div>
-    <div class="c"><p class="tag">5-3 · 新一代變頻器（第 15 頁）</p>
+    <div class="c"><p class="tag">5-3 · 新一代變頻器</p>
       <ul class="dot"><li><a href="https://zephr.autocar.co.uk/car-news/technology/under-skin-how-new-inverters-give-evs-more-power-and-range" target="_blank" rel="noopener">Autocar：Infineon 訪談（續航 +7%）</a></li><li><a href="https://research.unipd.it/handle/11577/3146201" target="_blank" rel="noopener">Padova 大學：SiC 變頻器續航 +5%</a></li><li><a href="https://www.electricvehiclesresearch.com/articles/23080/teslas-innovative-power-electronics-the-silicon-carbide-inverter" target="_blank" rel="noopener">IDTechEx：Tesla SiC 變頻器</a></li></ul></div>
-    <div class="c"><p class="tag">5-4 · 高壓安全（第 18 頁）</p>
+    <div class="c"><p class="tag">5-4 · 高壓安全</p>
       <ul class="dot"><li><a href="https://www.autoliv.com/sites/autoliv/files/2025-05/PSSfolder_202503.pdf" target="_blank" rel="noopener">Autoliv：Pyro Safety Switch 型錄</a></li><li><a href="https://www.automotiveworld.com/news/autoliv-and-mersen-announce-joint-collaboration-to-deliver-high-voltage-disconnect-devices-for-electric-vehicles/" target="_blank" rel="noopener">Automotive World：Autoliv × Mersen 高壓斷電裝置</a></li></ul></div>
-    <div class="c"><p class="tag">最新案例 · Tesla Roadster（第 19 頁）</p>
+    <div class="c"><p class="tag">最新案例 · Tesla Roadster</p>
       <ul class="dot"><li><a href="https://techcrunch.com/2026/10/15/tesla-reveals-spacex-powered-roadster-that-flies-and-falls-with-style/" target="_blank" rel="noopener">TechCrunch：發表會報導</a></li><li><a href="https://en.wikipedia.org/wiki/Tesla_Roadster_(second_generation)" target="_blank" rel="noopener">Wikipedia：Tesla Roadster（第二代）</a></li><li><a href="https://driveteslacanada.ca/news/tesla-roadster-specifications-new-details-2026/" target="_blank" rel="noopener">Drive Tesla Canada：發表後規格整理</a></li></ul></div>
     <div class="c r wide"><p class="tag">照片（Wikimedia Commons）</p>
-      <ul class="dot"><li>IGBT 模組外觀（第 8 頁）：Sthdhk，<a href="https://commons.wikimedia.org/wiki/File:MITSUBISHI_IGBT_module.jpg" target="_blank" rel="noopener">CC BY-SA 4.0</a></li><li>拆開的 IGBT 模組（第 8 頁）：Pslawinski，<a href="https://commons.wikimedia.org/wiki/File:CM600DU-24NFH.jpg" target="_blank" rel="noopener">CC BY-SA 3.0</a></li><li>Nissan Leaf 動力總成（第 14 頁）：TTTNIS，<a href="https://commons.wikimedia.org/wiki/File:Nissan_Leaf_ZE1_powertrain_02.jpg" target="_blank" rel="noopener">CC0</a></li><li>多合一電驅剖面（第 15 頁）：RudolfSimon，<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">CC BY-SA 3.0</a></li></ul></div>
+      <ul class="dot"><li>IGBT 模組外觀：Sthdhk，<a href="https://commons.wikimedia.org/wiki/File:MITSUBISHI_IGBT_module.jpg" target="_blank" rel="noopener">CC BY-SA 4.0</a></li><li>拆開的 IGBT 模組：Pslawinski，<a href="https://commons.wikimedia.org/wiki/File:CM600DU-24NFH.jpg" target="_blank" rel="noopener">CC BY-SA 3.0</a></li><li>Nissan Leaf 動力總成：TTTNIS，<a href="https://commons.wikimedia.org/wiki/File:Nissan_Leaf_ZE1_powertrain_02.jpg" target="_blank" rel="noopener">CC0</a></li><li>多合一電驅剖面：RudolfSimon，<a href="https://commons.wikimedia.org/wiki/File:Inverter_motor_gearbox_2.jpg" target="_blank" rel="noopener">CC BY-SA 3.0</a></li></ul></div>
     <div class="c"><p class="tag">互動圖與 3D 模型</p>
-      <p>第 4、13、16 頁的動畫依課本原理自行繪製；第 16 頁預充曲線為示意數值（V<sub>B</sub> 360 V、C 1000 μF、R<sub>P</sub> 100 Ω）。第 11 頁 3D 模組為示意結構，以 <a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a> 製作，尺寸不按比例。</p></div>
+      <p>動畫依課本原理自行繪製，3D 用 <a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a> 製作。</p></div>
   </div>
 </section>
 
@@ -807,7 +810,7 @@ function whenVisible(el, on, off) {
 // 拖完滑桿就放掉焦點，方向鍵回到換頁
 document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('change', () => r.blur()));
 
-// Tesla Roadster 能量路徑（第 19 頁）：上排是電，下排是氮氣
+// Tesla Roadster 能量路徑：上排是電，下排是氮氣
 (() => {
   const svg = document.getElementById('roadster');
   const box = (x, y, w, t, sub, hot) => `<rect x="${x}" y="${y}" width="${w}" height="64" rx="12" fill="${hot ? C.red : 'rgba(255,255,255,.55)'}" stroke="${hot ? C.red : 'rgba(255,255,255,.9)'}"/>` +
@@ -1134,7 +1137,7 @@ document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('
   const txt = [
     '按 → 分步看開通、關斷',
     '<b>開通</b>：V<sub>GE</sub> 升高後要延遲 t<sub>d(on)</sub>，I<sub>C</sub> 才在 t<sub>r</sub> 內升到滿載',
-    '<b>關斷</b>：I<sub>C</sub> 先快速掉（t<sub>fi1</sub>），剩下的<b>拖尾電流</b>慢慢消失（t<sub>fi2</sub>），這段最耗能；SiC MOSFET 沒有拖尾（第 10 頁）',
+    '<b>關斷</b>：I<sub>C</sub> 先快速掉（t<sub>fi1</sub>），剩下的<b>拖尾電流</b>慢慢消失（t<sub>fi2</sub>），這段最耗能；SiC MOSFET 沒有拖尾',
   ];
   window.swSet = t => {
     band.setAttribute('opacity', t ? .55 : 0);
