@@ -355,6 +355,16 @@ td:first-child,#measRows tr.cur td:first-child{background:transparent;border-top
 /* 互動按鈕、滑桿、步驟點全部藏起來：用 ← → 鍵分步就好；只留說明目前狀態的那行字 */
 .ctl button,.ctl .seg,.ctl label,.ctl .dots{display:none}
 .ctl:not(:has(.st)){display:none}
+/* 編輯模式（按 E）：直接在頁面上改字，存在這台電腦，可下載改好的 index.html */
+body.editing [data-ek]{outline:1px dashed var(--line);outline-offset:3px;border-radius:2px;cursor:text}
+body.editing [data-ek]:hover{outline-color:var(--mute)}
+body.editing [data-ek]:focus{outline:2px solid var(--red);background:rgba(255,255,255,.35)}
+body.editing [data-ek].chg{outline:1px solid var(--red)}
+.cover [data-ek].chg,.cover [data-ek]:focus{outline-color:var(--on)}
+.edbar{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:50;display:none;gap:6px;align-items:center;background:var(--ink);color:var(--on);font-size:14px;padding:6px 8px 6px 14px;border-radius:8px;white-space:nowrap;max-width:calc(100vw - 24px);overflow-x:auto}
+body.editing .edbar{display:flex}
+.edbar button{font:inherit;color:inherit;background:rgba(255,255,255,.12);border:0;border-radius:5px;padding:4px 10px;cursor:pointer}
+.edbar button:hover{background:rgba(255,255,255,.25)}
 /* 開場問題頁 */
 .ask .q{font-size:clamp(30px,4.8vw,62px);line-height:1.4;font-weight:900;color:var(--ink)}
 .ask .qs{margin-top:28px;font-size:19px;color:var(--mute)}
@@ -1303,7 +1313,7 @@ function sync() {
 addEventListener('scroll', () => requestAnimationFrame(sync), {passive: true});
 addEventListener('resize', sync);
 addEventListener('keydown', e => {
-  if (e.altKey || e.ctrlKey || e.metaKey || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.altKey || e.ctrlKey || e.metaKey || e.target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
   if (e.target.tagName === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return;
   const k = e.key;
   if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); step(e.shiftKey && k === ' ' ? -1 : 1); }
@@ -1736,6 +1746,143 @@ lazy(document.getElementById('mot3d'), async box => {
     if (txt !== shown) hud.innerHTML = shown = txt;
   });
 });
+</script>
+<div class="edbar" id="edbar"><span id="edN">編輯模式</span><button id="edCopy">複製修改清單</button><button id="edSave">下載 index.html</button><button id="edReset">全部還原</button><button id="edExit">結束 (E)</button></div>
+<script>
+// 編輯模式：按 E 開關。點文字直接改，修改存成 Firebase 上的共用草稿（跟車隊網站同一個專案），
+// 每個人按 E 都看得到別人的草稿；平常看報告只顯示原版。
+// 確認後按「下載 index.html」把草稿寫進原始檔，再推上線。連不到 Firebase 時只存在這台電腦。
+(() => {
+  const KEY = 'ev-motor-drive-edits', SEL = 'h1,h2,h3,h4,p,li,td,th,figcaption,dt,dd,.big';
+  const SKIP = 'svg,.ctl,.three,.msg,button,.hint,.foot';
+  const FB = {
+    apiKey: 'AIzaSyCaLAdn2l-VZJJGk_uVst03MaNEtCJLn0Q',
+    authDomain: 'nkust-racing.firebaseapp.com',
+    databaseURL: 'https://nkust-racing-default-rtdb.firebaseio.com',
+    projectId: 'nkust-racing',
+  };
+  const PATH = 'reports/ev-motor-drive/edits';
+  // 只取最內層的文字元素，同一份規則用在網頁和原始檔，編號才會對得上
+  function targets(root) {
+    const out = [];
+    root.querySelectorAll('section.pg[id]').forEach(sec => {
+      let i = 0;
+      sec.querySelectorAll(SEL).forEach(el => {
+        if (el.closest(SKIP) || el.querySelector(SEL)) return;
+        out.push([sec.id + ':' + i++, el]);
+      });
+    });
+    return out;
+  }
+  const list = targets(document), orig = {}, byKey = {};
+  list.forEach(([k, el]) => { el.dataset.ek = k; orig[k] = el.innerHTML; byKey[k] = el; });
+  let edits = {}, ref = null, status = '連線中…', on = false;
+  const local = {
+    get() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } },
+    set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} },
+  };
+  const who = () => {
+    let n = ''; try { n = localStorage.getItem(KEY + '-name') || ''; } catch (e) {}
+    if (!n) { n = (prompt('你的名字（顯示在你改的地方）') || '').trim() || '匿名'; try { localStorage.setItem(KEY + '-name', n); } catch (e) {} }
+    return n;
+  };
+  const pages = [...document.querySelectorAll('section.pg')];
+  const pageNo = k => pages.findIndex(p => p.id === k.split(':')[0]) + 1;
+  const plain = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.replace(/\s+/g, ' ').trim(); };
+  const count = () => { document.getElementById('edN').textContent = `編輯模式 · ${status} · 已改 ${Object.keys(edits).length} 處`; };
+  // 把草稿套到畫面上（正在打字的那格不動）；結束編輯就換回原版
+  function paint() {
+    list.forEach(([k, el]) => {
+      if (el === document.activeElement) return;
+      const d = on ? edits[k] : undefined, h = d === undefined ? orig[k] : d.html;
+      if (el.innerHTML !== h) el.innerHTML = h;
+      el.classList.toggle('chg', d !== undefined);
+      el.title = d && d.by ? `${d.by} 修改` : '';
+    });
+    count();
+  }
+  function connect() {
+    if (ref || status === '只存在這台電腦') return;
+    const offline = () => { ref = null; status = '只存在這台電腦'; edits = local.get(); paint(); };
+    const load = src => new Promise((ok, no) => document.head.appendChild(Object.assign(document.createElement('script'), {src, onload: ok, onerror: no})));
+    const V = 'https://www.gstatic.com/firebasejs/10.14.1/';
+    load(V + 'firebase-app-compat.js').then(() => load(V + 'firebase-database-compat.js')).then(() => {
+      const app = firebase.apps.find(a => a.name === 'report') || firebase.initializeApp(FB, 'report');
+      ref = app.database().ref(PATH);
+      ref.on('value', snap => {
+        edits = {};
+        Object.entries(snap.val() || {}).forEach(([k, d]) => {
+          if (!(k in orig)) return;
+          // 已經寫進原始檔的草稿就清掉
+          if (d.html === orig[k]) { ref.child(k).remove(); return; }
+          edits[k] = d;
+        });
+        status = '共用草稿'; paint();
+      }, offline);
+    }).catch(offline);
+  }
+  function toggle(v) {
+    on = v;
+    document.body.classList.toggle('editing', on);
+    list.forEach(([, el]) => on ? el.setAttribute('contenteditable', 'plaintext-only') : el.removeAttribute('contenteditable'));
+    if (!on && document.activeElement?.isContentEditable) document.activeElement.blur();
+    if (on) { who(); connect(); }
+    paint();
+  }
+  const timers = {};
+  document.addEventListener('input', e => {
+    const el = e.target.closest?.('[data-ek]'); if (!el) return;
+    const k = el.dataset.ek, same = el.innerHTML === orig[k];
+    const d = same ? undefined : {html: el.innerHTML, by: who(), at: Date.now()};
+    if (d) edits[k] = d; else delete edits[k];
+    el.classList.toggle('chg', !same); count();
+    clearTimeout(timers[k]);
+    timers[k] = setTimeout(() => {
+      if (!ref) { local.set(edits); return; }
+      (d ? ref.child(k).set(d) : ref.child(k).remove()).catch(() => {
+        status = '存不進 Firebase，先存在這台電腦'; local.set(edits); count();
+      });
+    }, 500);
+  });
+  // 離開這格才把別人的新版本套上來
+  document.addEventListener('focusout', e => { if (e.target.dataset?.ek) setTimeout(paint); });
+  addEventListener('keydown', e => {
+    if (e.target.isContentEditable) { if (e.key === 'Escape') e.target.blur(); return; }
+    if ((e.key === 'e' || e.key === 'E') && !e.altKey && !e.ctrlKey && !e.metaKey) toggle(!on);
+  });
+  document.getElementById('edExit').onclick = () => toggle(false);
+  document.getElementById('edReset').onclick = () => {
+    if (!confirm('刪掉所有人的草稿，還原成原本的文字？')) return;
+    edits = {}; ref ? ref.remove() : local.set({}); paint();
+  };
+  document.getElementById('edCopy').onclick = async () => {
+    const t = Object.keys(edits).sort((a, b) => pageNo(a) - pageNo(b))
+      .map(k => `第 ${pageNo(k)} 頁${edits[k].by ? '（' + edits[k].by + '）' : ''}\n原：${plain(orig[k])}\n改：${plain(edits[k].html)}`).join('\n\n');
+    try { await navigator.clipboard.writeText(t || '還沒有修改'); alert('已複製修改清單'); } catch (e) { prompt('複製下面的文字：', t); }
+  };
+  document.getElementById('edSave').onclick = async () => {
+    let src;
+    try { src = await (await fetch(location.pathname, {cache: 'no-store'})).text(); }
+    catch (e) { alert('讀不到原始檔（要用網址開，不能用 file:// 開）'); return; }
+    // 只替換改過的那幾段文字，其他原始碼一個字都不動
+    const doc = new DOMParser().parseFromString(src, 'text/html');
+    let html = '', at = 0, miss = 0, cur = {};
+    for (const [k, el] of targets(doc)) {
+      const sid = k.split(':')[0];
+      if (!(sid in cur)) { const m = src.indexOf(`id="${sid}"`); cur[sid] = m < 0 ? -1 : m; }
+      const from = Math.max(cur[sid], at), o = el.innerHTML;
+      const j = cur[sid] < 0 ? -1 : src.indexOf(o, from);
+      if (j < 0) { if (k in edits) miss++; continue; }
+      if (k in edits) { html += src.slice(at, j) + edits[k].html; at = j + o.length; }
+      cur[sid] = j + o.length;
+    }
+    html += src.slice(at);
+    const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(new Blob([html], {type: 'text/html'})), download: 'index.html'});
+    a.click(); URL.revokeObjectURL(a.href);
+    if (miss) alert(`有 ${miss} 處對不到原始檔，沒有寫進去`);
+  };
+  if (location.hash === '#edit') toggle(true);
+})();
 </script>
 </body>
 </html>
