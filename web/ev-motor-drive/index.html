@@ -894,7 +894,8 @@ document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('
 
   const $ = id => svg.querySelector('#' + id), st = document.getElementById('invSt');
   const playBtn = document.getElementById('invPlay');
-  let k = 0, timer = null, playing = !RM;
+  let k = 0, timer = null, playing = !RM, rot = 0;
+  $('vec').style.cssText = `transform-box:view-box;transform-origin:${mx}px ${my}px`;
   function draw() {
     const s = S[k];
     s.forEach((v, i) => {
@@ -912,8 +913,10 @@ document.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('
     const va = (2 * s[0] - s[1] - s[2]) / 3, vb = (2 * s[1] - s[2] - s[0]) / 3, vc = (2 * s[2] - s[0] - s[1]) / 3;
     const re = va - (vb + vc) / 2, im = (vb - vc) * Math.sqrt(3) / 2;
     const ang = Math.atan2(im, re) * 180 / Math.PI;
-    $('vec').setAttribute('transform', `rotate(${-ang} ${mx} ${my})`);
+    // 累計角度、每次走最短的那一邊，從 300° 換到 0° 才不會倒轉一大圈；用 CSS 旋轉才不會在轉動途中變形
+    rot += ((-ang - rot) % 360 + 540) % 360 - 180;
     $('vec').style.transition = RM ? '' : 'transform .35s';
+    $('vec').style.transform = `rotate(${rot}deg)`;
     $('wcur').setAttribute('x', wx + k * ww / 6);
     const on = s.map((v, i) => v > 0 ? up[i] : dn[i]).sort((a, b) => a[1] - b[1]).join(' ');
     st.innerHTML = `狀態 <b>${k + 1}／6</b>　導通 ${on}　→ 磁場 <b>${Math.round((ang + 360) % 360)}°</b>`;
