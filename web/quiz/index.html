@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>刷題本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><small>Exam drills</small><h1>刷題本</h1></div>
+  </header>
+  <p class="lead">這次要考哪一科？</p>
+  <div class="exams" id="exams"></div>
+  <p class="note">進度只存在這台裝置的瀏覽器。</p>
+</div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function progress(id){
+  try{
+    const d=JSON.parse(localStorage.getItem('quiz:'+id));
+    if(!d||!d.rec)return null;
+    return{done:Object.values(d.rec).filter(r=>r.o).length,wrong:(d.wrong||[]).length};
+  }catch(e){return null}
+}
+fetch('exams.json').then(r=>r.json()).then(list=>{
+  document.getElementById('exams').innerHTML=list.map(x=>{
+    const href=x.url||('play.html?exam='+encodeURIComponent(x.id));
+    const p=x.url?null:progress(x.id);
+    const pct=p&&x.total?Math.round(p.done/x.total*100):0;
+    return`<a class="exam" href="${esc(href)}">
+      <span class="exam-sub">${esc(x.term)}</span>
+      <span class="exam-t">${esc(x.title)}</span>
+      <span class="exam-d">${esc(x.desc)}</span>
+      ${x.url?'':`<span class="meter" aria-hidden="true"><i style="width:${pct}%"></i></span>
+      <span class="exam-p">${p?`做過 ${p.done} / ${x.total} 題${p.wrong?` · 錯題 ${p.wrong}`:''}`:`共 ${x.total} 題，還沒開始`}</span>`}
+    </a>`}).join('');
+}).catch(()=>{
+  document.getElementById('exams').innerHTML='<div class="card empty"><b>科目列表載入失敗</b>重新整理一次試試。</div>';
+});
+</script>
+</body>
+</html>
