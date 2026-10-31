@@ -188,3 +188,7 @@ html,body{margin:0}
   .pos{margin-left:0;width:100%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* 題目附圖（線路圖）：不論深淺色都用白底，點開看原圖 */
+.q-img{display:block;margin:0 0 18px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:zoom-in}
+.q-img img{display:block;width:100%;max-height:340px;object-fit:contain}

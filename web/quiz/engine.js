@@ -22,6 +22,7 @@ function makeOpts(b){
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=s=>document.querySelector(s);
 const L='ABCDEF';
+const qImg=q=>q.img?`<a class="q-img" href="${esc(q.img)}" target="_blank" rel="noopener" aria-label="在新分頁開啟附圖"><img src="${esc(q.img)}" alt="${esc(q.short)} 附圖" loading="lazy"></a>`:'';
 
 /* ---------- 進度（只存在這台裝置的瀏覽器，每個科目分開） ---------- */
 const storeKey=id=>'quiz:'+id;
@@ -145,7 +146,7 @@ function boot(E){
       h+=`<div class="listen">${canSpeak()?`<button class="btn" data-act="speak">${speaking?'停止':'朗讀對話'}</button>`:''}
       <details class="deep"${cur.done||!canSpeak()?' open':''}><summary>聽力原文</summary><div class="in script">${q.scriptTitle?`<b>${esc(q.scriptTitle)}</b>\n\n`:''}${esc(q.script)}</div></details></div>`;
     }
-    h+=`<p class="qtext">${esc(cur.text)}</p>`;
+    h+=`<p class="qtext">${esc(cur.text)}</p>${qImg(q)}`;
     if(cur.self){
       h+=`<div class="wk">${q.html}</div>`;
       if(!cur.revealed){
@@ -213,7 +214,7 @@ function boot(E){
         h+=`<div class="grp"><h3>${esc(t)}</h3>`;
         qs.filter(q=>q.topic===t).forEach(q=>{
           h+=`<details class="item"><summary><span class="dot ${status(q.id)}"></span><span class="no">${q.no?esc(q.no):`第 ${q.n} 題`}</span><span class="tt">${esc(q.short)}</span></summary>
-          <div class="in">${q.sol?`<div class="wk">${q.html}</div><div class="wk wk-sol">${q.sol}</div>`:`<p class="qtext-sm">${esc(q.q)}</p><p class="ans">答案：${esc(q.o[q.a])}</p><p>${esc(q.exp)}</p>${q.deep||''}`}
+          <div class="in">${q.sol?`<div class="wk">${q.html}</div><div class="wk wk-sol">${q.sol}</div>`:`<p class="qtext-sm">${esc(q.q)}</p>${qImg(q)}<p class="ans">答案：${esc(q.o[q.a])}</p><p>${esc(q.exp)}</p>${q.deep||''}`}
           <p><button class="btn" data-jump="${q.id}">去練這題</button></p></div></details>`;
         });
         h+=`</div>`;

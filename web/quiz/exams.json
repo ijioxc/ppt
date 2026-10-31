@@ -1,5 +1,12 @@
 [
   {
+    "id": "electronics-midterm",
+    "term": "期中考",
+    "title": "電子學",
+    "desc": "第 1～4 章：基本電路、戴維寧、RC 充放電、二極體、整流與電源",
+    "total": 127
+  },
+  {
     "id": "machine-design-midterm",
     "term": "期中考",
     "title": "機械設計",
