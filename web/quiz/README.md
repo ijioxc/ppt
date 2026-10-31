@@ -48,4 +48,7 @@ QUIZ.register({
 
 進度依科目 id 分開存，所以 id 定了就不要改，改了那科的進度會歸零。
 
-已經有自己網頁的科目，`exams.json` 那筆寫 `url`，不用題庫檔；這種科目的進度不會顯示在首頁。
+## 其他題型
+
+- **聽力**：題目加 `script:'對話原文'`、`scriptTitle:'標題'`，會出現朗讀按鈕。例子看 `exams/english-midterm.js`。
+- **計算大題（先算再看解答）**：不寫 `o`、`a`，改寫 `html:'題目內容'`、`sol:'解答內容'`，可加 `no:'2.6.6'` 顯示原題號。例子看 `exams/fluid-workbook.js`。

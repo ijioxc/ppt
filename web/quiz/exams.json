@@ -10,14 +10,14 @@
     "id": "english-midterm",
     "term": "期中考",
     "title": "大二英文",
-    "desc": "英文期中刷題",
-    "url": "../english-midterm/"
+    "desc": "單字、文法、配對、情境、聽力（可朗讀）",
+    "total": 158
   },
   {
     "id": "fluid-workbook",
     "term": "習題集",
     "title": "流體力學",
-    "desc": "流體力學練習本",
-    "url": "../fluid-workbook/"
+    "desc": "第二章壓力計與閘門，計算大題先算再看解答",
+    "total": 10
   }
 ]
