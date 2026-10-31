@@ -1,0 +1,23 @@
+[
+  {
+    "id": "machine-design-midterm",
+    "term": "期中考",
+    "title": "機械設計",
+    "desc": "作業一、作業二：應力、失效理論、疲勞、軸、彈簧",
+    "total": 40
+  },
+  {
+    "id": "english-midterm",
+    "term": "期中考",
+    "title": "大二英文",
+    "desc": "英文期中刷題",
+    "url": "../english-midterm/"
+  },
+  {
+    "id": "fluid-workbook",
+    "term": "習題集",
+    "title": "流體力學",
+    "desc": "流體力學練習本",
+    "url": "../fluid-workbook/"
+  }
+]

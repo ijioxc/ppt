@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>刷題本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← 所有科目</a>
+  <header class="top">
+    <div class="brand"><small id="eyebrow"></small><h1 id="title">刷題本</h1></div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-drill" aria-selected="true" data-v="drill">刷題</button>
+    <button class="tab" role="tab" id="t-wrong" aria-selected="false" data-v="wrong">錯題本<span class="cnt" id="wcnt"></span></button>
+    <button class="tab" role="tab" id="t-learn" aria-selected="false" data-v="learn">觀念總覽</button>
+  </nav>
+
+  <section id="v-drill" class="sec">
+    <div class="bar">
+      <label for="scope">範圍 <select id="scope"></select></label>
+      <label for="order">順序
+        <select id="order"><option value="seq">依題號</option><option value="rnd">隨機</option></select>
+      </label>
+      <span class="pos" id="pos"></span>
+    </div>
+    <div class="card" id="card"></div>
+    <div class="map card" id="map"></div>
+  </section>
+
+  <section id="v-wrong" class="sec" hidden></section>
+  <section id="v-learn" class="sec" hidden></section>
+</div>
+<script src="engine.js"></script>
+</body>
+</html>

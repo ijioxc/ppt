@@ -97,6 +97,14 @@
     "group": "課程報告"
   },
   {
+    "id": "quiz",
+    "title": "刷題本",
+    "desc": "選科目刷題：機械設計期中考，計算題可換數字重練，有錯題本",
+    "url": "web/quiz/",
+    "shot": "quiz.jpg",
+    "group": "課程報告"
+  },
+  {
     "id": "english-midterm",
     "title": "大二英文・期中刷題",
     "desc": "158 題線上刷題：單字、文法、配對、情境、聽力",
