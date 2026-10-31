@@ -51,4 +51,5 @@ QUIZ.register({
 ## 其他題型
 
 - **聽力**：題目加 `script:'對話原文'`、`scriptTitle:'標題'`，會出現朗讀按鈕。例子看 `exams/english-midterm.js`。
+- **附圖**：題目加 `img:'assets/<科目id>/檔名.png'`，圖會顯示在題目文字下方，點開可看原圖。圖片放在 `assets/<科目id>/`，單張盡量低於 200 KB，能用 SVG 就用 SVG。例子看 `exams/electronics-midterm.js`。
 - **計算大題（先算再看解答）**：不寫 `o`、`a`，改寫 `html:'題目內容'`、`sol:'解答內容'`，可加 `no:'2.6.6'` 顯示原題號。例子看 `exams/fluid-workbook.js`。
