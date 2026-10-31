@@ -89,27 +89,11 @@
     "group": "公司"
   },
   {
-    "id": "fluid-workbook",
-    "title": "流體力學習題集",
-    "desc": "流體力學習題：標準解法與最速解法並列",
-    "url": "web/fluid-workbook/",
-    "shot": "fluid-workbook.jpg",
-    "group": "課程報告"
-  },
-  {
     "id": "quiz",
     "title": "刷題本",
-    "desc": "選科目刷題：機械設計期中考，計算題可換數字重練，有錯題本",
+    "desc": "所有科目的題目都在這裡：機械設計、英文、流體力學",
     "url": "web/quiz/",
     "shot": "quiz.jpg",
-    "group": "課程報告"
-  },
-  {
-    "id": "english-midterm",
-    "title": "大二英文・期中刷題",
-    "desc": "158 題線上刷題：單字、文法、配對、情境、聽力",
-    "url": "web/english-midterm/",
-    "shot": "english-midterm.jpg",
     "group": "課程報告"
   },
   {

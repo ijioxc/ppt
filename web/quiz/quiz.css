@@ -162,6 +162,26 @@ html,body{margin:0}
 .meter{display:block;height:6px;border-radius:3px;background:var(--chip);overflow:hidden;margin-top:6px}
 .meter i{display:block;height:100%;background:var(--ok)}
 .exam-p{font-family:var(--font-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+/* 聽力與計算大題 */
+.qtext,.qtext-sm{white-space:pre-line}
+.listen{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:16px}
+.listen details{width:100%}
+.script{white-space:pre-line;font-size:14px}
+.wk{display:flex;flex-direction:column;gap:14px;font-size:15px}
+.wk-sol{margin-top:16px;padding-top:16px;border-top:1.5px dashed var(--line)}
+.wk .section-title{font-size:12px;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;font-weight:700}
+.wk .data-grid{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr);gap:4px 14px}
+.wk .data-label{color:var(--muted);font-size:14px}
+.wk .data-value{font-family:var(--font-mono);font-size:14px;min-width:0}
+.wk .method-compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.wk .method-box{border-left:3px solid var(--line);padding-left:12px;min-width:0}
+.wk .method-box.fast{border-left-color:var(--accent)}
+.wk .method-title{font-weight:700;font-size:14px;margin-bottom:6px}
+.wk .formula{font-family:var(--font-mono);font-size:13.5px;background:var(--paper);padding:8px 12px;margin:8px 0;border-radius:6px;overflow-x:auto}
+.wk .answer-box{font-family:var(--font-mono);font-weight:700;background:var(--ok-soft);color:var(--ok);padding:10px 14px;border-radius:6px}
+.wk .checkpoint{background:var(--mark);padding:8px 12px;border-radius:6px;font-size:14px}
+.wk .note{font-style:normal}
+.home-back{align-self:flex-start}
 @media (max-width:520px){
   .qtext{font-size:17px}
   .item .in{padding-left:16px}

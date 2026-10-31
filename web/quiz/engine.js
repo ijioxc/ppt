@@ -68,7 +68,10 @@ function boot(E){
   }
   function load(id,variant){
     const q=Q[id];
-    if(variant){
+    stopSpeech();
+    if(q.sol){
+      cur={id,self:true,text:q.q,revealed:false,done:false,pick:-1,ci:0,opts:[]};
+    }else if(variant){
       const g=GEN[q.gen],b=g.build(g.rand()),m=makeOpts(b);
       cur={id,variant:true,text:b.q,opts:m.opts,ci:m.ci,steps:b.steps,exp:'',done:false,pick:-1};
     }else{
@@ -90,8 +93,20 @@ function boot(E){
     if(!queue.length){cur=null;render();return}
     load(queue[0],false);
   }
+  const canSpeak=()=>'speechSynthesis' in window;
+  let speaking=false;
+  function stopSpeech(){if(canSpeak())window.speechSynthesis.cancel();speaking=false}
+  function toggleSpeech(){
+    const q=Q[cur.id];if(!q.script||!canSpeak())return;
+    if(speaking){stopSpeech();render();return}
+    stopSpeech();
+    const u=new SpeechSynthesisUtterance(q.script.replace(/\n/g,' '));
+    u.lang='en-US';u.rate=.9;
+    u.onend=()=>{speaking=false;render()};
+    window.speechSynthesis.speak(u);speaking=true;render();
+  }
   function answer(i){
-    if(!cur||cur.done||i>=cur.opts.length)return;
+    if(!cur||cur.done||(!cur.self&&i>=cur.opts.length))return;
     cur.done=true;cur.pick=i;
     const ok=i===cur.ci,r=rec(cur.id);
     if(cur.variant){if(ok)r.v++}else r.o=ok?'ok':'bad';
@@ -122,10 +137,27 @@ function boot(E){
       return;
     }
     const q=Q[cur.id],st=status(cur.id);
-    let h=`<div class="meta"><span class="chip">${esc(setLabel(q.set))} · 第 ${q.n} 題</span><span class="chip">${esc(q.topic)}</span>`;
+    let h=`<div class="meta"><span class="chip">${esc(setLabel(q.set))} · ${q.no?esc(q.no):`第 ${q.n} 題`}</span><span class="chip">${esc(q.topic)}</span>`;
     if(cur.variant)h+=`<span class="chip var">換數字版</span>`;
     if(st==='mast')h+=`<span class="chip mast">已精通</span>`;
-    h+=`</div><p class="qtext">${esc(cur.text)}</p><div class="opts">`;
+    h+=`</div>`;
+    if(q.script){
+      h+=`<div class="listen">${canSpeak()?`<button class="btn" data-act="speak">${speaking?'停止':'朗讀對話'}</button>`:''}
+      <details class="deep"${cur.done||!canSpeak()?' open':''}><summary>聽力原文</summary><div class="in script">${q.scriptTitle?`<b>${esc(q.scriptTitle)}</b>\n\n`:''}${esc(q.script)}</div></details></div>`;
+    }
+    h+=`<p class="qtext">${esc(cur.text)}</p>`;
+    if(cur.self){
+      h+=`<div class="wk">${q.html}</div>`;
+      if(!cur.revealed){
+        h+=`<p class="hint">先在紙上算完，再看解答。</p><div class="acts"><button class="btn pri" id="nextbtn" data-act="reveal">看解答<kbd>Enter</kbd></button></div>`;
+      }else{
+        h+=`<div class="wk wk-sol">${q.sol}</div>`;
+        if(!cur.done)h+=`<div class="acts"><button class="btn pri" data-self="1">我算對了<kbd>1</kbd></button><button class="btn" data-self="0">還不會<kbd>2</kbd></button></div>`;
+        else h+=`<div class="fb"><div class="verdict ${cur.pick===cur.ci?'ok':'bad'}">${cur.pick===cur.ci?'記為會了':'收進錯題本了'}</div></div><div class="acts"><button class="btn pri" id="nextbtn" data-act="next">下一題<kbd>Enter</kbd></button></div>`;
+      }
+      c.innerHTML=h;return;
+    }
+    h+=`<div class="opts">`;
     cur.opts.forEach((o,i)=>{
       let cls='opt';
       if(cur.done){if(i===cur.ci)cls+=' right';else if(i===cur.pick)cls+=' wrong';else cls+=' dim'}
@@ -158,7 +190,7 @@ function boot(E){
       });
       h+=`</div></div>`;
     });
-    h+=`<div class="legend"><span><i></i>還沒做</span><span><i class="l-bad"></i>錯題</span><span><i class="l-ok"></i>答對過</span><span><i class="l-mast"></i>精通（計算題要再換數字對 2 次）</span></div>`;
+    h+=`<div class="legend"><span><i></i>還沒做</span><span><i class="l-bad"></i>錯題</span><span><i class="l-ok"></i>答對過</span><span><i class="l-mast"></i>${CALC_IDS.length?'精通（計算題要再換數字對 2 次）':'精通'}</span></div>`;
     $('#map').innerHTML=h;
   }
   let resetArm=false;
@@ -180,8 +212,8 @@ function boot(E){
       [...new Set(qs.map(q=>q.topic))].forEach(t=>{
         h+=`<div class="grp"><h3>${esc(t)}</h3>`;
         qs.filter(q=>q.topic===t).forEach(q=>{
-          h+=`<details class="item"><summary><span class="dot ${status(q.id)}"></span><span class="no">第 ${q.n} 題</span><span class="tt">${esc(q.short)}</span></summary>
-          <div class="in"><p>${esc(q.q)}</p><p class="ans">答案：${esc(q.o[q.a])}</p><p>${esc(q.exp)}</p>${q.deep||''}
+          h+=`<details class="item"><summary><span class="dot ${status(q.id)}"></span><span class="no">${q.no?esc(q.no):`第 ${q.n} 題`}</span><span class="tt">${esc(q.short)}</span></summary>
+          <div class="in">${q.sol?`<div class="wk">${q.html}</div><div class="wk wk-sol">${q.sol}</div>`:`<p class="qtext-sm">${esc(q.q)}</p><p class="ans">答案：${esc(q.o[q.a])}</p><p>${esc(q.exp)}</p>${q.deep||''}`}
           <p><button class="btn" data-jump="${q.id}">去練這題</button></p></div></details>`;
         });
         h+=`</div>`;
@@ -212,13 +244,16 @@ function boot(E){
 
   /* 事件 */
   document.addEventListener('click',e=>{
-    const t=e.target.closest('[data-opt],[data-act],[data-jump],.tab');if(!t)return;
+    const t=e.target.closest('[data-opt],[data-self],[data-act],[data-jump],.tab');if(!t)return;
     if(t.classList.contains('tab'))return show(t.dataset.v);
     if(t.dataset.opt!==undefined)return answer(+t.dataset.opt);
+    if(t.dataset.self!==undefined)return answer(t.dataset.self==='1'?0:1);
     if(t.dataset.jump)return jump(t.dataset.jump);
     const a=t.dataset.act;
     if(a==='next')next();
     else if(a==='variant')load(cur.id,true);
+    else if(a==='speak')toggleSpeech();
+    else if(a==='reveal'){cur.revealed=true;render()}
     else if(a==='again'){S.order='rnd';$('#order').value='rnd';save();start()}
     else if(a==='dowrong'){S.scope='wrong';scopeEl.value='wrong';save();show('drill');start()}
     else if(a==='reset'){
@@ -232,9 +267,14 @@ function boot(E){
     if(view!=='drill'||!cur||e.metaKey||e.ctrlKey||e.altKey)return;
     if(e.target.tagName==='SELECT')return;
     const k=e.key.toLowerCase();
+    if(cur.self&&!cur.done){
+      if(!cur.revealed&&k==='enter'){e.preventDefault();cur.revealed=true;render()}
+      else if(cur.revealed&&(k==='1'||k==='2')){e.preventDefault();answer(k==='1'?0:1)}
+      return;
+    }
     if(!cur.done){const i='123456'.indexOf(k)>=0?'123456'.indexOf(k):'abcdef'.indexOf(k);if(i>=0&&i<cur.opts.length){e.preventDefault();answer(i)}}
     else if(k==='enter'||k==='arrowright'){e.preventDefault();next()}
-    else if(k==='n'&&Q[cur.id].gen){e.preventDefault();load(cur.id,true)}
+    else if(k==='n'&&Q[cur.id].gen&&!cur.self){e.preventDefault();load(cur.id,true)}
   });
 
   if(![...scopeEl.options].some(o=>o.value===String(S.scope)))S.scope='all';
